@@ -1,0 +1,50 @@
+name: Bug
+description: Something is broken or behaving incorrectly
+labels: ["fix"]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: What's broken
+      description: One sentence describing the broken behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+      placeholder: |
+        Expected: ...
+        Actual: ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Severity
+      options:
+        - P0 — production broken
+        - P1 — high, blocks work
+        - P2 — medium, workaround exists
+        - P3 — low, cosmetic
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Screenshots, logs, container health output. Optional.

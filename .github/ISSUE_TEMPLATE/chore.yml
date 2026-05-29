@@ -1,0 +1,35 @@
+name: Chore / Refactor / Docs
+description: Housekeeping, dependency updates, refactoring, or documentation
+labels: ["chore"]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: What
+      description: One sentence — what needs doing?
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why now
+      description: What's the cost of not doing this? Is it blocking something?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options: [chore, refactor, docs, research]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      options: [XS, S, M, L]
+    validations:
+      required: true
