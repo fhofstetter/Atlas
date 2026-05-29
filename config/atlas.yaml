@@ -1,0 +1,49 @@
+# Atlas — Main Configuration
+# Source of truth for active model and feature settings.
+# Model IDs from: https://docs.anthropic.com/en/docs/about-claude/models/overview
+
+system:
+  name: Atlas
+  version: "0.1.0"
+
+# Model assignments per agent role.
+# Supported shorthand: sonnet | opus | haiku (Claude Code resolves these).
+# Full IDs when calling the API directly.
+model:
+  # Orchestrator and reviewer use Opus — complex reasoning, strong instruction following.
+  # Sonnet for balanced throughput/quality. Haiku for routing and classification.
+  default: claude-sonnet-4-6
+  orchestrator: claude-opus-4-7
+  planner: claude-sonnet-4-6
+  researcher: claude-sonnet-4-6
+  coder: claude-sonnet-4-6
+  reviewer: claude-opus-4-7
+  writer: claude-sonnet-4-6
+  # Use Haiku for cheap, fast tasks (routing, tagging, quick lookups)
+  classifier: claude-haiku-4-5-20251001
+
+tasks:
+  max_parallel_agents: 5    # official limit: avoid spawning too many; results consume main context
+  default_priority: medium
+  timeout_minutes: 30
+
+logging:
+  level: info               # debug | info | warn | error
+  session_dir: logs/sessions
+  error_dir: logs/errors
+  max_session_files: 100    # rotate via tools/scripts/rotate-logs.sh
+
+memory:
+  # MEMORY.md: first 200 lines OR 25 KB loaded at session start (whichever first).
+  # Topic files in memory/ are NOT loaded at startup — they are loaded on demand.
+  index: memory/MEMORY.md
+  scope: project            # user | project | local (see subagent docs)
+
+output:
+  dir: output/
+
+integrations:
+  web_search: true          # built-in WebSearch tool — no credentials needed
+  gmail: true               # set true + add credentials to config/integrations.yaml
+  google_calendar: true
+  travel: true

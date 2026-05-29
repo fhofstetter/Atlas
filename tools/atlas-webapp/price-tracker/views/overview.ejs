@@ -1,0 +1,193 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:20vh">
+  <div class="hero-glow"></div>
+  <h1>Good <%= new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening' %>.</h1>
+  <p class="hero-sub">Here's where everything stands right now.</p>
+</section>
+
+<div class="main-content">
+
+  <!-- TOP STATS -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number" style="<%= todos.length > 0 ? 'color:var(--red2)' : 'color:#6ee7b7' %>"><%= todos.length %></div>
+      <div class="stat-label">Open todos</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#f59e0b"><%= goals.length %></div>
+      <div class="stat-label">Active goals</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number"><%= productCount %></div>
+      <div class="stat-label">Products tracked</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="<%= activeTasks.length > 0 ? 'color:#f59e0b' : 'color:var(--muted)' %>"><%= activeTasks.length + queuedTasks.length %></div>
+      <div class="stat-label">Agent tasks pending</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px">
+
+    <!-- TODOS -->
+    <div class="fade-up">
+      <div class="section-heading" style="margin-bottom:12px">
+        Todos
+        <a href="/organizer" style="font-size:12px;color:var(--muted);margin-left:8px;font-weight:400">View all →</a>
+      </div>
+      <% if (!todos.length) { %>
+      <div class="window-wrap">
+        <div class="window-body" style="padding:16px;color:var(--muted);font-size:13px">All caught up — no open todos.</div>
+      </div>
+      <% } else { %>
+      <div class="table-wrap">
+        <table>
+          <tbody>
+            <% todos.slice(0, 5).forEach(t => { %>
+            <tr>
+              <td style="width:8px;padding-right:0">
+                <span class="pill <%= t.priority === 'high' || t.priority === 'critical' ? 'pill-red' : t.priority === 'medium' ? 'pill-yellow' : 'pill-green' %>" style="font-size:10px;padding:2px 6px"><%= t.priority %></span>
+              </td>
+              <td class="cell-strong" style="font-size:13px"><%= t.title %></td>
+              <td class="cell-muted" style="font-size:11px;white-space:nowrap;text-align:right">
+                <% if (t.due) { %>
+                  <span style="<%= t.due < new Date().toISOString().slice(0,10) ? 'color:var(--red2)' : '' %>"><%= t.due %></span>
+                <% } else { %>—<% } %>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% if (todos.length > 5) { %>
+        <div style="padding:10px 16px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)">+<%= todos.length - 5 %> more · <a href="/organizer" style="color:var(--muted)">view all</a></div>
+        <% } %>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- GOALS -->
+    <div class="fade-up">
+      <div class="section-heading" style="margin-bottom:12px">
+        Goals
+        <a href="/organizer" style="font-size:12px;color:var(--muted);margin-left:8px;font-weight:400">View all →</a>
+      </div>
+      <% if (!goals.length) { %>
+      <div class="window-wrap">
+        <div class="window-body" style="padding:16px;color:var(--muted);font-size:13px">No active goals set.</div>
+      </div>
+      <% } else { %>
+      <% goals.forEach(g => { %>
+      <div class="window-wrap" style="margin-bottom:12px">
+        <div class="window-body" style="padding:14px 16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div style="font-weight:600;font-size:14px;color:var(--text)"><%= g.title %></div>
+            <span class="pill pill-yellow" style="font-size:10px"><%= g.horizon %></span>
+          </div>
+          <% const done = (g.milestones || []).filter(m => m.done).length %>
+          <% const total = (g.milestones || []).length %>
+          <% if (total > 0) { %>
+          <div style="background:var(--bg3);border-radius:99px;height:4px;overflow:hidden;margin-bottom:6px">
+            <div style="background:var(--red2);height:4px;width:<%= Math.round(done/total*100) %>%;transition:width 0.3s"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted)"><%= done %>/<%= total %> milestones · due <%= g.target_date || '—' %></div>
+          <% } %>
+        </div>
+      </div>
+      <% }) %>
+      <% } %>
+    </div>
+
+  </div>
+
+  <!-- PRICE SNAPSHOT -->
+  <% if (bestPrices.length) { %>
+  <div class="section-heading fade-up" style="margin-bottom:12px">
+    Best Current Prices
+    <a href="/prices" style="font-size:12px;color:var(--muted);margin-left:8px;font-weight:400">Price tracker →</a>
+  </div>
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <% bestPrices.forEach(p => { %>
+    <div class="stat-block" style="align-items:flex-start;gap:4px">
+      <a href="/history/<%= p.id %>" style="font-weight:600;font-size:13px;color:var(--text);text-decoration:none;line-height:1.3"><%= p.name %></a>
+      <div style="font-size:22px;font-weight:700;color:var(--text)">CHF <%= p.priceCHFCard.toFixed(2) %></div>
+      <% if (p.oneLiner) { %><div style="font-size:11px;color:var(--muted);line-height:1.4"><%= p.oneLiner.slice(0,60) %>…</div><% } %>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+
+  <!-- ALERTS -->
+  <% if (alerts.length) { %>
+  <div class="section-heading fade-up" style="margin-bottom:12px">Price Alerts</div>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Product</th><th>Store</th><th>Price</th><th>Date</th></tr></thead>
+      <tbody>
+        <% alerts.slice(0, 5).forEach(a => { %>
+        <tr>
+          <td class="cell-strong"><%= a.productName || a.productId %></td>
+          <td class="cell-muted"><%= a.store || '—' %></td>
+          <td class="cell-strong" style="color:#6ee7b7">CHF <%= a.priceCHF ? a.priceCHF.toFixed(2) : '—' %></td>
+          <td class="cell-muted"><%= a.triggeredAt ? new Date(a.triggeredAt).toLocaleDateString('de-CH') : '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <!-- AGENT TASKS -->
+  <% if (activeTasks.length || queuedTasks.length) { %>
+  <div class="section-heading fade-up" style="margin-bottom:12px">
+    Agent Tasks
+    <a href="/tasks" style="font-size:12px;color:var(--muted);margin-left:8px;font-weight:400">View all →</a>
+  </div>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Title</th><th>Agent</th><th>Status</th></tr></thead>
+      <tbody>
+        <% [...activeTasks, ...queuedTasks].slice(0, 5).forEach(t => { %>
+        <tr>
+          <td class="cell-strong"><%= t.title || '—' %></td>
+          <td><span class="pill pill-yellow" style="font-size:10px"><%= t.agent || '—' %></span></td>
+          <td><span class="pill <%= t.status === 'active' ? 'pill-green' : 'pill-orange' %>" style="font-size:10px"><%= t.status || 'queue' %></span></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <!-- QUICK LINKS -->
+  <div class="features-grid fade-up" style="margin-bottom:0;grid-template-columns:repeat(4,1fr)">
+    <a href="/organizer" style="text-decoration:none">
+      <div class="feature-card" style="cursor:pointer">
+        <div class="feature-card-header"><div class="feature-card-icon grad-red">📋</div><h3>Organizer</h3></div>
+        <div class="feature-card-body" style="font-size:13px;color:var(--muted)">Goals, todos, and chores</div>
+      </div>
+    </a>
+    <a href="/prices" style="text-decoration:none">
+      <div class="feature-card" style="cursor:pointer">
+        <div class="feature-card-header"><div class="feature-card-icon grad-red">💶</div><h3>Prices</h3></div>
+        <div class="feature-card-body" style="font-size:13px;color:var(--muted)">Live prices + landed CH costs</div>
+      </div>
+    </a>
+    <a href="/health" style="text-decoration:none">
+      <div class="feature-card" style="cursor:pointer">
+        <div class="feature-card-header"><div class="feature-card-icon grad-red">❤️</div><h3>Health</h3></div>
+        <div class="feature-card-body" style="font-size:13px;color:var(--muted)">Sleep, fitness, health goals</div>
+      </div>
+    </a>
+    <a href="/budget" style="text-decoration:none">
+      <div class="feature-card" style="cursor:pointer">
+        <div class="feature-card-header"><div class="feature-card-icon grad-red">💰</div><h3>Budget</h3></div>
+        <div class="feature-card-body" style="font-size:13px;color:var(--muted)">Accounts and savings goals</div>
+      </div>
+    </a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

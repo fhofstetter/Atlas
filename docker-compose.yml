@@ -1,0 +1,151 @@
+services:
+  atlas-nginx:
+    image: nginx:alpine
+    container_name: atlas-nginx
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3456}:80"
+    volumes:
+      - ./tools/atlas-nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./tools/atlas-nginx/html:/usr/share/nginx/html:ro
+      - ./data/ops:/data/ops:ro
+    depends_on:
+      - atlas-webapp
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  atlas-webapp:
+    build:
+      context: ./tools/atlas-webapp
+      dockerfile: Dockerfile
+    image: atlas-webapp:latest
+    container_name: atlas-webapp
+    restart: unless-stopped
+    expose:
+      - "3456"
+    environment:
+      PORT: "3456"
+      ATLAS_DATA_ROOT: /atlas-data
+      DATA_DIR: /atlas-data/prices
+      ORGANIZER_DIR: /atlas-data/organizer
+      HEALTH_DIR: /atlas-data/health
+      BUDGET_DIR: /atlas-data/budget
+      CONFIG_DIR: /config
+      LOGS_DIR: /logs
+      TASKS_ROOT: /tasks
+      GRAFANA_URL: "http://localhost:3000"
+      AGENTS_DIR: /claude-agents
+      ATLAS_FIT_URL: "http://atlas-fit:3457"
+    volumes:
+      - ./data:/atlas-data
+      - ./config:/config:ro
+      - ./logs:/logs
+      - ./tasks:/tasks:ro
+      - ./tools/atlas-webapp/server.js:/app/server.js:ro
+      - ./tools/atlas-webapp/views:/app/views:ro
+      - ./tools/atlas-webapp/public:/app/public:ro
+      - ./.claude/agents:/claude-agents:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3456/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      - prometheus
+
+  atlas-fit:
+    build:
+      context: /mnt/c/Data/Projects/code/atlas-fit
+      dockerfile: Dockerfile
+    image: atlas-fit:latest
+    container_name: atlas-fit
+    restart: unless-stopped
+    expose:
+      - "3457"
+    ports:
+      - "3457:3457"
+    environment:
+      PORT: "3457"
+      HEALTH_DIR: /atlas-data/health
+      ATLAS_URL: "http://localhost:3456"
+      NODE_ENV: production
+    volumes:
+      - ./data:/atlas-data
+      - /mnt/c/Data/Projects/code/atlas-fit/server.js:/app/server.js:ro
+      - /mnt/c/Data/Projects/code/atlas-fit/views:/app/views:ro
+      - /mnt/c/Data/Projects/code/atlas-fit/public:/app/public:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3457/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: atlas-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: atlas-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: atlas
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_SECURITY_COOKIE_SAMESITE: disabled
+    volumes:
+      - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: atlas-blackbox
+    restart: unless-stopped
+    volumes:
+      - ./config/blackbox.yml:/config/blackbox.yml:ro
+    command: --config.file=/config/blackbox.yml
+
+  # cadvisor disabled — privileged + /:/rootfs mount causes kernel panics on WSL2
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:latest
+  #   container_name: atlas-cadvisor
+  #   restart: unless-stopped
+  #   privileged: true
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #     - /dev/disk/:/dev/disk:ro
+  #   command:
+  #     - '--disable_metrics=diskIO,network,tcp,udp,percpu,sched,process'
+  #     - '--docker_only=true'
+
+volumes:
+  prometheus_data:
+  grafana_data:

@@ -1,0 +1,52 @@
+# Code-Feature Workflow
+# Plan, implement, and review a new code feature.
+name: code-feature
+description: Plan, implement, and review a code feature end-to-end
+version: "1.0"
+trigger:
+  type: manual
+
+inputs:
+  - name: specification
+    type: string
+    required: true
+    description: "Feature specification"
+  - name: target_path
+    type: string
+    required: true
+    description: "Target file or directory"
+
+steps:
+  - id: plan
+    name: Plan the implementation
+    agent: planner
+    prompt: |
+      Create an implementation plan for: {{ inputs.specification }}
+      Target: {{ inputs.target_path }}
+      List exact files to create/modify and the changes needed.
+    depends_on: []
+    on_error: fail
+
+  - id: implement
+    name: Implement the feature
+    agent: coder
+    prompt: |
+      Implement according to this plan: {{ steps.plan.output }}
+      Specification: {{ inputs.specification }}
+      Target: {{ inputs.target_path }}
+    depends_on: [plan]
+    on_error: fail
+
+  - id: review
+    name: Review the implementation
+    agent: reviewer
+    prompt: |
+      Review the changes made to {{ inputs.target_path }}.
+      Check for: correctness, security, performance, and spec compliance.
+      Reference spec: {{ inputs.specification }}
+    depends_on: [implement]
+    on_error: skip
+
+outputs:
+  implementation_summary: "{{ steps.implement.output }}"
+  review: "{{ steps.review.output }}"

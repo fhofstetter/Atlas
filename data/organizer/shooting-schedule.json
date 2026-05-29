@@ -1,0 +1,317 @@
+{
+  "_schema": "atlas-shooting-schedule-v1",
+  "_source": "https://schuetzen-muri-guemligen.ch/media/attachments/2026/03/03/jahresprogramm_2026.pdf",
+  "_updated": "2026-05-04",
+  "_privacy": "LOCAL ONLY",
+  "club": "Schützen Muri-Gümligen",
+  "location": {
+    "name": "Schiessstand Gümligen",
+    "street": "Dentenbergstrasse 73",
+    "postal_code": "3073",
+    "city": "Gümligen",
+    "country": "CH",
+    "weather_query": "Gümligen, CH"
+  },
+  "travel": {
+    "from_home_office": {
+      "postal_code": "3096",
+      "city": "Oberbalm",
+      "travel_minutes": 60,
+      "depart_for_1730": "16:30"
+    }
+  },
+  "note": "Guests welcome at all Freie Übungen. 300m range (Gewehr) and 25/50m range (Pistole/KK) are separate tracks.",
+  "freie_uebung": [
+    {
+      "date": "2026-03-04", "day": "Mi", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-03-07", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-03-11", "day": "Mi", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-03-14", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-03-18", "day": "Mi", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-03-19", "day": "Do", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "25m Kleinkaliber", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-03-21", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-03-25", "day": "Mi", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-03-28", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-01", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["25/50m"], "discipline": "25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-08", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["25/50m"], "discipline": "25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-11", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-15", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-16", "day": "Do", "start": "17:30", "end": "19:30",
+      "ranges": ["25/50m"], "discipline": "25m Kleinkaliber", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-18", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-22", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-25", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-04-29", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-05-02", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m"], "discipline": "Gewehr 300m", "note": "Training Teilnehmer Eidg. Schützenfest Chur",
+      "half_year": 1, "past": true
+    },
+    {
+      "date": "2026-05-06", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-05-09", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-05-16", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m"], "discipline": "Gewehr 300m", "note": "Training Teilnehmer Eidg. Schützenfest Chur",
+      "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-05-20", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m",
+      "note": "Vorschiessen Eidg. Feldschiessen", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-05-21", "day": "Do", "start": "17:30", "end": "19:30",
+      "ranges": ["25/50m"], "discipline": "25m Kleinkaliber", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-05-23", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m",
+      "note": "Vorschiessen Eidg. Feldschiessen", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-06-03", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-06-06", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m"], "discipline": "Gewehr 300m", "note": "Training Teilnehmer Eidg. Schützenfest Chur",
+      "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-06-11", "day": "Do", "start": "17:30", "end": "19:30",
+      "ranges": ["25/50m"], "discipline": "25m Kleinkaliber", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-06-17", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-06-20", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-06-24", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-06-27", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 1, "past": false
+    },
+    {
+      "date": "2026-08-05", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-08-08", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-08-15", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-08-19", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-08-20", "day": "Do", "start": "17:30", "end": "19:30",
+      "ranges": ["25/50m"], "discipline": "25m Kleinkaliber", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-08-22", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-08-26", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["25/50m"], "discipline": "Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-02", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-05", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-09", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-12", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-16", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-17", "day": "Do", "start": "17:30", "end": "19:30",
+      "ranges": ["25/50m"], "discipline": "25m Kleinkaliber", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-19", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-23", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-26", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-09-30", "day": "Mi", "start": "17:30", "end": "19:30",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-10-03", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-10-07", "day": "Mi", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-10-10", "day": "Sa", "start": "10:00", "end": "12:00",
+      "ranges": ["300m", "25/50m"], "discipline": "Gewehr 300m + Nur 50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-10-14", "day": "Mi", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "Pistole 25m/50m", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-10-15", "day": "Do", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "25m Kleinkaliber", "half_year": 2, "past": false
+    },
+    {
+      "date": "2026-10-21", "day": "Mi", "start": "17:30", "end": "19:00",
+      "ranges": ["25/50m"], "discipline": "Pistole 25m/50m", "half_year": 2, "past": false
+    }
+  ],
+  "special_events": [
+    {
+      "date": "2026-02-20", "day": "Fr", "event": "Hauptversammlung 2026",
+      "location": "Sternen, Muri", "start": "18:00", "end": "21:00"
+    },
+    {
+      "date": "2026-04-11", "day": "Sa", "event": "ASVB Eröffnungsmatch",
+      "start": "13:30", "end": "17:00", "ranges": ["300m"]
+    },
+    {
+      "date": "2026-05-13", "day": "Mi", "event": "1. Obligatorische Übung (300m + 25m)",
+      "start": "17:30", "end": "19:30", "note": "Kommandiertes Feuer, keine freie Übung"
+    },
+    {
+      "date": "2026-05-29", "day": "Fr", "event": "Eidg. Feldschiessen",
+      "start": "17:00", "end": "19:30"
+    },
+    {
+      "date": "2026-05-30", "day": "Sa", "event": "Eidg. Feldschiessen",
+      "start": "08:00", "end": "12:00"
+    },
+    {
+      "date": "2026-05-31", "day": "So", "event": "Eidg. Feldschiessen",
+      "start": "08:00", "end": "12:00"
+    },
+    {
+      "date": "2026-06-10", "day": "Mi", "event": "2. Obligatorische Übung (300m + 25m)",
+      "start": "17:30", "end": "19:30", "note": "Kommandiertes Feuer, keine freie Übung"
+    },
+    {
+      "date": "2026-06-13", "day": "Sa", "event": "Eidgenössisches Schützenfest in Chur",
+      "location": "Chur"
+    },
+    {
+      "date": "2026-08-12", "day": "Mi", "event": "3. Obligatorische Übung (300m + 25m)",
+      "start": "17:30", "end": "19:30", "note": "Kommandiertes Feuer, keine freie Übung"
+    },
+    {
+      "date": "2026-08-29", "day": "Sa", "event": "4. Obligatorische Übung (300m + 25m)",
+      "start": "08:00", "end": "12:00", "note": "Kommandiertes Feuer, keine freie Übung"
+    },
+    {
+      "date": "2026-09-12", "day": "Sa", "event": "ASVB Schlussmatch",
+      "start": "13:30", "end": "17:00", "ranges": ["300m"]
+    },
+    {
+      "date": "2026-10-17", "day": "Sa", "event": "Zvierischiessen (mit Fondue im Schützenbeizli)",
+      "start": "14:00", "end": "16:00"
+    },
+    {
+      "date": "2026-10-24", "day": "Sa", "event": "25m/50m Ausschiessen",
+      "start": "13:30", "end": "17:00", "ranges": ["25/50m"]
+    },
+    {
+      "date": "2026-10-31", "day": "Sa", "event": "Absenden: Apéro und Nachtessen",
+      "start": "18:00", "end": "23:30"
+    },
+    {
+      "date": "2026-12-05", "day": "Sa", "event": "Chlouseschiesse: Gewehr 300m / Pistole 25m / KK-Gewehr 50m",
+      "start": "13:00", "end": "16:00"
+    },
+    {
+      "date": "2027-02-19", "day": "Fr", "event": "Hauptversammlung 2027",
+      "location": "Sternen, Muri", "start": "18:00", "end": "21:00"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+# Price Check Workflow
+# Run a full price check: scrape all stores, calculate landed costs, detect deals, report.
+name: price-check
+description: Scrape all tracked product prices, detect deals, and produce a report
+version: "1.0"
+trigger:
+  type: manual
+  # Uncomment for scheduled runs (requires Windows Task Scheduler calling check-prices.sh):
+  # type: scheduled
+  # schedule: "0 9 * * *"  # daily at 09:00
+
+inputs:
+  - name: product_filter
+    type: string
+    required: false
+    default: ""
+    description: "Optional product name/id to check a single product (leave empty for all)"
+
+  - name: report_output
+    type: string
+    required: false
+    default: ""
+    description: "Override output path for the price report"
+
+steps:
+  - id: install_check
+    name: Verify price tracker dependencies
+    agent: coder
+    prompt: |
+      Check that the price tracker Node.js dependencies are installed.
+      Run: ls tools/price-tracker/node_modules 2>/dev/null || (cd tools/price-tracker && npm install)
+      Report: installed (already present) or just-installed.
+    depends_on: []
+    on_error: fail
+
+  - id: scrape
+    name: Scrape current prices
+    agent: price-tracker
+    prompt: |
+      Run a fresh price check for {{ inputs.product_filter | default('all products') }}.
+      Command:
+        - If product_filter is set: node tools/price-tracker/index.js check-one "{{ inputs.product_filter }}"
+        - Otherwise: node tools/price-tracker/index.js check-all
+      Capture all output. Report any extraction failures separately.
+    depends_on: [install_check]
+    on_error: fail
+
+  - id: detect_deals
+    name: Identify deals and alerts
+    agent: price-tracker
+    prompt: |
+      Review the scrape results from the previous step.
+      Read data/prices/alerts.json for any alerts fired.
+      Read logs/alerts.md for the alert log.
+      Summarise: how many deals found, types, best deal (lowest landed cost to CH).
+    depends_on: [scrape]
+    on_error: skip
+
+  - id: report
+    name: Generate price report
+    agent: price-tracker
+    prompt: |
+      Generate a full price report.
+      Read all product history from data/prices/history/.
+      Read current state from data/prices/products.json.
+      Write report to: {{ inputs.report_output | default('output/price-report_' + timestamp() + '.md') }}
+      Format: follow the price-report command template.
+      Include: all products, current prices, landed costs (CH + DE), 30-day trends, deals.
+    depends_on: [detect_deals]
+    on_error: skip
+
+outputs:
+  scrape_result: "{{ steps.scrape.output }}"
+  deals_summary: "{{ steps.detect_deals.output }}"
+  report_path: "{{ steps.report.output }}"

@@ -1,0 +1,145 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:20vh">
+  <div class="hero-glow"></div>
+  <h1>Budget</h1>
+  <p class="hero-sub">Accounts, spending, and savings goals — local only.</p>
+</section>
+
+<div class="main-content">
+
+  <!-- STATS -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number" style="<%= accounts.length ? 'color:#6ee7b7' : 'color:var(--muted)' %>">
+        <% if (accounts.length) { %>CHF <%= totalBalance.toLocaleString('de-CH', {minimumFractionDigits:2, maximumFractionDigits:2}) %><% } else { %>—<% } %>
+      </div>
+      <div class="stat-label">Total balance</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:var(--muted)"><%= accounts.length %></div>
+      <div class="stat-label">Accounts</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:var(--muted)"><%= savingsBuckets.length %></div>
+      <div class="stat-label">Savings goals</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:var(--muted)"><%= transactions.length %></div>
+      <div class="stat-label">Recent transactions</div>
+    </div>
+  </div>
+
+  <!-- ACCOUNTS -->
+  <div class="section-heading fade-up">Accounts</div>
+  <% if (!accounts.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:20px;padding:28px">
+      <div style="font-size:36px">🏦</div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--text);margin-bottom:6px">No accounts configured</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Tell the budget-agent about your accounts to track balances.</div>
+        <div style="background:var(--bg3);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--muted)">
+          <code>Ask: "Add my PostFinance checking with CHF 2'400 balance"</code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Account</th><th>Type</th><th>Currency</th><th>Balance</th></tr></thead>
+      <tbody>
+        <% accounts.forEach(a => { %>
+        <tr>
+          <td class="cell-strong"><%= a.name %></td>
+          <td><span class="pill pill-yellow" style="font-size:10px"><%= a.type || '—' %></span></td>
+          <td class="cell-muted"><%= a.currency || 'CHF' %></td>
+          <td class="cell-strong" style="color:#6ee7b7;text-align:right"><%= (a.currency || 'CHF') + ' ' + (a.balance || 0).toLocaleString('de-CH', {minimumFractionDigits:2, maximumFractionDigits:2}) %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <!-- SAVINGS GOALS -->
+  <div class="section-heading fade-up">Savings Goals</div>
+  <% if (!savingsBuckets.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:20px;padding:28px">
+      <div style="font-size:36px">🐷</div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--text);margin-bottom:6px">No savings goals yet</div>
+        <div style="font-size:13px;color:var(--muted)">Ask the budget-agent to create a savings bucket.</div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
+    <% savingsBuckets.forEach(b => { %>
+    <% const pct = b.target ? Math.min(100, Math.round((b.saved||0)/b.target*100)) : 0 %>
+    <div class="window-wrap fade-up">
+      <div class="window-body" style="padding:16px 20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-weight:600;font-size:14px;color:var(--text)"><%= b.name %></div>
+          <div style="font-size:12px;color:var(--muted)"><%= pct %>%</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:99px;height:6px;overflow:hidden;margin-bottom:8px">
+          <div style="background:#6ee7b7;height:6px;width:<%= pct %>%;border-radius:99px;transition:width 0.5s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)">
+          <span>CHF <%= (b.saved||0).toLocaleString('de-CH') %> saved</span>
+          <span>of CHF <%= (b.target||0).toLocaleString('de-CH') %></span>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+
+  <!-- TRANSACTIONS -->
+  <div class="section-heading fade-up">Recent Transactions</div>
+  <% if (!transactions.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:20px;padding:28px">
+      <div style="font-size:36px">📊</div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--text);margin-bottom:6px">No transactions logged</div>
+        <div style="font-size:13px;color:var(--muted)">Tell the budget-agent about income and expenses.</div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead>
+      <tbody>
+        <% transactions.slice().reverse().slice(0, 20).forEach(t => { %>
+        <tr>
+          <td class="cell-muted" style="white-space:nowrap"><%= t.date || '—' %></td>
+          <td class="cell-strong" style="font-size:13px"><%= t.description || '—' %></td>
+          <td><span class="pill" style="font-size:10px;background:var(--bg3);color:var(--muted)"><%= t.category || '—' %></span></td>
+          <td class="cell-strong" style="text-align:right;color:<%= (t.amount||0) >= 0 ? '#6ee7b7' : 'var(--red2)' %>">
+            <%= (t.amount||0) >= 0 ? '+' : '' %><%= (t.amount||0).toLocaleString('de-CH', {minimumFractionDigits:2}) %>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;font-size:12px;color:var(--muted);margin-bottom:32px">
+    🔒 All budget data is stored locally only — never sent to external services.
+  </div>
+
+  <div style="display:flex;gap:12px">
+    <a href="/health" class="btn btn-ghost">← Health</a>
+    <a href="/agents" class="btn btn-ghost">Agents →</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

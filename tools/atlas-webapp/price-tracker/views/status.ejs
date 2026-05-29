@@ -1,0 +1,144 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:22vh">
+  <div class="hero-glow"></div>
+  <h1>System Status</h1>
+  <p class="hero-sub">Live health, scraping metrics, and monitoring dashboards.</p>
+</section>
+
+<div class="main-content">
+
+  <!-- HEALTH STATS -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number" style="color:#6ee7b7">●&nbsp;Online</div>
+      <div class="stat-label">Server status</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number"><%= Math.floor(uptime / 3600) %>h <%= Math.floor((uptime % 3600) / 60) %>m</div>
+      <div class="stat-label">Uptime</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number"><%= products.length %></div>
+      <div class="stat-label">Products tracked</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="<%= failedStores > 0 ? 'color:var(--red2)' : 'color:#6ee7b7' %>">
+        <%= pricedStores %> / <%= pricedStores + failedStores %>
+      </div>
+      <div class="stat-label">Stores with prices</div>
+    </div>
+  </div>
+
+  <!-- SCRAPING STATUS TABLE -->
+  <div class="section-heading fade-up">Scraping Status</div>
+  <div class="table-wrap fade-up" style="margin-bottom:40px">
+    <% if (!products.length) { %>
+    <div class="table-empty">No products tracked yet.</div>
+    <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Store</th>
+          <th>Status</th>
+          <th>Tier</th>
+          <th>Price (CHF)</th>
+          <th>Last Checked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(p => { %>
+          <% (p.stores || []).forEach(s => { %>
+          <% const tier = s.extractionTier || '' %>
+          <% const tierClass = tier === 'jsonld' ? 'pill-green' : tier === 'opengraph' ? 'pill-yellow' : tier === 'heuristic' ? 'pill-orange' : 'pill-red' %>
+          <tr>
+            <td class="cell-strong"><%= p.name %></td>
+            <td class="cell-muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              <a href="<%= s.url %>" target="_blank" rel="noopener" style="color:var(--muted)">
+                <%= (() => { try { return new URL(s.url).hostname.replace(/^www\./,'') } catch { return s.url } })() %>
+              </a>
+            </td>
+            <td>
+              <% if (s.priceCHF != null) { %>
+              <span class="pill pill-green">✓ OK</span>
+              <% } else { %>
+              <span class="pill pill-red">Failed</span>
+              <% } %>
+            </td>
+            <td><span class="pill <%= tierClass %>" style="font-size:10px"><%= tier || '—' %></span></td>
+            <td class="<%= s.priceCHF != null ? 'cell-strong' : 'cell-muted' %>">
+              <% if (s.priceCHF != null) { %>CHF <%= (s.priceCHF * 1.025).toFixed(2) %><% } else { %>—<% } %>
+            </td>
+            <td class="cell-muted">
+              <% if (s.lastChecked) { %><%= new Date(s.lastChecked).toLocaleString('de-CH') %><% } else { %>—<% } %>
+            </td>
+          </tr>
+          <% }) %>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+
+  <!-- MONITORING LINKS -->
+  <div class="section-heading fade-up">Monitoring</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px">
+    <div class="window-wrap fade-up">
+      <div class="window-bar">
+        <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+        <div class="window-title">Grafana</div>
+        <% if (grafanaUrl) { %><span class="pill pill-green" style="font-size:10px;margin-left:auto">configured</span><% } else { %><span class="pill" style="font-size:10px;margin-left:auto;background:var(--bg3);color:var(--muted)">not running</span><% } %>
+      </div>
+      <div class="window-body" style="padding:20px">
+        <div style="font-size:28px;margin-bottom:10px">📊</div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:6px">Atlas dashboard</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">HTTP request rate, p95 latency, heap memory, event loop lag, product count.</div>
+        <% if (grafanaUrl) { %>
+        <a href="<%= grafanaUrl %>/d/atlas-webapp/atlas-webapp?orgId=1&refresh=30s" target="_blank" rel="noopener" class="btn" style="display:inline-flex;font-size:12px">
+          Open dashboard →
+        </a>
+        <% } else { %>
+        <div style="font-size:12px;color:var(--muted)">Start with <code>docker compose up</code> and set <code>GRAFANA_URL</code>.</div>
+        <% } %>
+      </div>
+    </div>
+    <div class="window-wrap fade-up">
+      <div class="window-bar">
+        <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+        <div class="window-title">Prometheus</div>
+        <span class="pill pill-green" id="prom-badge" style="font-size:10px;margin-left:auto;display:none">live</span>
+      </div>
+      <div class="window-body" style="padding:20px">
+        <div style="font-size:28px;margin-bottom:10px">🔬</div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:6px">Raw metrics explorer</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">Query <code>/metrics</code> and Prometheus directly. Scraped every 15 s.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="/metrics" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:12px">Raw /metrics</a>
+          <% if (grafanaUrl) { %>
+          <a href="<%= grafanaUrl.replace('3000','9090') %>/graph" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:12px">Prometheus UI →</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    fetch('http://localhost:9090/-/healthy').then(r => { if (r.ok) document.getElementById('prom-badge').style.display = '' }).catch(() => {})
+  </script>
+
+  <!-- METRICS ENDPOINT NOTE -->
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;font-size:13px;color:var(--muted);margin-bottom:40px">
+    <strong style="color:var(--text)">🔍 Prometheus metrics</strong> available at
+    <a href="/metrics" target="_blank" style="color:var(--muted);text-decoration:underline">/metrics</a>
+    — scraped every 15 s by Prometheus when running via Docker Compose.
+  </div>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <a href="/" class="btn btn-ghost">← Dashboard</a>
+    <a href="/metrics" target="_blank" class="btn btn-ghost">Raw metrics →</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

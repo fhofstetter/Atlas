@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            'atlas-bg': '#0f172a',
+            'atlas-card': '#1e293b',
+            'atlas-border': '#334155',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; font-size: 14px; }
+    @media (min-width: 1024px) { body { font-size: 15px; } }
+
+    .skeleton {
+      background: linear-gradient(90deg, #1e293b 25%, #293548 50%, #1e293b 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .progress-bar-fill {
+      transition: width 0.4s ease;
+    }
+
+    .star-filled { color: #f59e0b; }
+    .star-empty { color: #334155; }
+
+    #plan-modal-content {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    #plan-modal-content pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .chore-card-overdue { border-left: 4px solid #ef4444; }
+    .chore-card-today   { border-left: 4px solid #f59e0b; }
+    .chore-card-upcoming { border-left: 4px solid #22c55e; }
+
+    .savings-bar-fill {
+      display: inline-block;
+      background: #3b82f6;
+      height: 8px;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+    .savings-bar-bg {
+      display: block;
+      background: #334155;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 px-4 py-4">
+    <div class="max-w-6xl mx-auto flex items-start justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xl font-bold text-slate-100">Atlas</span>
+          <span class="text-slate-500">·</span>
+          <span id="header-date" class="text-slate-300 font-medium"></span>
+        </div>
+        <div class="text-xs text-slate-500 mt-0.5">
+          Last updated: <span id="last-updated">—</span>
+        </div>
+      </div>
+      <button
+        id="refresh-btn"
+        onclick="doRefresh()"
+        class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm font-medium transition-colors min-h-[44px]"
+        aria-label="Refresh dashboard"
+      >
+        <span id="refresh-icon">↺</span> Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- Main grid -->
+  <main class="max-w-6xl mx-auto px-4 py-6">
+
+    <!-- Panel 1: Today at a Glance (full width) -->
+    <div id="panel-today" class="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6 mb-6">
+      <div class="skeleton h-24 w-full" id="skeleton-today"></div>
+      <div id="content-today" class="hidden"></div>
+    </div>
+
+    <!-- 2/3-col grid for remaining panels -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- Panel 2: Goals -->
+      <div id="panel-goals" class="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6">
+        <div class="skeleton h-48 w-full" id="skeleton-goals"></div>
+        <div id="content-goals" class="hidden"></div>
+      </div>
+
+      <!-- Panel: Travel -->
+      <div id="panel-travel" class="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6">
+        <div class="skeleton h-48 w-full" id="skeleton-travel"></div>
+        <div id="content-travel" class="hidden"></div>
+      </div>
+
+      <!-- Panel 3: Chores -->
+      <div id="panel-chores" class="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6">
+        <div class="skeleton h-48 w-full" id="skeleton-chores"></div>
+        <div id="content-chores" class="hidden"></div>
+      </div>
+
+      <!-- Panel 4: Todos -->
+      <div id="panel-todos" class="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6">
+        <div class="skeleton h-48 w-full" id="skeleton-todos"></div>
+        <div id="content-todos" class="hidden"></div>
+      </div>
+
+      <!-- Panel 5: Health & Sleep (spans 2 cols on lg) -->
+      <div id="panel-health" class="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6 lg:col-span-2">
+        <div class="skeleton h-48 w-full" id="skeleton-health"></div>
+        <div id="content-health" class="hidden"></div>
+      </div>
+
+      <!-- Panel 6: Budget -->
+      <div id="panel-budget" class="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6">
+        <div class="skeleton h-48 w-full" id="skeleton-budget"></div>
+        <div id="content-budget" class="hidden"></div>
+      </div>
+
+      <!-- Skills & Docs panel -->
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6 md:col-span-2 lg:col-span-3" id="panel-docs">
+        <h2 class="text-base font-semibold text-slate-100 mb-4 flex items-center gap-2">
+          <span>⚡</span> Skills &amp; Docs
+          <span id="docs-cmd-count" class="ml-auto text-xs font-normal text-slate-400 bg-slate-700 px-2 py-0.5 rounded-full"></span>
+        </h2>
+
+        <!-- Commands -->
+        <div class="mb-5">
+          <button onclick="toggleSection('docs-commands')"
+            class="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-slate-100 mb-3 w-full text-left">
+            <span class="text-slate-500">▸</span>
+            <span>Slash Commands</span>
+          </button>
+          <div id="docs-commands" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+        </div>
+
+        <!-- Agents -->
+        <div>
+          <button onclick="toggleSection('docs-agents')"
+            class="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-slate-100 mb-3 w-full text-left">
+            <span class="text-slate-500">▸</span>
+            <span>Agents</span>
+          </button>
+          <div id="docs-agents" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Plan modal -->
+  <div id="plan-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.75)">
+    <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-2xl shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-slate-700">
+        <h2 class="font-semibold text-slate-100">Today's Plan</h2>
+        <button onclick="closePlanModal()" class="text-slate-400 hover:text-slate-100 text-2xl leading-none min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Close">&times;</button>
+      </div>
+      <div id="plan-modal-content" class="p-4">
+        <pre class="text-slate-300 text-sm font-mono" id="plan-modal-text"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    function escHtml(str) {
+      if (str == null) return ''
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+    }
+
+    function formatDateShort(dateStr) {
+      if (!dateStr) return ''
+      const d = new Date(dateStr + 'T00:00:00')
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    }
+
+    function todayStr() {
+      const d = new Date()
+      return d.toISOString().split('T')[0]
+    }
+
+    function daysFromNow(dateStr) {
+      if (!dateStr) return null
+      const today = new Date()
+      today.setHours(0,0,0,0)
+      const target = new Date(dateStr + 'T00:00:00')
+      return Math.round((target - today) / 86400000)
+    }
+
+    function stars(quality, max = 5) {
+      const filled = Math.round(quality || 0)
+      let out = ''
+      for (let i = 1; i <= max; i++) {
+        out += `<span class="${i <= filled ? 'star-filled' : 'star-empty'}">★</span>`
+      }
+      return out
+    }
+
+    function fmtCHF(n) {
+      return Number(n || 0).toLocaleString('de-CH', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+    }
+
+    let sleepChartInstance = null
+    let budgetChartInstance = null
+
+    // ── Skeleton management ───────────────────────────────────────────────────
+
+    function showContent(id) {
+      const skeleton = document.getElementById(`skeleton-${id}`)
+      const content = document.getElementById(`content-${id}`)
+      if (skeleton) skeleton.classList.add('hidden')
+      if (content) content.classList.remove('hidden')
+    }
+
+    function showSkeleton(id) {
+      const skeleton = document.getElementById(`skeleton-${id}`)
+      const content = document.getElementById(`content-${id}`)
+      if (skeleton) skeleton.classList.remove('hidden')
+      if (content) content.classList.add('hidden')
+    }
+
+    // ── Render: Today at a Glance ─────────────────────────────────────────────
+
+    function renderToday(organizer, health, todayPlan) {
+      const now = new Date()
+      const dateLabel = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+      const timeLabel = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+
+      const openTodos = (organizer.todos || []).filter(t => t.status !== 'done').length
+      const activeGoals = organizer.active_goals || 0
+      const overdueChores = organizer.overdue_chores || 0
+
+      const lastSleep = health.sleep && health.sleep.last_entry
+      const sleepHtml = lastSleep
+        ? `<span class="text-slate-300">Last night:</span> <strong>${lastSleep.hours}h</strong> ${stars(lastSleep.quality)}`
+        : `<span class="text-slate-500">No sleep data</span>`
+
+      const planBtnHtml = todayPlan && todayPlan.exists
+        ? `<button onclick="openPlanModal()" class="mt-3 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors min-h-[44px]">View full plan →</button>`
+        : ''
+
+      document.getElementById('content-today').innerHTML = `
+        <div class="flex flex-col md:flex-row md:items-center gap-4">
+          <div class="flex-1">
+            <div class="text-2xl font-bold text-slate-100">${escHtml(timeLabel)}</div>
+            <div class="text-slate-400 text-sm mt-0.5">${escHtml(dateLabel)}</div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1.5 rounded-full bg-slate-700 text-slate-200 text-sm font-medium">${openTodos} open todos</span>
+            <span class="px-3 py-1.5 rounded-full bg-slate-700 text-slate-200 text-sm font-medium">${activeGoals} goals active</span>
+            <span class="px-3 py-1.5 rounded-full ${overdueChores > 0 ? 'bg-red-900/60 text-red-300' : 'bg-slate-700 text-slate-200'} text-sm font-medium">${overdueChores} chores due</span>
+          </div>
+        </div>
+        <div class="mt-3 text-sm">${sleepHtml}</div>
+        ${planBtnHtml}
+      `
+      showContent('today')
+    }
+
+    // ── Render: Goals ─────────────────────────────────────────────────────────
+
+    function renderGoals(organizer) {
+      const goals = (organizer.goals || []).filter(g => g.status === 'active')
+      const total = goals.length
+
+      const horizonColors = {
+        short: 'bg-blue-900/50 text-blue-300',
+        medium: 'bg-amber-900/50 text-amber-300',
+        long: 'bg-purple-900/50 text-purple-300'
+      }
+
+      let goalsHtml = ''
+      const visible = goals.slice(0, 5)
+      for (const g of visible) {
+        const pct = Math.min(100, Math.max(0, g.progress_pct || 0))
+        const hc = horizonColors[g.horizon] || 'bg-slate-700 text-slate-300'
+        goalsHtml += `
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-1 gap-2">
+              <span class="text-slate-200 text-sm font-medium truncate flex-1">${escHtml(g.title)}</span>
+              <span class="px-2 py-0.5 rounded-full text-xs font-medium ${hc} shrink-0">${escHtml(g.horizon || '')}</span>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-2 mb-1">
+              <div class="progress-bar-fill bg-blue-500 h-2 rounded-full" style="width:${pct}%"></div>
+            </div>
+            ${g.next_action ? `<div class="text-slate-500 text-xs truncate">${escHtml(g.next_action)}</div>` : ''}
+          </div>
+        `
+      }
+
+      const emptyHtml = `<div class="text-slate-500 text-sm py-4">No goals yet — add one with /goals add</div>`
+      const moreHtml = goals.length > 5
+        ? `<div class="text-blue-400 text-sm mt-1 cursor-pointer hover:text-blue-300">+ ${goals.length - 5} more goals</div>`
+        : ''
+
+      document.getElementById('content-goals').innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-slate-100">Goals</h2>
+          ${total > 0 ? `<span class="px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-300 text-xs font-medium">${total} active</span>` : ''}
+        </div>
+        ${goals.length === 0 ? emptyHtml : goalsHtml + moreHtml}
+      `
+      showContent('goals')
+    }
+
+    // ── Render: Chores ────────────────────────────────────────────────────────
+
+    function renderChores(organizer) {
+      const today = todayStr()
+      const chores = (organizer.chores || []).slice()
+
+      chores.sort((a, b) => {
+        const da = a.next_due || '9999-99-99'
+        const db = b.next_due || '9999-99-99'
+        return da < db ? -1 : da > db ? 1 : 0
+      })
+
+      const overdue = organizer.overdue_chores || 0
+
+      let choresHtml = ''
+      for (const c of chores) {
+        const due = c.next_due || ''
+        let cardClass = 'chore-card-upcoming'
+        let dueLabelClass = 'text-slate-400'
+        let dueLabel = due ? formatDateShort(due) : '—'
+        if (due && due < today) {
+          cardClass = 'chore-card-overdue'
+          dueLabelClass = 'text-red-400'
+          dueLabel = `Overdue · ${formatDateShort(due)}`
+        } else if (due === today) {
+          cardClass = 'chore-card-today'
+          dueLabelClass = 'text-amber-400'
+          dueLabel = 'Due today'
+        }
+        choresHtml += `
+          <div class="pl-3 py-2 mb-2 ${cardClass} bg-slate-700/40 rounded-r-lg">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-200 text-sm font-medium truncate flex-1">${escHtml(c.title)}</span>
+              ${c.recurrence ? `<span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-400 text-xs shrink-0">${escHtml(c.recurrence)}</span>` : ''}
+            </div>
+            <div class="${dueLabelClass} text-xs mt-0.5">${dueLabel}</div>
+          </div>
+        `
+      }
+
+      const emptyHtml = `<div class="text-slate-500 text-sm py-4">No chores scheduled</div>`
+
+      document.getElementById('content-chores').innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-slate-100">Chores</h2>
+          ${overdue > 0 ? `<span class="px-2 py-0.5 rounded-full bg-red-900/50 text-red-300 text-xs font-medium">${overdue} overdue</span>` : ''}
+        </div>
+        ${chores.length === 0 ? emptyHtml : choresHtml}
+      `
+      showContent('chores')
+    }
+
+    // ── Render: Todos ─────────────────────────────────────────────────────────
+
+    function renderTodos(organizer) {
+      const today = todayStr()
+      const priorityOrder = { high: 0, medium: 1, low: 2 }
+      const priorityDot = { high: 'bg-red-500', medium: 'bg-amber-500', low: 'bg-slate-500' }
+
+      const todos = (organizer.todos || [])
+        .filter(t => t.status !== 'done')
+        .sort((a, b) => {
+          const pa = priorityOrder[a.priority] ?? 1
+          const pb = priorityOrder[b.priority] ?? 1
+          if (pa !== pb) return pa - pb
+          const da = a.due_date || '9999-99-99'
+          const db = b.due_date || '9999-99-99'
+          return da < db ? -1 : 1
+        })
+
+      const count = todos.length
+
+      let todosHtml = ''
+      for (const t of todos) {
+        const dot = priorityDot[t.priority] || 'bg-slate-500'
+        let dueBadge = ''
+        if (t.due_date) {
+          const days = daysFromNow(t.due_date)
+          if (days !== null && days < 0) {
+            dueBadge = `<span class="px-2 py-0.5 rounded-full bg-red-900/50 text-red-300 text-xs">${formatDateShort(t.due_date)}</span>`
+          } else if (days !== null && days <= 3) {
+            dueBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-900/50 text-amber-300 text-xs">${formatDateShort(t.due_date)}</span>`
+          } else {
+            dueBadge = `<span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-400 text-xs">${formatDateShort(t.due_date)}</span>`
+          }
+        }
+        todosHtml += `
+          <div class="flex items-center gap-2 py-2 border-b border-slate-700/50 last:border-0 min-h-[44px]">
+            <span class="w-2 h-2 rounded-full ${dot} shrink-0"></span>
+            <span class="text-slate-200 text-sm flex-1 truncate">${escHtml(t.title)}</span>
+            ${dueBadge}
+          </div>
+        `
+      }
+
+      const emptyHtml = `<div class="text-slate-500 text-sm py-4">No open todos — great job!</div>`
+
+      document.getElementById('content-todos').innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-slate-100">My Todos</h2>
+          ${count > 0 ? `<span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 text-xs font-medium">${count}</span>` : ''}
+        </div>
+        ${todos.length === 0 ? emptyHtml : todosHtml}
+      `
+      showContent('todos')
+    }
+
+    // ── Render: Health & Sleep ────────────────────────────────────────────────
+
+    function renderHealth(health) {
+      const sleep = health.sleep || {}
+      const fitness = health.fitness || {}
+      const healthGoals = health.health_goals || []
+
+      const last14Sleep = (sleep.last14 || []).slice().reverse()
+      const last7ForChart = last14Sleep.slice(-7)
+
+      const lastSleep = sleep.last_entry
+      const sleepSummaryHtml = lastSleep
+        ? `
+          <div class="flex items-center gap-3 mb-3">
+            <div class="text-3xl font-bold text-blue-400">${lastSleep.hours}h</div>
+            <div>
+              <div class="text-sm">${stars(lastSleep.quality)}</div>
+              <div class="text-xs text-slate-500">${formatDateShort(lastSleep.date)}</div>
+            </div>
+            ${lastSleep.position ? `<div class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-400 text-xs">${escHtml(lastSleep.position)}</div>` : ''}
+          </div>
+        `
+        : `<div class="text-slate-500 text-sm mb-3">Log sleep with /sleep-log</div>`
+
+      const avgHtml = sleep.avg_hours_7d != null
+        ? `<div class="text-xs text-slate-500 mb-3">7-day avg: <span class="text-slate-300">${sleep.avg_hours_7d}h</span> · quality <span class="text-slate-300">${sleep.avg_quality_7d}/5</span></div>`
+        : ''
+
+      const chartLabels = last7ForChart.map(e => formatDateShort(e.date))
+      const chartData = last7ForChart.map(e => e.hours || 0)
+
+      const lastFitness = fitness.last_entry
+      const fitnessHtml = lastFitness
+        ? `<div class="text-sm text-slate-300 mb-1">Last: <strong>${escHtml(lastFitness.type || 'Workout')}</strong>${lastFitness.duration_min ? ` · ${lastFitness.duration_min}min` : ''} <span class="text-slate-500">${formatDateShort(lastFitness.date)}</span></div>`
+        : `<div class="text-sm text-slate-500 mb-1">No recent workouts logged</div>`
+
+      let goalsHtml = ''
+      for (const g of healthGoals.slice(0, 3)) {
+        const pct = Math.min(100, Math.max(0, g.progress_pct || 0))
+        goalsHtml += `
+          <div class="mb-2">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-400 truncate">${escHtml(g.title)}</span>
+              <span class="text-slate-500 shrink-0 ml-2">${pct}%</span>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-1.5">
+              <div class="progress-bar-fill bg-green-500 h-1.5 rounded-full" style="width:${pct}%"></div>
+            </div>
+          </div>
+        `
+      }
+
+      document.getElementById('content-health').innerHTML = `
+        <h2 class="font-semibold text-slate-100 mb-4">Health &amp; Sleep</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Sleep</h3>
+            ${sleepSummaryHtml}
+            ${avgHtml}
+            <canvas id="sleep-chart" height="120"></canvas>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Fitness</h3>
+            ${fitnessHtml}
+            <div class="text-xs text-slate-500 mb-3">Workouts this week: <span class="text-slate-300 font-medium">${fitness.workouts_7d || 0}</span></div>
+            ${healthGoals.length > 0 ? `<h4 class="text-xs text-slate-500 mb-2">Health Goals</h4>${goalsHtml}` : ''}
+          </div>
+        </div>
+      `
+      showContent('health')
+
+      if (sleepChartInstance) {
+        sleepChartInstance.destroy()
+        sleepChartInstance = null
+      }
+
+      if (chartLabels.length > 0) {
+        const ctx = document.getElementById('sleep-chart')
+        if (ctx) {
+          sleepChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: chartLabels,
+              datasets: [{
+                label: 'Hours',
+                data: chartData,
+                backgroundColor: '#3b82f6',
+                borderRadius: 4,
+                borderSkipped: false
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  max: 10,
+                  min: 0,
+                  ticks: { color: '#94a3b8', stepSize: 2 },
+                  grid: { color: '#1e293b' }
+                },
+                x: {
+                  ticks: { color: '#94a3b8' },
+                  grid: { display: false }
+                }
+              }
+            }
+          })
+        }
+      }
+    }
+
+    // ── Render: Budget ────────────────────────────────────────────────────────
+
+    function renderBudget(budget) {
+      const cm = budget.current_month || {}
+      const accounts = budget.accounts || []
+      const savings = budget.savings || []
+
+      const monthName = cm.year && cm.month
+        ? new Date(cm.year, cm.month - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+        : 'This Month'
+
+      const net = cm.net || 0
+      const netClass = net >= 0 ? 'text-green-400' : 'text-red-400'
+
+      const byCategory = cm.by_category || {}
+      const catEntries = Object.entries(byCategory)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+      const catLabels = catEntries.map(([k]) => k)
+      const catData = catEntries.map(([, v]) => v)
+
+      const catColors = ['#3b82f6', '#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd']
+
+      let savingsHtml = ''
+      for (const s of savings) {
+        const current = s.current || 0
+        const target = s.target || 1
+        const pct = Math.min(100, Math.round((current / target) * 100))
+        savingsHtml += `
+          <div class="mb-3">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-300 truncate font-medium">${escHtml(s.name)}</span>
+              <span class="text-slate-500 shrink-0 ml-2">${pct}%</span>
+            </div>
+            <span class="savings-bar-bg">
+              <span class="savings-bar-fill" style="width:${pct}%"></span>
+            </span>
+            <div class="text-xs text-slate-500 mt-0.5">CHF ${fmtCHF(current)} / ${fmtCHF(target)}</div>
+          </div>
+        `
+      }
+
+      const emptyStateHtml = `<div class="text-slate-500 text-sm py-4">No budget data available</div>`
+      const hasData = cm.income || cm.expenses || savings.length > 0
+
+      document.getElementById('content-budget').innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-slate-100">Budget</h2>
+          <span class="text-xs text-slate-500">${escHtml(monthName)}</span>
+        </div>
+        ${!hasData ? emptyStateHtml : `
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="bg-slate-700/50 rounded-lg p-3">
+              <div class="text-xs text-slate-500 mb-1">Income</div>
+              <div class="text-lg font-bold text-green-400">CHF ${fmtCHF(cm.income)}</div>
+            </div>
+            <div class="bg-slate-700/50 rounded-lg p-3">
+              <div class="text-xs text-slate-500 mb-1">Expenses</div>
+              <div class="text-lg font-bold text-red-400">CHF ${fmtCHF(cm.expenses)}</div>
+            </div>
+          </div>
+          <div class="text-sm mb-4">Net: <span class="${netClass} font-semibold">CHF ${fmtCHF(net)}</span></div>
+          ${catEntries.length > 0 ? `<canvas id="budget-chart" height="160" class="mb-4"></canvas>` : ''}
+          ${savings.length > 0 ? `<h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Savings</h3>${savingsHtml}` : ''}
+        `}
+      `
+      showContent('budget')
+
+      if (budgetChartInstance) {
+        budgetChartInstance.destroy()
+        budgetChartInstance = null
+      }
+
+      if (catEntries.length > 0) {
+        const ctx = document.getElementById('budget-chart')
+        if (ctx) {
+          budgetChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: catLabels,
+              datasets: [{
+                label: 'CHF',
+                data: catData,
+                backgroundColor: catColors.slice(0, catLabels.length),
+                borderRadius: 4,
+                borderSkipped: false
+              }]
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: {
+                  ticks: {
+                    color: '#94a3b8',
+                    callback: v => `CHF ${fmtCHF(v)}`
+                  },
+                  grid: { color: '#1e293b' }
+                },
+                y: {
+                  ticks: { color: '#94a3b8' },
+                  grid: { display: false }
+                }
+              }
+            }
+          })
+        }
+      }
+    }
+
+    // ── Render: Travel ────────────────────────────────────────────────────────
+
+    function renderTravel(data) {
+      const { trips, upcoming, ongoing, next, days_until_next } = data || {}
+
+      const statusColors = {
+        planning:  'bg-slate-700 text-slate-300',
+        confirmed: 'bg-blue-900/50 text-blue-300',
+        ongoing:   'bg-green-900/50 text-green-300',
+        completed: 'bg-slate-700/50 text-slate-500',
+        cancelled: 'bg-red-900/40 text-red-400'
+      }
+
+      let html = `
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-slate-100">Travel</h2>
+          ${next && days_until_next != null
+            ? `<span class="px-2 py-0.5 rounded-full bg-amber-900/50 text-amber-300 text-xs font-medium">
+                ✈ ${escHtml(next.name || next.destination)} in ${days_until_next}d
+               </span>`
+            : ''}
+        </div>
+      `
+
+      if (ongoing && ongoing.length > 0) {
+        html += `<div class="mb-3 p-2 rounded-lg bg-green-900/20 border border-green-800/40 text-xs text-green-300 font-medium">
+          Currently travelling: ${escHtml(ongoing[0].name || ongoing[0].destination)}
+        </div>`
+      }
+
+      if (!upcoming || upcoming.length === 0) {
+        html += `<div class="text-slate-500 text-sm py-2">No upcoming trips — plan one with <span class="font-mono text-slate-400">/travel plan &lt;destination&gt;</span></div>`
+      } else {
+        for (const t of upcoming.slice(0, 3)) {
+          const bookedFlights  = (t.flights || []).filter(f => f.status === 'booked').length
+          const totalFlights   = (t.flights || []).length
+          const bookedHotels   = (t.accommodation || []).filter(a => a.status === 'booked').length
+          const totalHotels    = (t.accommodation || []).length
+          const totalBookable  = totalFlights + totalHotels
+          const totalBooked    = bookedFlights + bookedHotels
+          const bookingPct     = totalBookable > 0 ? Math.round((totalBooked / totalBookable) * 100) : 0
+          const budgetPct      = t.budget_chf > 0 ? Math.min(100, Math.round((t.spent_chf || 0) / t.budget_chf * 100)) : 0
+          const sc             = statusColors[t.status] || statusColors.planning
+
+          html += `
+            <div class="mb-4 last:mb-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <span class="text-sm font-medium text-slate-200 truncate flex-1">${escHtml(t.name || t.destination)}</span>
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium ${sc} shrink-0">${escHtml(t.status)}</span>
+              </div>
+              <div class="text-xs text-slate-500 mb-2">
+                ${t.start_date ? `${formatDateShort(t.start_date)}` : ''}
+                ${t.end_date ? ` – ${formatDateShort(t.end_date)}` : ''}
+                ${t.travelers > 1 ? ` · ${t.travelers} travelers` : ''}
+              </div>
+              ${totalBookable > 0 ? `
+                <div class="mb-1.5">
+                  <div class="flex justify-between text-xs text-slate-500 mb-1">
+                    <span>Bookings</span><span>${totalBooked}/${totalBookable}</span>
+                  </div>
+                  <div class="savings-bar-bg"><div class="savings-bar-fill" style="width:${bookingPct}%"></div></div>
+                </div>` : ''}
+              ${t.budget_chf > 0 ? `
+                <div>
+                  <div class="flex justify-between text-xs text-slate-500 mb-1">
+                    <span>Budget</span><span>CHF ${fmtCHF(t.spent_chf || 0)} / ${fmtCHF(t.budget_chf)}</span>
+                  </div>
+                  <div class="savings-bar-bg"><div class="savings-bar-fill ${budgetPct >= 90 ? '!bg-red-500' : ''}" style="width:${budgetPct}%"></div></div>
+                </div>` : ''}
+            </div>
+          `
+        }
+        if (upcoming.length > 3) {
+          html += `<div class="text-blue-400 text-sm mt-1">+ ${upcoming.length - 3} more trips</div>`
+        }
+      }
+
+      html += `<a href="/travel" class="mt-3 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-white text-xs font-semibold transition-colors min-h-[36px]" style="text-decoration:none">
+        🗺 Open Travel Planner →
+      </a>`
+      document.getElementById('content-travel').innerHTML = html
+      showContent('travel')
+    }
+
+    async function loadTravel() {
+      try {
+        const data = await fetchJSON('/api/travel')
+        renderTravel(data)
+      } catch {
+        document.getElementById('content-travel').innerHTML =
+          '<div class="text-slate-500 text-sm py-4">Travel data unavailable</div>'
+        showContent('travel')
+      }
+    }
+
+    // ── Plan modal ────────────────────────────────────────────────────────────
+
+    let planContent = null
+
+    function openPlanModal() {
+      if (!planContent) return
+      document.getElementById('plan-modal-text').textContent = planContent
+      document.getElementById('plan-modal').classList.remove('hidden')
+    }
+
+    function closePlanModal() {
+      document.getElementById('plan-modal').classList.add('hidden')
+    }
+
+    document.getElementById('plan-modal').addEventListener('click', function(e) {
+      if (e.target === this) closePlanModal()
+    })
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closePlanModal()
+    })
+
+    // ── Header date ───────────────────────────────────────────────────────────
+
+    function setHeaderDate() {
+      const now = new Date()
+      const label = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+      document.getElementById('header-date').textContent = label
+    }
+
+    // ── Last updated counter ──────────────────────────────────────────────────
+
+    let lastFetchTime = null
+
+    function updateLastUpdated() {
+      if (!lastFetchTime) return
+      const elapsed = Math.floor((Date.now() - lastFetchTime) / 1000)
+      document.getElementById('last-updated').textContent = `${elapsed}s ago`
+    }
+
+    setInterval(updateLastUpdated, 5000)
+
+    // ── Docs helpers ──────────────────────────────────────────────────────────
+
+    async function fetchJSON(url) {
+      const r = await fetch(url)
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      return r.json()
+    }
+
+    function toggleSection(id) {
+      const el = document.getElementById(id)
+      if (!el) return
+      el.classList.toggle('hidden')
+    }
+
+    function renderDocs(data) {
+      const cmdCount = document.getElementById('docs-cmd-count')
+      if (cmdCount) cmdCount.textContent = `${data.commands.length} commands · ${data.agents.length} agents`
+
+      function card(item, isCommand) {
+        const hint = isCommand && item.argument_hint
+          ? `<div class="text-xs text-blue-400 font-mono mt-1 truncate">${escHtml(item.argument_hint)}</div>`
+          : ''
+        const sub = !isCommand && item.model
+          ? `<div class="text-xs text-slate-500 mt-1">${escHtml(item.model)}</div>`
+          : ''
+        return `<div class="bg-slate-700/50 rounded-lg p-3 min-w-0">
+          <div class="text-sm font-medium text-slate-100">${isCommand ? '/' : ''}${escHtml(item.name)}</div>
+          <div class="text-xs text-slate-400 mt-0.5 line-clamp-2">${escHtml(item.description)}</div>
+          ${hint}${sub}
+        </div>`
+      }
+
+      const cmdsEl = document.getElementById('docs-commands')
+      if (cmdsEl) cmdsEl.innerHTML = data.commands.map(c => card(c, true)).join('')
+
+      const agentsEl = document.getElementById('docs-agents')
+      if (agentsEl) agentsEl.innerHTML = data.agents.map(a => card(a, false)).join('')
+    }
+
+    async function loadDocs() {
+      try {
+        const data = await fetchJSON('/api/docs')
+        renderDocs(data)
+      } catch {
+        const el = document.getElementById('panel-docs')
+        if (el) el.querySelector('#docs-commands').innerHTML =
+          '<p class="text-slate-500 text-sm col-span-3">Could not load docs</p>'
+      }
+    }
+
+    // ── Fetch + render all ────────────────────────────────────────────────────
+
+    async function fetchAll() {
+      const endpoints = ['/api/organizer', '/api/health', '/api/budget', '/api/today', '/api/travel']
+      const results = await Promise.allSettled(endpoints.map(ep =>
+        fetch(ep).then(r => r.json()).catch(() => null)
+      ))
+
+      const [orgResult, healthResult, budgetResult, todayResult, travelResult] = results.map(r =>
+        r.status === 'fulfilled' ? r.value : null
+      )
+
+      const organizer = orgResult || { goals: [], chores: [], todos: [], overdue_chores: 0, overdue_todos: 0, active_goals: 0 }
+      const health = healthResult || { sleep: { last14: [], avg_hours_7d: null, avg_quality_7d: null, last_entry: null }, fitness: { last14: [], last_entry: null, workouts_7d: 0 }, health_goals: [] }
+      const budget = budgetResult || { accounts: [], current_month: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, income: 0, expenses: 0, net: 0, by_category: {} }, savings: [] }
+      const todayPlan = todayResult || { exists: false, date: '', content: null }
+      const travel = travelResult || { trips: [], upcoming: [], ongoing: [], next: null, days_until_next: null }
+
+      planContent = todayPlan.content
+
+      renderToday(organizer, health, todayPlan)
+      renderGoals(organizer)
+      renderChores(organizer)
+      renderTodos(organizer)
+      renderHealth(health)
+      renderBudget(budget)
+      renderTravel(travel)
+
+      lastFetchTime = Date.now()
+      updateLastUpdated()
+    }
+
+    function doRefresh() {
+      const icon = document.getElementById('refresh-icon')
+      icon.style.display = 'inline-block'
+      icon.style.animation = 'spin 0.6s linear'
+      ;['today', 'goals', 'travel', 'chores', 'todos', 'health', 'budget'].forEach(showSkeleton)
+      Promise.all([fetchAll(), loadDocs()]).then(() => {
+        icon.style.animation = ''
+      })
+    }
+
+    // ── Auto-refresh every 60s ────────────────────────────────────────────────
+    setInterval(() => {
+      fetchAll()
+    }, 60000)
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    setHeaderDate()
+    fetchAll()
+    loadDocs()
+  </script>
+</body>
+</html>

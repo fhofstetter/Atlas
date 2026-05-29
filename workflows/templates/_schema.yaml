@@ -1,0 +1,29 @@
+# Workflow Schema — copy this file to create a new workflow
+name: ""              # unique slug
+description: ""       # one-line description
+version: "1.0"
+trigger:              # how this workflow is started
+  type: manual        # manual | scheduled | event
+  # schedule: "0 9 * * 1"  # cron expression (if type: scheduled)
+  # event: task.completed   # event name (if type: event)
+
+inputs:               # parameters the workflow expects
+  # - name: goal
+  #   type: string
+  #   required: true
+  #   description: "The goal to accomplish"
+
+steps:
+  - id: step_1
+    name: ""
+    agent: ""         # must match an agent slug in agents/
+    prompt: ""        # instruction passed to the agent
+    inputs:           # map workflow inputs or prior step outputs to agent inputs
+      # goal: "{{ inputs.goal }}"
+    outputs:
+      # result: "{{ steps.step_1.output }}"
+    depends_on: []    # list of step ids that must complete first
+    on_error: fail    # fail | skip | retry
+
+outputs:              # what the workflow produces
+  # final_report: "{{ steps.last_step.output }}"

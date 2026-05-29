@@ -1,0 +1,40 @@
+<!-- Exercise Detail Modal -->
+<div id="exercise-modal" class="ex-modal-overlay" onclick="if(event.target===this)closeExerciseModal()">
+  <div class="ex-modal">
+    <button class="ex-modal-close" onclick="closeExerciseModal()">×</button>
+
+    <div class="ex-modal-header">
+      <div id="ex-modal-name" class="ex-modal-title"></div>
+      <div id="ex-modal-category" class="ex-modal-cat"></div>
+    </div>
+
+    <div class="ex-modal-body">
+      <!-- Anatomical diagrams (body-muscles library renders here) -->
+      <div class="ex-diagrams">
+        <div class="ex-diagram-col">
+          <div class="ex-diagram-label">Front</div>
+          <div id="body-front-container" class="body-chart-wrap"></div>
+        </div>
+        <div class="ex-diagram-col">
+          <div class="ex-diagram-label">Back</div>
+          <div id="body-back-container" class="body-chart-wrap"></div>
+        </div>
+      </div>
+
+      <!-- Info panel -->
+      <div class="ex-info">
+        <div class="ex-info-section">
+          <div class="ex-info-heading" style="color:#e8445a">Muscles</div>
+          <div id="ex-modal-muscles" class="ex-muscle-tags"></div>
+        </div>
+        <div class="ex-info-section">
+          <div id="ex-modal-equipment" style="font-size:12px;color:var(--muted)"></div>
+        </div>
+        <div class="ex-info-section">
+          <div class="ex-info-heading">How to</div>
+          <div id="ex-modal-desc" class="ex-desc"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

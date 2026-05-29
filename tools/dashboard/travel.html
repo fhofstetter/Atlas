@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Atlas · Travel Planner</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺</text></svg>">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; background: #0f172a; color: #e2e8f0; }
+
+    .layout { display: flex; height: calc(100vh - 56px - 48px); overflow: hidden; }
+
+    /* Sidebar */
+    #sidebar { width: 260px; flex-shrink: 0; background: #1e293b; border-right: 1px solid #334155; overflow-y: auto; }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+
+    .stop-card { display: flex; gap: 10px; padding: 10px 12px; cursor: pointer; border-left: 3px solid transparent; transition: background .15s, border-color .15s; }
+    .stop-card:hover { background: #162032; }
+    .stop-card.active { background: #172554; border-left-color: #3b82f6; }
+    .stop-card.active.ret { border-left-color: #a855f7; }
+    .stop-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .stop-card.out .stop-num, .stop-card.start .stop-num, .stop-card.end .stop-num { background: #1d4ed8; color: #fff; }
+    .stop-card.ret .stop-num { background: #7c3aed; color: #fff; }
+    .stop-info h3 { font-size: 13px; font-weight: 600; color: #f1f5f9; }
+    .stop-meta { font-size: 11px; color: #64748b; margin-top: 1px; }
+    .stop-nights { font-size: 11px; color: #f59e0b; margin-top: 1px; }
+
+    /* Map */
+    #map { flex: 1; }
+
+    /* Detail panel */
+    #detail-panel { width: 320px; flex-shrink: 0; background: #1e293b; border-left: 1px solid #334155; display: flex; flex-direction: column; overflow: hidden; }
+    .panel-tabs { display: flex; border-bottom: 1px solid #334155; flex-shrink: 0; }
+    .panel-tab { flex: 1; padding: 10px 4px; text-align: center; font-size: 12px; font-weight: 500; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
+    .panel-tab.active { color: #60a5fa; border-bottom-color: #3b82f6; }
+    .panel-body { flex: 1; overflow-y: auto; padding: 14px; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+
+    .section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #475569; margin-bottom: 6px; margin-top: 14px; }
+    .section-label:first-child { margin-top: 0; }
+
+    /* Stats bar */
+    #stats-bar { height: 48px; background: #0f172a; border-top: 1px solid #334155; display: flex; align-items: center; padding: 0 16px; gap: 20px; flex-shrink: 0; overflow-x: auto; }
+    .stat { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .stat-label { font-size: 11px; color: #475569; }
+    .stat-val { font-size: 12px; font-weight: 600; color: #94a3b8; }
+
+    /* Leaflet popup */
+    .leaflet-popup-content-wrapper { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 10px; padding: 0; box-shadow: 0 8px 24px rgba(0,0,0,.6); }
+    .leaflet-popup-content { margin: 0; min-width: 200px; }
+    .leaflet-popup-tip { background: #1e293b; }
+    .leaflet-popup-close-button { color: #64748b !important; top: 8px !important; right: 10px !important; }
+    .lp { padding: 12px 14px; }
+    .lp h3 { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+    .lp .lp-sub { font-size: 11px; color: #64748b; margin-bottom: 8px; }
+    .lp-btn { display: block; margin-top: 8px; background: #1d4ed8; color: #fff; text-align: center; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; }
+    .lp-btn:hover { background: #2563eb; }
+    .lp-btn.purple { background: #7c3aed; }
+    .lp-btn.purple:hover { background: #6d28d9; }
+
+    /* Booking links */
+    .book-links { display: flex; flex-direction: column; gap: 6px; }
+    .book-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; text-decoration: none; color: #cbd5e1; font-size: 12px; transition: border-color .15s; }
+    .book-link:hover { border-color: #3b82f6; color: #e2e8f0; }
+    .book-link .ico { font-size: 16px; }
+
+    /* Fuel calculator */
+    input[type=range] { width: 100%; accent-color: #3b82f6; }
+    input[type=number] { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; padding: 4px 8px; border-radius: 6px; font-size: 12px; width: 80px; }
+
+    /* Packing */
+    .pack-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid #1e293b; }
+    .pack-item label { font-size: 12px; color: #cbd5e1; cursor: pointer; flex: 1; }
+    .pack-item input[type=checkbox] { accent-color: #3b82f6; width: 14px; height: 14px; cursor: pointer; }
+    .pack-item label.checked { color: #475569; text-decoration: line-through; }
+    .pack-cat { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #475569; padding: 10px 0 4px; }
+
+    /* Weather */
+    .weather-card { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px; }
+    .weather-temp { font-size: 32px; font-weight: 700; color: #f1f5f9; }
+    .weather-desc { font-size: 13px; color: #94a3b8; }
+    .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .weather-cell { background: #1e293b; border-radius: 6px; padding: 8px; }
+    .weather-cell .wc-label { font-size: 10px; color: #475569; margin-bottom: 2px; }
+    .weather-cell .wc-val { font-size: 13px; font-weight: 600; color: #cbd5e1; }
+
+    /* Vignette */
+    .vig-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1a2540; }
+    .vig-name { font-size: 12px; color: #cbd5e1; }
+    .vig-price { font-size: 12px; font-weight: 600; color: #fde68a; }
+    input[type=checkbox].vig-check { accent-color: #22c55e; width: 14px; height: 14px; cursor: pointer; }
+
+    /* Spinner */
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #334155; border-top-color: #3b82f6; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media print {
+      #sidebar, #detail-panel, #stats-bar, header { display: none !important; }
+      .layout { height: auto !important; }
+      #map { height: 500px !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────────────────── -->
+<header class="h-14 bg-slate-800 border-b border-slate-700 flex items-center px-4 gap-4" style="flex-shrink:0">
+  <a href="/" class="text-slate-500 hover:text-slate-300 text-sm flex items-center gap-1">← Dashboard</a>
+  <span class="text-slate-700">|</span>
+  <span class="text-base font-bold text-slate-100" id="trip-name">Travel Planner</span>
+  <span id="trip-status-badge" class="hidden px-2 py-0.5 rounded-full text-xs font-semibold"></span>
+  <span id="trip-dates" class="text-sm text-slate-400 hidden"></span>
+  <span id="trip-countdown" class="text-sm font-semibold text-amber-300 hidden"></span>
+  <div class="ml-auto flex gap-2">
+    <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-medium transition-colors">Print</button>
+    <a id="gmaps-btn-out" href="#" target="_blank"
+       class="px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-white text-xs font-semibold transition-colors flex items-center gap-1.5">
+      📍 Outbound in Google Maps
+    </a>
+    <a id="gmaps-btn-ret" href="#" target="_blank"
+       class="px-3 py-1.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white text-xs font-semibold transition-colors flex items-center gap-1.5">
+      📍 Bosnia Return in Maps
+    </a>
+  </div>
+</header>
+
+<!-- ── Main layout ─────────────────────────────────────────────────────────── -->
+<div class="layout">
+
+  <!-- Sidebar: stop list -->
+  <aside id="sidebar">
+    <div style="padding:10px 12px 6px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#475569">Outbound</div>
+    <div id="stops-out"></div>
+    <div style="padding:10px 12px 6px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#7c3aed;margin-top:4px">Return · Bosnia</div>
+    <div id="stops-ret"></div>
+  </aside>
+
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Detail panel -->
+  <aside id="detail-panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" onclick="setTab('info')" id="tab-info">Info</div>
+      <div class="panel-tab" onclick="setTab('weather')" id="tab-weather">Weather</div>
+      <div class="panel-tab" onclick="setTab('book')" id="tab-book">Book</div>
+      <div class="panel-tab" onclick="setTab('fuel')" id="tab-fuel">Fuel</div>
+      <div class="panel-tab" onclick="setTab('pack')" id="tab-pack">Pack</div>
+    </div>
+    <div class="panel-body" id="panel-info"></div>
+    <div class="panel-body hidden" id="panel-weather"></div>
+    <div class="panel-body hidden" id="panel-book"></div>
+    <div class="panel-body hidden" id="panel-fuel"></div>
+    <div class="panel-body hidden" id="panel-pack"></div>
+  </aside>
+</div>
+
+<!-- ── Stats bar ───────────────────────────────────────────────────────────── -->
+<div id="stats-bar">
+  <div class="stat"><span class="stat-label">Stops</span><span class="stat-val" id="stat-stops">—</span></div>
+  <div class="stat"><span class="stat-label">One-way</span><span class="stat-val" id="stat-km">~1,400 km</span></div>
+  <div class="stat"><span class="stat-label">Nights</span><span class="stat-val" id="stat-nights">21</span></div>
+  <div class="stat"><span class="stat-label">Travelers</span><span class="stat-val" id="stat-travelers">2</span></div>
+  <div class="stat"><span class="stat-label">Road costs</span><span class="stat-val text-yellow-300">~CHF 627</span></div>
+  <div class="stat"><span class="stat-label">Budget total</span><span class="stat-val text-green-400">CHF 5,500–6,500</span></div>
+  <div class="stat"><span class="stat-label">Vignettes</span><span class="stat-val" id="stat-vig">AT + SI needed</span></div>
+</div>
+
+<script>
+// ────────────────────────────────────────────────────────────────────────────
+// Trip data (Croatia 2026 example — replaced if trips.json has entries)
+// ────────────────────────────────────────────────────────────────────────────
+const EXAMPLE_TRIP = {
+  name: 'Switzerland → Croatia 2026',
+  status: 'planning',
+  start_date: '2026-07-15',
+  end_date: '2026-08-04',
+  travelers: 2,
+  budget_chf: 6500,
+  origin: 'Zurich',
+  gmaps_out: 'https://www.google.com/maps/dir/Zurich,+Switzerland/Innsbruck,+Austria/Ljubljana,+Slovenia/Lake+Bled,+Slovenia/Zagreb,+Croatia/Plitvice+Lakes+National+Park,+Croatia/Zadar,+Croatia/Split,+Croatia/Dubrovnik,+Croatia',
+  gmaps_ret: 'https://www.google.com/maps/dir/Dubrovnik,+Croatia/Mostar,+Bosnia+and+Herzegovina/Sarajevo,+Bosnia+and+Herzegovina/Zagreb,+Croatia/Ljubljana,+Slovenia/Zurich,+Switzerland',
+  stops: [
+    {
+      id: 0, name: 'Zurich', country: 'Switzerland', flag: '🇨🇭',
+      latlng: [47.3769, 8.5417], type: 'start', nights: 0,
+      drive: null, km: 0,
+      sights: ['Altstadt old town & guildhalls', 'Lake Zurich promenade', 'Landesmuseum Swiss National Museum'],
+      food: 'Zürichgeschnetzeltes, Birchermüesli, Raclette',
+      price_budget: '—', price_mid: '—', price_note: 'Home base',
+      mapsQ: 'Zurich,+Switzerland'
+    },
+    {
+      id: 1, name: 'Innsbruck', country: 'Austria', flag: '🇦🇹',
+      latlng: [47.2692, 11.4041], type: 'out', nights: 1,
+      drive: '2.5h', km: 190,
+      sights: ['Nordkette cable car — Alps above the city', 'Golden Roof (Goldenes Dachl) — 16th-c medieval landmark', 'Maria-Theresien-Strasse evening stroll'],
+      food: 'Tiroler Gröstl, Käsespätzle, Germknödel with plum jam',
+      price_budget: 'CHF 90–130', price_mid: 'CHF 160–220', price_note: 'per night for 2',
+      mapsQ: 'Innsbruck,+Austria'
+    },
+    {
+      id: 2, name: 'Ljubljana', country: 'Slovenia', flag: '🇸🇮',
+      latlng: [46.0569, 14.5058], type: 'out', nights: 2,
+      drive: '3.5h', km: 290,
+      sights: ['Ljubljana Castle (free funicular)', 'Car-free baroque Old Town — entirely walkable', 'Central Market along the Ljubljanica river (morning)'],
+      food: 'Kranjska klobasa sausage, štruklji dumplings, riverside lunch ~€12–15',
+      price_budget: 'CHF 70–100', price_mid: 'CHF 130–180', price_note: 'per night for 2',
+      mapsQ: 'Ljubljana,+Slovenia'
+    },
+    {
+      id: 3, name: 'Lake Bled', country: 'Slovenia', flag: '🇸🇮',
+      latlng: [46.3683, 14.1146], type: 'out', nights: 2,
+      drive: '55 min', km: 55,
+      sights: ['Pletna boat row to island church — ring the bell', 'Bled Castle viewpoint over the lake', 'Vintgar Gorge boardwalk (arrive before 9am)'],
+      food: 'Kremšnita cream cake (Hotel Park only), Sava river trout',
+      price_budget: 'CHF 90–130', price_mid: 'CHF 160–260', price_note: 'Stay in Lesce for 40% less',
+      mapsQ: 'Lake+Bled,+Slovenia'
+    },
+    {
+      id: 4, name: 'Zagreb', country: 'Croatia', flag: '🇭🇷',
+      latlng: [45.8150, 15.9819], type: 'out', nights: 2,
+      drive: '2.5h', km: 170,
+      sights: ['Museum of Broken Relationships', 'Dolac farmers market — morning', 'Lotrščak Tower noon cannon'],
+      food: 'Štrukli (baked cheese pastry, UNESCO listed!), ćevapčići, excellent espresso',
+      price_budget: 'CHF 60–90', price_mid: 'CHF 100–150', price_note: 'Cheapest city in Croatia',
+      mapsQ: 'Zagreb,+Croatia'
+    },
+    {
+      id: 5, name: 'Plitvice Lakes', country: 'Croatia', flag: '🇭🇷',
+      latlng: [44.8804, 15.6173], type: 'out', nights: 2,
+      drive: '2h', km: 135,
+      sights: ['16 turquoise terraced lakes (UNESCO) — upper + lower loop walks', 'Book timed-entry online weeks ahead — mandatory July/Aug', 'Best light before 9am'],
+      food: 'Roast lamb (janjatina) in Korenica village, freshwater trout',
+      price_budget: 'CHF 60–90', price_mid: 'CHF 100–140', price_note: 'Stay in Korenica or Selište',
+      mapsQ: 'Plitvice+Lakes+National+Park,+Croatia',
+      warning: 'Book timed entry at np-plitvicka-jezera.hr now — July slots sell out weeks in advance'
+    },
+    {
+      id: 6, name: 'Zadar', country: 'Croatia', flag: '🇭🇷',
+      latlng: [44.1194, 15.2314], type: 'out', nights: 2,
+      drive: '2h', km: 130,
+      sights: ['Sea Organ — waves play music through stone pipes', 'Sun Salutation light artwork at sunset', 'Roman forum ruins + Cathedral of St. Anastasia'],
+      food: 'Peka (lamb/octopus under bell — order 2h ahead), Novigrad oysters, Maraschino cherry liqueur',
+      price_budget: 'CHF 70–100', price_mid: 'CHF 120–170', price_note: 'per night for 2',
+      mapsQ: 'Zadar,+Croatia'
+    },
+    {
+      id: 7, name: 'Split', country: 'Croatia', flag: '🇭🇷',
+      latlng: [43.5081, 16.4402], type: 'out', nights: 3,
+      drive: '1.5h', km: 160,
+      sights: ['Diocletian\'s Palace — 3,000 people live inside Roman walls', 'Riva seafront promenade', 'Day trip to Trogir UNESCO island-town (30 min)'],
+      food: 'Pašticada (braised beef + gnocchi), fresh fish at Pazar market, Dalmatian pršut',
+      price_budget: 'CHF 80–110', price_mid: 'CHF 150–210', price_note: 'Stay in Žnjan for 40% savings',
+      mapsQ: 'Split,+Croatia',
+      ferry: 'Ferry to Hvar from here: car + 2 pax return ~CHF 110 (Jadrolinija, book ahead)'
+    },
+    {
+      id: 8, name: 'Hvar Island', country: 'Croatia', flag: '🇭🇷',
+      latlng: [43.1729, 16.4412], type: 'out', nights: 3,
+      drive: 'Ferry 2h', km: 0,
+      sights: ['Hvar Town — Venetian architecture + Spanjola fortress views', 'Pakleni Islands by water taxi (crystal water)', 'Stari Grad ancient Greek grid (UNESCO)'],
+      food: 'Gregada fish stew, local Plavac Mali red wine, lavender honey',
+      price_budget: 'CHF 90–130', price_mid: 'CHF 160–240', price_note: 'Ferry: car+2 return ~CHF 110',
+      mapsQ: 'Hvar,+Croatia'
+    },
+    {
+      id: 9, name: 'Dubrovnik', country: 'Croatia', flag: '🇭🇷',
+      latlng: [42.6507, 18.0944], type: 'end', nights: 3,
+      drive: '3.5h', km: 230,
+      sights: ['City Walls walk 2km (€35pp — book online at ticketshop.dubrovnik.hr)', 'Cable car to Mount Srđ — sunset panorama', 'Sea kayak around the walls (~€55pp, 3–4h)'],
+      food: 'Ston oysters (40 min north), Pelješac Plavac Mali wine, rozata custard. Eat in Lapad for half price!',
+      price_budget: 'CHF 90–130 (Lapad)', price_mid: 'CHF 180–280', price_note: 'Don\'t park near Old Town walls!',
+      mapsQ: 'Dubrovnik,+Croatia',
+      warning: 'Park at Ivanica and take shuttle bus. City Walls tickets sell out — book online'
+    },
+    // Return via Bosnia
+    {
+      id: 10, name: 'Mostar', country: 'Bosnia & Herzegovina', flag: '🇧🇦',
+      latlng: [43.3438, 17.8078], type: 'ret', nights: 1,
+      drive: '2.5h', km: 145,
+      sights: ['Stari Most (Old Bridge) — rebuilt Ottoman bridge, divers jump daily', 'Kujundžiluk bazaar — Ottoman market street', 'Koski Mehmed Pasha Mosque rooftop view'],
+      food: 'Ćevapi with somun bread, burek, Bosnian coffee ritual (džezva served with lokum)',
+      price_budget: 'CHF 45–70', price_mid: 'CHF 80–120', price_note: 'Bosnia is very affordable',
+      mapsQ: 'Mostar,+Bosnia+and+Herzegovina',
+      note: 'Check car insurance covers Bosnia (BiH) — most Swiss/EU policies do'
+    },
+    {
+      id: 11, name: 'Sarajevo', country: 'Bosnia & Herzegovina', flag: '🇧🇦',
+      latlng: [43.8476, 18.3564], type: 'ret', nights: 1,
+      drive: '2.5h', km: 130,
+      sights: ['Baščaršija bazaar — Ottoman quarter unchanged for 500 years', 'Tunnel Museum (WWII/siege of Sarajevo, deeply moving)', 'Unique mix of Ottoman + Austro-Hungarian + Yugoslav architecture'],
+      food: 'Čevapi with somun (Sarajevo specialty), sogan-dolma, baklava fresh from Baščaršija',
+      price_budget: 'CHF 50–80', price_mid: 'CHF 90–140', price_note: 'per night for 2',
+      mapsQ: 'Sarajevo,+Bosnia+and+Herzegovina'
+    }
+  ],
+  road_segments: {
+    out: [
+      [47.3769, 8.5417], [47.2692, 11.4041], [46.0569, 14.5058],
+      [46.3683, 14.1146], [45.8150, 15.9819], [44.8804, 15.6173],
+      [44.1194, 15.2314], [43.5081, 16.4402], [43.1729, 16.4412],
+      [42.6507, 18.0944]
+    ],
+    ret: [
+      [42.6507, 18.0944], [43.3438, 17.8078], [43.8476, 18.3564],
+      [45.8150, 15.9819], [46.0569, 14.5058], [47.3769, 8.5417]
+    ],
+    ferry: [[43.5081, 16.4402], [43.1729, 16.4412]]
+  },
+  vignettes: [
+    { country: 'Austria 🇦🇹', type: '10-day digital vignette', price: 'CHF 12', where: 'asfinag.at or petrol station before border', required: true },
+    { country: 'Slovenia 🇸🇮', type: 'E-vignette 7-day', price: 'CHF 15', where: 'evinjeta.dars.si — buy online before entry', required: true },
+    { country: 'Croatia 🇭🇷', type: 'Toll booths', price: '~CHF 110 return', where: 'Pay at booths — card accepted', required: false }
+  ],
+  packing: [
+    { cat: 'Documents', items: ['Passport (valid 6+ months)', 'Driver\'s licence', 'Car registration & green card insurance', 'EU health insurance card (EHIC)', 'Hotel/ferry booking confirmations', 'Car insurance — verify covers Bosnia for return'] },
+    { cat: 'Car / Road', items: ['Warning triangle (mandatory FR/IT/HR)', 'High-vis vest in cabin (mandatory in many countries)', 'First aid kit', 'Spare tyre or repair kit', 'Austria & Slovenia vignettes (buy before/at border)', 'Offline maps (Google Maps offline / Maps.me)', 'Car charger / USB hub', 'Sunshade for windscreen'] },
+    { cat: 'Clothing', items: ['Lightweight clothing x 7 days (summer heat 30–35°C coast)', 'Swimwear x 2–3', 'Light evening layers (sea breeze)', 'Comfortable walking shoes', 'Sandals / flip flops', 'Light rain jacket', 'Sun hat'] },
+    { cat: 'Beach & Outdoor', items: ['Sunscreen SPF 50+', 'After-sun lotion', 'Snorkel & mask (Adriatic is crystal clear)', 'Reusable water bottle', 'Daypack / small backpack', 'Trekking shoes (Plitvice walks)'] },
+    { cat: 'Health & Pharmacy', items: ['Personal medications (3-week supply)', 'Motion sickness tablets (mountain passes)', 'Antihistamines', 'Insect repellent (evening coastal areas)', 'Blister plasters', 'Electrolyte sachets'] },
+    { cat: 'Tech', items: ['Swiss → EU Type F power adapter', 'Portable power bank (charging in car)', 'Camera / extra SD cards', 'Offline music / podcasts downloaded', 'Travel router (optional)'] },
+    { cat: 'Money', items: ['Croatian kuna → kuna is replaced by EUR (Croatia uses EUR since 2023)', 'Bosnian Convertible Mark (BAM) for Bosnia leg', 'Credit/debit cards (Visa/Mastercard accepted widely)', 'Some EUR cash for small restaurants / markets'] }
+  ]
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// State
+// ────────────────────────────────────────────────────────────────────────────
+let TRIP = EXAMPLE_TRIP
+let selectedStop = null
+let currentTab = 'info'
+let markers = []
+let routeOut, routeRet, routeFerry
+let segmentHighlight = null
+
+// ────────────────────────────────────────────────────────────────────────────
+// Map init
+// ────────────────────────────────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true }).setView([45.5, 15.5], 6)
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  subdomains: 'abcd', maxZoom: 19
+}).addTo(map)
+
+// ────────────────────────────────────────────────────────────────────────────
+// Icon factory
+// ────────────────────────────────────────────────────────────────────────────
+function makeIcon(color, label, sz = 28) {
+  return L.divIcon({
+    className: '',
+    iconAnchor: [sz / 2, sz / 2],
+    popupAnchor: [0, -sz / 2 - 4],
+    html: `<div style="width:${sz}px;height:${sz}px;border-radius:50%;background:${color};
+      border:2.5px solid rgba(255,255,255,.3);display:flex;align-items:center;
+      justify-content:center;font-size:${sz < 26 ? 9 : 10}px;font-weight:700;color:#fff;
+      box-shadow:0 3px 10px rgba(0,0,0,.6);font-family:system-ui,sans-serif;">${label}</div>`
+  })
+}
+
+const COLORS = { start: '#22c55e', out: '#3b82f6', end: '#ef4444', ret: '#a855f7' }
+
+// ────────────────────────────────────────────────────────────────────────────
+// Render trip
+// ────────────────────────────────────────────────────────────────────────────
+function renderTrip(trip) {
+  TRIP = trip
+
+  // Header
+  document.getElementById('trip-name').textContent = trip.name
+  const statusColors = {
+    planning:  'bg-amber-900/60 text-amber-300',
+    confirmed: 'bg-blue-900/60 text-blue-300',
+    ongoing:   'bg-green-900/60 text-green-300',
+    completed: 'bg-slate-700 text-slate-400',
+    cancelled: 'bg-red-900/40 text-red-400'
+  }
+  const badge = document.getElementById('trip-status-badge')
+  const sc = statusColors[trip.status] || statusColors.planning
+  badge.className = `px-2 py-0.5 rounded-full text-xs font-semibold ${sc}`
+  badge.textContent = trip.status
+  badge.classList.remove('hidden')
+  if (trip.start_date) {
+    const dateEl = document.getElementById('trip-dates')
+    dateEl.textContent = `${fmtDate(trip.start_date)} → ${fmtDate(trip.end_date)}`
+    dateEl.classList.remove('hidden')
+    const daysUntil = Math.ceil((new Date(trip.start_date) - new Date()) / 86400000)
+    if (daysUntil > 0) {
+      const el = document.getElementById('trip-countdown')
+      el.textContent = `${daysUntil} days away`
+      el.classList.remove('hidden')
+    }
+  }
+
+  // Google Maps buttons
+  document.getElementById('gmaps-btn-out').href = trip.gmaps_out || '#'
+  document.getElementById('gmaps-btn-ret').href = trip.gmaps_ret || '#'
+
+  // Stats
+  const outStops = trip.stops.filter(s => s.type !== 'ret').length
+  document.getElementById('stat-stops').textContent = `${trip.stops.length} (${outStops} out, ${trip.stops.length - outStops} return)`
+  document.getElementById('stat-travelers').textContent = trip.travelers || 2
+
+  // Draw routes
+  if (routeOut) map.removeLayer(routeOut)
+  if (routeRet) map.removeLayer(routeRet)
+  if (routeFerry) map.removeLayer(routeFerry)
+
+  routeOut   = L.polyline(trip.road_segments.out,   { color: '#3b82f6', weight: 3.5, opacity: .8 }).addTo(map)
+  routeRet   = L.polyline(trip.road_segments.ret,   { color: '#a855f7', weight: 3, opacity: .75, dashArray: '8 5' }).addTo(map)
+  routeFerry = L.polyline(trip.road_segments.ferry, { color: '#f59e0b', weight: 3, opacity: .9, dashArray: '4 8' }).addTo(map)
+
+  // Draw markers
+  markers.forEach(m => map.removeLayer(m))
+  markers = []
+
+  let outIdx = 0
+  trip.stops.forEach((s, i) => {
+    const isRet = s.type === 'ret'
+    const label = isRet ? `R${i - trip.stops.filter(x => x.type !== 'ret').length + 1}` : (outIdx++).toString()
+    const icon  = makeIcon(COLORS[s.type] || '#3b82f6', label === '0' ? 'S' : label, 26)
+
+    const popHtml = makePopupHtml(s, i)
+
+    const m = L.marker(s.latlng, { icon }).addTo(map)
+    m.bindPopup(popHtml, { maxWidth: 260 })
+    m.on('click', () => selectStop(i))
+    markers.push(m)
+  })
+
+  // Sidebar
+  renderSidebar()
+  // Default panel: overview
+  renderInfoOverview()
+  renderFuelPanel()
+  renderPackPanel()
+  renderVigPanel()
+  initRoadRoutes()
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Popup HTML factory
+// ────────────────────────────────────────────────────────────────────────────
+function makePopupHtml(s, i) {
+  return `<div class="lp">
+    <h3>${s.flag || ''} ${s.name}</h3>
+    <div class="lp-sub">${s.country}${s.nights ? ` · ${s.nights} night${s.nights > 1 ? 's' : ''}` : ''}</div>
+    ${s.drive ? `<div style="font-size:11px;color:#94a3b8">🚗 ${s.drive}${s.km > 0 ? ` · ${s.km} km` : ''}</div>` : ''}
+    <a href="#" onclick="selectStop(${i});return false" class="lp-btn">Details & Weather →</a>
+    <a href="https://www.google.com/maps/search/?api=1&query=${s.mapsQ}" target="_blank" class="lp-btn" style="margin-top:4px;background:#0f172a;border:1px solid #334155;color:#94a3b8">📍 Open in Google Maps</a>
+  </div>`
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Sidebar
+// ────────────────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const outEl = document.getElementById('stops-out')
+  const retEl = document.getElementById('stops-ret')
+  outEl.innerHTML = ''
+  retEl.innerHTML = ''
+
+  let outIdx = 0
+  TRIP.stops.forEach((s, i) => {
+    const isRet = s.type === 'ret'
+    const label = isRet
+      ? `R${i - TRIP.stops.filter(x => x.type !== 'ret').length + 1}`
+      : (outIdx++).toString()
+    const card = document.createElement('div')
+    card.className = `stop-card ${s.type}${selectedStop === i ? ' active' : ''}`
+    card.id = `stop-card-${i}`
+    card.onclick = () => selectStop(i)
+    card.innerHTML = `
+      <div class="stop-num">${label === '0' ? 'S' : label}</div>
+      <div class="stop-info">
+        <h3>${s.flag || ''} ${s.name}</h3>
+        <div class="stop-meta">${s.country}${s.drive ? ` · ${s.drive}` : ''}${s.km > 0 ? ` · ${s.km} km` : ''}</div>
+        ${s.nights ? `<div class="stop-nights">${s.nights} night${s.nights > 1 ? 's' : ''}</div>` : ''}
+      </div>`
+    ;(isRet ? retEl : outEl).appendChild(card)
+  })
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Select stop
+// ────────────────────────────────────────────────────────────────────────────
+function selectStop(idx) {
+  selectedStop = idx
+  const s = TRIP.stops[idx]
+
+  // Sidebar highlight
+  document.querySelectorAll('.stop-card').forEach(c => c.classList.remove('active'))
+  const card = document.getElementById(`stop-card-${idx}`)
+  if (card) { card.classList.add('active'); card.scrollIntoView({ block: 'nearest', behavior: 'smooth' }) }
+
+  // Fly + open popup
+  map.closePopup()
+  map.flyTo(s.latlng, 12, { duration: 1.0 })
+  setTimeout(() => markers[idx] && markers[idx].openPopup(), 1100)
+
+  // Segment highlight — use OSRM road geometry if loaded, else straight line
+  if (segmentHighlight) { map.removeLayer(segmentHighlight); segmentHighlight = null }
+  const legCoords = s.type === 'ret' ? TRIP._legRet?.[s.id] : TRIP._legOut?.[s.id]
+  if (legCoords) {
+    segmentHighlight = L.polyline(legCoords, { color: '#facc15', weight: 5, opacity: 1 }).addTo(map)
+  } else {
+    const stopCoords = TRIP.stops.filter(x => x.type === (s.type === 'ret' ? 'ret' : 'out') || x.type === 'start' || x.type === 'end').map(x => x.latlng)
+    const segIdx = stopCoords.findIndex(c => c[0] === s.latlng[0] && c[1] === s.latlng[1])
+    if (segIdx > 0) {
+      segmentHighlight = L.polyline([stopCoords[segIdx - 1], stopCoords[segIdx]], { color: '#facc15', weight: 5, opacity: 1 }).addTo(map)
+    }
+  }
+
+  // Update panel
+  renderInfoStop(s)
+  if (currentTab === 'weather') fetchWeather(s)
+  if (currentTab === 'book') renderBookPanel(s)
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Info panel
+// ────────────────────────────────────────────────────────────────────────────
+function renderInfoOverview() {
+  const t = TRIP
+  const nights = t.stops.reduce((n, s) => n + (s.nights || 0), 0)
+  const budgetPerDay = t.budget_chf ? Math.round(t.budget_chf / nights) : null
+  document.getElementById('panel-info').innerHTML = `
+    <div style="color:#64748b;font-size:12px;margin-bottom:12px">Click a stop on the sidebar or map to see details.</div>
+    <div class="section-label">Trip Summary</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      ${cell('Departure', t.origin || 'Zurich')}
+      ${cell('Final', 'Dubrovnik')}
+      ${cell('Total nights', nights)}
+      ${cell('Travelers', t.travelers || 2)}
+      ${cell('Budget', t.budget_chf ? `CHF ${t.budget_chf.toLocaleString()}` : '—')}
+      ${cell('Per day', budgetPerDay ? `~CHF ${budgetPerDay}` : '—')}
+    </div>
+    <div class="section-label">Road Costs</div>
+    <div style="font-size:12px;color:#94a3b8;line-height:2">
+      ⛽ Fuel (~3,200 km): <strong style="color:#fde68a">CHF ~380</strong><br>
+      🇦🇹 Austria vignette: <strong style="color:#fde68a">CHF 12</strong><br>
+      🇸🇮 Slovenia e-vignette: <strong style="color:#fde68a">CHF 15</strong><br>
+      🇭🇷 Croatia tolls (rtn): <strong style="color:#fde68a">CHF 110</strong><br>
+      ⛴ Ferry Split↔Hvar (rtn): <strong style="color:#fde68a">CHF 110</strong><br>
+      <span style="display:inline-block;margin-top:6px;padding-top:6px;border-top:1px solid #334155;width:100%">
+        Total road: <strong style="color:#4ade80">~CHF 627</strong>
+      </span>
+    </div>
+    <div class="section-label">Best Time to Go</div>
+    <div style="font-size:12px;color:#94a3b8;line-height:1.7">
+      ✅ <strong>Mid June – early July</strong> or <strong>late August – Sept</strong>:<br>
+      20–30% cheaper accommodation, far fewer crowds.<br>
+      ⚠️ <strong>July 10 – Aug 20</strong>: Peak prices, extremely busy (Dubrovnik, Hvar).<br>
+      🌡 Coast: 28–35°C July. Sea temp: ~26°C.
+    </div>
+    <div class="section-label" style="margin-top:14px">Return Options</div>
+    <div style="font-size:12px;color:#94a3b8;line-height:1.7">
+      <strong style="color:#60a5fa">Option A</strong> — Coastal (same road back, 4 days)<br>
+      <strong style="color:#a78bfa">Option B (recommended)</strong> — Bosnia: Mostar + Sarajevo, adds 1 day, unforgettable
+    </div>
+  `
+}
+
+function cell(label, val) {
+  return `<div style="background:#0f172a;border-radius:6px;padding:8px">
+    <div style="font-size:10px;color:#475569;margin-bottom:2px">${label}</div>
+    <div style="font-size:13px;font-weight:600;color:#cbd5e1">${val}</div>
+  </div>`
+}
+
+function renderInfoStop(s) {
+  const sightsHtml = s.sights.map(x => `<li style="font-size:12px;color:#cbd5e1;margin-bottom:3px">${x}</li>`).join('')
+  document.getElementById('panel-info').innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
+      <div>
+        <div style="font-size:17px;font-weight:700;color:#f1f5f9">${s.flag || ''} ${s.name}</div>
+        <div style="font-size:12px;color:#64748b">${s.country}${s.drive ? ` · ${s.drive} drive` : ''}${s.km ? `, ${s.km} km` : ''}</div>
+      </div>
+      ${s.nights ? `<div style="background:#1d3a6e;color:#93c5fd;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600;white-space:nowrap;margin-top:2px">${s.nights} night${s.nights > 1 ? 's' : ''}</div>` : ''}
+    </div>
+    ${s.warning ? `<div style="background:#422006;border:1px solid #92400e;border-radius:8px;padding:8px 10px;font-size:12px;color:#fde68a;margin-bottom:12px">⚠️ ${s.warning}</div>` : ''}
+    ${s.ferry ? `<div style="background:#0c2a4a;border:1px solid #1e4d7a;border-radius:8px;padding:8px 10px;font-size:12px;color:#7dd3fc;margin-bottom:12px">⛴ ${s.ferry}</div>` : ''}
+    ${s.note ? `<div style="background:#1a2540;border:1px solid #334155;border-radius:8px;padding:8px 10px;font-size:12px;color:#94a3b8;margin-bottom:12px">ℹ️ ${s.note}</div>` : ''}
+    <div class="section-label">Must See</div>
+    <ul style="padding-left:16px;margin-bottom:4px">${sightsHtml}</ul>
+    <div class="section-label">Local Food</div>
+    <div style="font-size:12px;color:#86efac;line-height:1.6;margin-bottom:4px">${s.food}</div>
+    <div class="section-label">Accommodation</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
+      <div style="background:#0f172a;border-radius:6px;padding:8px">
+        <div style="font-size:10px;color:#475569;margin-bottom:2px">Budget</div>
+        <div style="font-size:12px;font-weight:600;color:#fde68a">${s.price_budget || '—'}</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:8px">
+        <div style="font-size:10px;color:#475569;margin-bottom:2px">Mid-range</div>
+        <div style="font-size:12px;font-weight:600;color:#fde68a">${s.price_mid || '—'}</div>
+      </div>
+    </div>
+    ${s.price_note ? `<div style="font-size:11px;color:#475569;margin-bottom:10px">${s.price_note}</div>` : ''}
+    <a href="https://www.google.com/maps/search/?api=1&query=${s.mapsQ}" target="_blank"
+       style="display:block;background:#1d4ed8;color:#fff;text-align:center;padding:8px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;margin-top:4px">
+      📍 Open ${s.name} in Google Maps
+    </a>
+    <button onclick="setTab('weather');fetchWeather(TRIP.stops[${s.id}])"
+      style="display:block;width:100%;background:#0f172a;border:1px solid #334155;color:#94a3b8;padding:7px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;margin-top:6px">
+      🌤 Check live weather
+    </button>
+    <button onclick="setTab('book')"
+      style="display:block;width:100%;background:#0f172a;border:1px solid #334155;color:#94a3b8;padding:7px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;margin-top:6px">
+      🏨 Search accommodation
+    </button>
+  `
+  renderBookPanel(s)
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Weather tab
+// ────────────────────────────────────────────────────────────────────────────
+async function fetchWeather(stop) {
+  const el = document.getElementById('panel-weather')
+  el.innerHTML = `<div style="text-align:center;padding:20px"><div class="spinner"></div><div style="font-size:12px;color:#64748b;margin-top:8px">Fetching weather for ${stop.name}…</div></div>`
+
+  try {
+    const r = await fetch(`/api/travel/weather?city=${encodeURIComponent(stop.name + ', ' + stop.country)}`)
+    if (!r.ok) throw new Error('unavailable')
+    const d = await r.json()
+    if (d.error) throw new Error(d.error)
+
+    const cur = d.current_condition?.[0] || {}
+    const tempC = cur.temp_C || '—'
+    const desc = cur.weatherDesc?.[0]?.value || '—'
+    const feels = cur.FeelsLikeC || '—'
+    const humidity = cur.humidity || '—'
+    const windKmph = cur.windspeedKmph || '—'
+    const precipMM = cur.precipMM || '0'
+
+    const days = (d.weather || []).slice(0, 3).map(day => {
+      const hi = day.maxtempC || '—'
+      const lo = day.mintempC || '—'
+      const dayDesc = day.hourly?.[4]?.weatherDesc?.[0]?.value || '—'
+      const precip = day.hourly?.reduce((s, h) => s + parseFloat(h.precipMM || 0), 0).toFixed(1)
+      return `<div style="background:#0f172a;border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:11px;color:#475569;margin-bottom:4px">${fmtDate(day.date)}</div>
+        <div style="font-size:18px;font-weight:700;color:#f1f5f9">${hi}°</div>
+        <div style="font-size:11px;color:#64748b">${lo}° low</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:4px">${dayDesc}</div>
+        <div style="font-size:11px;color:#7dd3fc;margin-top:2px">${precip}mm</div>
+      </div>`
+    }).join('')
+
+    el.innerHTML = `
+      <div style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:600;color:#94a3b8;margin-bottom:8px">${stop.flag || ''} ${stop.name} — Current</div>
+        <div class="weather-card">
+          <div style="display:flex;align-items:flex-end;gap:8px">
+            <div class="weather-temp">${tempC}°C</div>
+            <div class="weather-desc" style="margin-bottom:5px">${desc}</div>
+          </div>
+          <div class="weather-grid">
+            <div class="weather-cell"><div class="wc-label">Feels like</div><div class="wc-val">${feels}°C</div></div>
+            <div class="weather-cell"><div class="wc-label">Humidity</div><div class="wc-val">${humidity}%</div></div>
+            <div class="weather-cell"><div class="wc-label">Wind</div><div class="wc-val">${windKmph} km/h</div></div>
+            <div class="weather-cell"><div class="wc-label">Precip.</div><div class="wc-val">${precipMM} mm</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-label">3-Day Forecast</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">${days}</div>
+      <div style="font-size:10px;color:#334155;margin-top:10px;text-align:center">Source: wttr.in</div>
+    `
+  } catch (e) {
+    el.innerHTML = `<div style="color:#94a3b8;font-size:12px;padding:16px;text-align:center">
+      Weather unavailable for ${stop.name}.<br>
+      <a href="https://wttr.in/${encodeURIComponent(stop.name)}" target="_blank" style="color:#3b82f6;text-decoration:underline;margin-top:8px;display:inline-block">Open wttr.in directly →</a>
+    </div>`
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Book tab
+// ────────────────────────────────────────────────────────────────────────────
+function renderBookPanel(s) {
+  if (!s) {
+    document.getElementById('panel-book').innerHTML = '<div style="color:#64748b;font-size:12px;padding:4px">Select a stop to see booking links.</div>'
+    return
+  }
+  const city = s.name
+  const checkIn = TRIP.start_date || '2026-07-15'
+  const checkOut = TRIP.end_date || '2026-08-04'
+  const travelers = TRIP.travelers || 2
+
+  const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${travelers}`
+  const airbnbUrl  = `https://www.airbnb.com/s/${encodeURIComponent(city)}/homes?checkin=${checkIn}&checkout=${checkOut}&adults=${travelers}`
+  const tripadUrl  = `https://www.tripadvisor.com/Search?q=${encodeURIComponent(city + ' hotels')}`
+  const mapsUrl    = `https://www.google.com/maps/search/hotels+in+${s.mapsQ}`
+
+  document.getElementById('panel-book').innerHTML = `
+    <div style="font-size:13px;font-weight:600;color:#f1f5f9;margin-bottom:10px">${s.flag || ''} ${city}</div>
+    <div class="book-links">
+      <a href="${bookingUrl}" target="_blank" class="book-link">
+        <span class="ico">🏨</span><span><strong>Booking.com</strong><br><span style="font-size:11px;color:#64748b">Hotels & apartments in ${city}</span></span>
+      </a>
+      <a href="${airbnbUrl}" target="_blank" class="book-link">
+        <span class="ico">🏠</span><span><strong>Airbnb</strong><br><span style="font-size:11px;color:#64748b">Apartments & private rooms</span></span>
+      </a>
+      <a href="${tripadUrl}" target="_blank" class="book-link">
+        <span class="ico">🔍</span><span><strong>TripAdvisor</strong><br><span style="font-size:11px;color:#64748b">Reviews & ratings</span></span>
+      </a>
+      <a href="${mapsUrl}" target="_blank" class="book-link">
+        <span class="ico">📍</span><span><strong>Google Maps Hotels</strong><br><span style="font-size:11px;color:#64748b">Map view of options</span></span>
+      </a>
+    </div>
+    <div class="section-label" style="margin-top:14px">Accommodation Tips</div>
+    <div style="font-size:12px;color:#94a3b8;line-height:1.7">
+      Budget: <strong style="color:#fde68a">${s.price_budget || '—'}</strong><br>
+      Mid-range: <strong style="color:#fde68a">${s.price_mid || '—'}</strong><br>
+      ${s.price_note ? `<span style="color:#64748b">${s.price_note}</span>` : ''}
+    </div>
+  `
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Fuel calculator tab
+// ────────────────────────────────────────────────────────────────────────────
+function renderFuelPanel() {
+  document.getElementById('panel-fuel').innerHTML = `
+    <div class="section-label">Fuel Calculator</div>
+    <div style="font-size:12px;color:#94a3b8;margin-bottom:12px">Adjust for your car and current prices.</div>
+
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px">
+        <span>Consumption (L/100km)</span>
+        <span id="fuel-cons-val" style="color:#fde68a;font-weight:600">7.0</span>
+      </div>
+      <input type="range" min="4" max="14" step="0.5" value="7" oninput="calcFuel(this.value, null, null)" id="fuel-cons">
+    </div>
+
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px">
+        <span>Avg fuel price (CHF/L)</span>
+        <span id="fuel-price-val" style="color:#fde68a;font-weight:600">1.65</span>
+      </div>
+      <input type="range" min="1.00" max="2.50" step="0.05" value="1.65" oninput="calcFuel(null, this.value, null)" id="fuel-price">
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px">
+        <span>Total km (round trip)</span>
+        <span id="fuel-km-val" style="color:#fde68a;font-weight:600">3,200</span>
+      </div>
+      <input type="range" min="2000" max="5000" step="100" value="3200" oninput="calcFuel(null, null, this.value)" id="fuel-km">
+    </div>
+
+    <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px;text-align:center">
+      <div style="font-size:11px;color:#475569;margin-bottom:4px">Estimated fuel cost</div>
+      <div id="fuel-result" style="font-size:28px;font-weight:700;color:#4ade80">CHF 370</div>
+      <div id="fuel-litres" style="font-size:12px;color:#64748b;margin-top:2px">~224 litres total</div>
+    </div>
+
+    <div class="section-label" style="margin-top:14px">Vignettes & Tolls</div>
+    <div id="vig-list"></div>
+  `
+  renderVigPanel()
+  calcFuel()
+}
+
+function calcFuel(cons, price, km) {
+  const consEl  = document.getElementById('fuel-cons')
+  const priceEl = document.getElementById('fuel-price')
+  const kmEl    = document.getElementById('fuel-km')
+
+  const c = parseFloat(cons  || consEl.value)
+  const p = parseFloat(price || priceEl.value)
+  const k = parseFloat(km    || kmEl.value)
+
+  document.getElementById('fuel-cons-val').textContent  = c.toFixed(1)
+  document.getElementById('fuel-price-val').textContent = p.toFixed(2)
+  document.getElementById('fuel-km-val').textContent    = k.toLocaleString()
+
+  const litres = (c / 100) * k
+  const cost   = litres * p
+
+  document.getElementById('fuel-result').textContent = `CHF ${Math.round(cost).toLocaleString()}`
+  document.getElementById('fuel-litres').textContent = `~${Math.round(litres)} litres total`
+}
+
+function renderVigPanel() {
+  const el = document.getElementById('vig-list')
+  if (!el || !TRIP.vignettes) return
+  el.innerHTML = TRIP.vignettes.map((v, i) => `
+    <div class="vig-item">
+      <div>
+        <div class="vig-name">${v.country} — ${v.type}</div>
+        <div style="font-size:11px;color:#475569;margin-top:1px">${v.where}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="vig-price">${v.price}</span>
+        <input type="checkbox" class="vig-check" id="vig-${i}"
+          ${localStorage.getItem('vig-' + i) === '1' ? 'checked' : ''}
+          onchange="localStorage.setItem('vig-${i}', this.checked ? '1' : '0')">
+      </div>
+    </div>`).join('')
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Packing list tab
+// ────────────────────────────────────────────────────────────────────────────
+function renderPackPanel() {
+  const el = document.getElementById('panel-pack')
+  let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div id="pack-progress" style="font-size:12px;color:#64748b"></div>
+    <button onclick="resetPacking()" style="font-size:11px;color:#475569;background:none;border:none;cursor:pointer;padding:2px 0">Reset</button>
+  </div>`
+
+  TRIP.packing.forEach(cat => {
+    html += `<div class="pack-cat">${cat.cat}</div>`
+    cat.items.forEach((item, j) => {
+      const key = `pack-${cat.cat}-${j}`
+      const checked = localStorage.getItem(key) === '1'
+      html += `<div class="pack-item" id="pack-wrap-${key.replace(/[^a-z0-9]/gi, '')}">
+        <input type="checkbox" id="${key}" ${checked ? 'checked' : ''}
+          onchange="togglePack('${key}', this)">
+        <label for="${key}" class="${checked ? 'checked' : ''}">${item}</label>
+      </div>`
+    })
+  })
+
+  el.innerHTML = html
+  updatePackProgress()
+}
+
+function togglePack(key, cb) {
+  localStorage.setItem(key, cb.checked ? '1' : '0')
+  const lbl = cb.nextElementSibling
+  if (lbl) lbl.className = cb.checked ? 'checked' : ''
+  updatePackProgress()
+}
+
+function resetPacking() {
+  if (!confirm('Clear all packing checkboxes?')) return
+  Object.keys(localStorage).filter(k => k.startsWith('pack-')).forEach(k => localStorage.removeItem(k))
+  renderPackPanel()
+}
+
+function updatePackProgress() {
+  const total  = document.querySelectorAll('#panel-pack input[type=checkbox]').length
+  const packed = document.querySelectorAll('#panel-pack input[type=checkbox]:checked').length
+  const el = document.getElementById('pack-progress')
+  if (el) el.textContent = `${packed} / ${total} packed`
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Tab switching
+// ────────────────────────────────────────────────────────────────────────────
+const TABS = ['info', 'weather', 'book', 'fuel', 'pack']
+
+function setTab(name) {
+  currentTab = name
+  TABS.forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === name)
+    document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== name)
+  })
+  if (name === 'weather' && selectedStop !== null) fetchWeather(TRIP.stops[selectedStop])
+  else if (name === 'weather') {
+    document.getElementById('panel-weather').innerHTML = '<div style="color:#64748b;font-size:12px;padding:4px">Select a stop to check weather.</div>'
+  }
+  if (name === 'book') renderBookPanel(selectedStop !== null ? TRIP.stops[selectedStop] : null)
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ────────────────────────────────────────────────────────────────────────────
+function fmtDate(d) {
+  if (!d) return ''
+  const dt = new Date(d + 'T00:00:00')
+  return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// OSRM road routing
+// ────────────────────────────────────────────────────────────────────────────
+function findNearestCoordIndex(geoCoords, latLng) {
+  const lon = latLng[1], lat = latLng[0]
+  let minD = Infinity, idx = 0
+  for (let i = 0; i < geoCoords.length; i++) {
+    const d = (geoCoords[i][0] - lon) ** 2 + (geoCoords[i][1] - lat) ** 2
+    if (d < minD) { minD = d; idx = i }
+  }
+  return idx
+}
+
+async function fetchOsrmRoute(latlngs) {
+  const coords = latlngs.map(ll => `${ll[1]},${ll[0]}`).join(';')
+  const r = await fetch(`/api/travel/osrm?coords=${encodeURIComponent(coords)}`)
+  if (!r.ok) throw new Error(`HTTP ${r.status}`)
+  const d = await r.json()
+  if (d.code !== 'Ok' || !d.routes?.[0]) throw new Error(d.error || 'no route')
+  return d.routes[0]
+}
+
+function osrmDrive(durationSec) {
+  const h = durationSec / 3600
+  if (h < 1) return `${Math.round(h * 60)} min`
+  return `${Math.round(h * 2) / 2}h`
+}
+
+async function initRoadRoutes() {
+  if (!TRIP.stops?.length || !TRIP.road_segments) return
+
+  // Outbound: exclude ferry stops (km=0 island stops)
+  const outWpts = TRIP.road_segments.out.filter(ll => {
+    const s = TRIP.stops.find(x => x.latlng[0] === ll[0] && x.latlng[1] === ll[1])
+    return !(s?.km === 0 && s?.drive && /ferry/i.test(s.drive))
+  })
+  const outIds = outWpts.map(ll =>
+    TRIP.stops.find(x => x.latlng[0] === ll[0] && x.latlng[1] === ll[1])?.id
+  )
+
+  const retWpts = TRIP.road_segments.ret
+  const retIds = retWpts.map(ll =>
+    TRIP.stops.find(x => x.latlng[0] === ll[0] && x.latlng[1] === ll[1])?.id
+  )
+
+  const [outRes, retRes] = await Promise.allSettled([
+    fetchOsrmRoute(outWpts),
+    fetchOsrmRoute(retWpts)
+  ])
+
+  if (outRes.status === 'fulfilled') {
+    const { geometry, legs } = outRes.value
+    const gc = geometry.coordinates
+    const leaflet = gc.map(c => [c[1], c[0]])
+
+    if (routeOut) map.removeLayer(routeOut)
+    routeOut = L.polyline(leaflet, { color: '#3b82f6', weight: 3.5, opacity: .88 }).addTo(map)
+
+    const wIdxs = outWpts.map(ll => findNearestCoordIndex(gc, ll))
+    TRIP._legOut = {}
+    legs.forEach((leg, i) => {
+      const sid = outIds[i + 1]
+      if (sid == null) return
+      TRIP._legOut[sid] = gc.slice(wIdxs[i], wIdxs[i + 1] + 1).map(c => [c[1], c[0]])
+      const s = TRIP.stops.find(x => x.id === sid)
+      if (s) { s.km = Math.round(leg.distance / 1000); s.drive = osrmDrive(leg.duration) }
+    })
+    renderSidebar()
+    if (selectedStop !== null) {
+      renderInfoStop(TRIP.stops[selectedStop])
+      markers[selectedStop]?.setPopupContent(makePopupHtml(TRIP.stops[selectedStop], selectedStop))
+    }
+    TRIP.stops.forEach((s, i) => markers[i]?.setPopupContent(makePopupHtml(s, i)))
+  }
+
+  if (retRes.status === 'fulfilled') {
+    const { geometry, legs } = retRes.value
+    const gc = geometry.coordinates
+    const leaflet = gc.map(c => [c[1], c[0]])
+
+    if (routeRet) map.removeLayer(routeRet)
+    routeRet = L.polyline(leaflet, { color: '#a855f7', weight: 3, opacity: .8, dashArray: '8 5' }).addTo(map)
+
+    const wIdxs = retWpts.map(ll => findNearestCoordIndex(gc, ll))
+    TRIP._legRet = {}
+    legs.forEach((leg, i) => {
+      const sid = retIds[i + 1]
+      if (sid == null) return
+      TRIP._legRet[sid] = gc.slice(wIdxs[i], wIdxs[i + 1] + 1).map(c => [c[1], c[0]])
+      const s = TRIP.stops.find(x => x.id === sid && x.type === 'ret')
+      if (s) { s.km = Math.round(leg.distance / 1000); s.drive = osrmDrive(leg.duration) }
+    })
+    renderSidebar()
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Boot — try live trips first, fall back to example
+// ────────────────────────────────────────────────────────────────────────────
+async function boot() {
+  try {
+    const r = await fetch('/api/travel')
+    const data = await r.json()
+    const live = data.upcoming?.[0] || data.ongoing?.[0]
+    if (live && live.stops && live.stops.length > 0) {
+      renderTrip(live)
+    } else {
+      renderTrip(EXAMPLE_TRIP)
+    }
+  } catch {
+    renderTrip(EXAMPLE_TRIP)
+  }
+}
+
+boot()
+</script>
+</body>
+</html>

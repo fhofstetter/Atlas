@@ -1,0 +1,105 @@
+{
+  "_schema": "atlas-travel-v1",
+  "_updated": "2026-05-02",
+  "trips": [
+    {
+      "id": "trip_20260715_001",
+      "name": "Switzerland → Croatia 2026",
+      "status": "planning",
+      "destination": "Croatia",
+      "cities": ["Innsbruck", "Ljubljana", "Lake Bled", "Zagreb", "Plitvice Lakes", "Zadar", "Split", "Hvar", "Dubrovnik", "Mostar", "Sarajevo"],
+      "origin": "ZRH",
+      "start_date": "2026-07-15",
+      "end_date": "2026-08-04",
+      "travelers": 2,
+      "budget_chf": 6500,
+      "spent_chf": 627,
+      "style": "mixed",
+      "transport_mode": "car",
+      "flights": [],
+      "accommodation": [
+        { "id": "acc_001", "city": "Innsbruck",     "name": "", "type": "hotel",     "check_in": "2026-07-15", "check_out": "2026-07-16", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_002", "city": "Ljubljana",     "name": "", "type": "hotel",     "check_in": "2026-07-16", "check_out": "2026-07-18", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_003", "city": "Lake Bled",     "name": "", "type": "apartment", "check_in": "2026-07-18", "check_out": "2026-07-20", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_004", "city": "Zagreb",        "name": "", "type": "hotel",     "check_in": "2026-07-20", "check_out": "2026-07-22", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_005", "city": "Plitvice",      "name": "", "type": "apartment", "check_in": "2026-07-22", "check_out": "2026-07-24", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_006", "city": "Zadar",         "name": "", "type": "apartment", "check_in": "2026-07-24", "check_out": "2026-07-26", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_007", "city": "Split",         "name": "", "type": "apartment", "check_in": "2026-07-26", "check_out": "2026-07-29", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_008", "city": "Hvar",          "name": "", "type": "apartment", "check_in": "2026-07-29", "check_out": "2026-08-01", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_009", "city": "Dubrovnik",     "name": "", "type": "hotel",     "check_in": "2026-08-01", "check_out": "2026-08-03", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" },
+        { "id": "acc_010", "city": "Mostar",        "name": "", "type": "hotel",     "check_in": "2026-08-03", "check_out": "2026-08-04", "price_per_night_chf": null, "booking_ref": "", "url": "", "status": "searching" }
+      ],
+      "transport": [
+        { "id": "tr_001", "type": "ferry", "from": "Split", "to": "Hvar (Stari Grad)", "date": "2026-07-29", "price_chf": 56, "notes": "Jadrolinija car ferry — book ahead for July peak", "status": "searching" },
+        { "id": "tr_002", "type": "ferry", "from": "Hvar (Stari Grad)", "to": "Split", "date": "2026-08-01", "price_chf": 56, "notes": "Return Jadrolinija ferry", "status": "searching" }
+      ],
+      "road_trips": [
+        {
+          "id": "rt_001",
+          "name": "Zurich to Dubrovnik via Slovenia",
+          "origin": "Zurich, Switzerland",
+          "destination": "Dubrovnik, Croatia",
+          "stops": [
+            { "order": 1, "place": "Innsbruck, Austria",               "nights": 1, "notes": "Alps, Golden Roof" },
+            { "order": 2, "place": "Ljubljana, Slovenia",              "nights": 2, "notes": "Car-free old town, castle" },
+            { "order": 3, "place": "Lake Bled, Slovenia",              "nights": 2, "notes": "Island church, Vintgar Gorge" },
+            { "order": 4, "place": "Zagreb, Croatia",                  "nights": 2, "notes": "Cheapest city, Dolac market" },
+            { "order": 5, "place": "Plitvice Lakes, Croatia",          "nights": 2, "notes": "UNESCO — book timed entry now!" },
+            { "order": 6, "place": "Zadar, Croatia",                   "nights": 2, "notes": "Sea Organ, sunset" },
+            { "order": 7, "place": "Split, Croatia",                   "nights": 3, "notes": "Diocletian's Palace" },
+            { "order": 8, "place": "Hvar Island, Croatia",             "nights": 3, "notes": "Ferry from Split" },
+            { "order": 9, "place": "Dubrovnik, Croatia",               "nights": 3, "notes": "City Walls — book tickets online" }
+          ],
+          "google_maps_url": "https://www.google.com/maps/dir/Zurich,+Switzerland/Innsbruck,+Austria/Ljubljana,+Slovenia/Lake+Bled,+Slovenia/Zagreb,+Croatia/Plitvice+Lakes+National+Park,+Croatia/Zadar,+Croatia/Split,+Croatia/Dubrovnik,+Croatia",
+          "total_distance_km": 1400,
+          "total_duration_h": 19,
+          "car_consumption_l100km": 7,
+          "fuel_price_chf_l": 1.65,
+          "estimated_fuel_chf": 162,
+          "vignettes_needed": ["Austria 10-day CHF 12 (asfinag.at)", "Slovenia 7-day CHF 15 (evinjeta.dars.si)"],
+          "date": "2026-07-15",
+          "notes": "Fill up in Slovenia (cheapest fuel). Pay Croatia tolls by card at booths (~CHF 110 return)."
+        },
+        {
+          "id": "rt_002",
+          "name": "Bosnia return: Dubrovnik to Zurich via Mostar & Sarajevo",
+          "origin": "Dubrovnik, Croatia",
+          "destination": "Zurich, Switzerland",
+          "stops": [
+            { "order": 1, "place": "Mostar, Bosnia",    "nights": 1, "notes": "Stari Most bridge, Old Bazaar" },
+            { "order": 2, "place": "Sarajevo, Bosnia",  "nights": 1, "notes": "Baščaršija, Tunnel Museum" },
+            { "order": 3, "place": "Zagreb, Croatia",   "nights": 1, "notes": "Transit stop" },
+            { "order": 4, "place": "Ljubljana, Slovenia","nights": 1, "notes": "Last night before home" }
+          ],
+          "google_maps_url": "https://www.google.com/maps/dir/Dubrovnik,+Croatia/Mostar,+Bosnia+and+Herzegovina/Sarajevo,+Bosnia+and+Herzegovina/Zagreb,+Croatia/Ljubljana,+Slovenia/Zurich,+Switzerland",
+          "total_distance_km": 1600,
+          "total_duration_h": 22,
+          "car_consumption_l100km": 7,
+          "fuel_price_chf_l": 1.65,
+          "estimated_fuel_chf": 185,
+          "vignettes_needed": ["Slovenia 7-day CHF 15 (if not already valid)"],
+          "date": "2026-08-01",
+          "notes": "Verify car insurance covers Bosnia (BiH). Bosnia uses BAM currency — bring some cash."
+        }
+      ],
+      "activities": [
+        { "id": "act_001", "city": "Plitvice Lakes", "title": "Timed entry ticket", "type": "sightseeing", "date": null, "duration_hours": 5, "price_chf": 35, "notes": "Book at np-plitvicka-jezera.hr — sells out weeks ahead in July" },
+        { "id": "act_002", "city": "Dubrovnik",      "title": "City Walls walk",    "type": "sightseeing", "date": null, "duration_hours": 2, "price_chf": 70, "notes": "€35pp — book at ticketshop.dubrovnik.hr" },
+        { "id": "act_003", "city": "Dubrovnik",      "title": "Sea kayak tour",     "type": "outdoor",     "date": null, "duration_hours": 4, "price_chf": 110, "notes": "~€55pp, around the walls" },
+        { "id": "act_004", "city": "Hvar",           "title": "Pakleni Islands",    "type": "outdoor",     "date": null, "duration_hours": 6, "price_chf": 30, "notes": "Water taxi from Hvar Town" }
+      ],
+      "packing_list": [],
+      "suggestions": [
+        "Book Plitvice Lakes timed entry immediately — July slots sell out weeks in advance",
+        "Book Dubrovnik City Walls tickets online — queues are very long walk-up in peak season",
+        "Book Hvar ferry (Jadrolinija Split→Stari Grad) 2–3 weeks ahead for car spots in July",
+        "Fill up fuel in Slovenia (cheapest) and Croatia rather than Switzerland/Austria",
+        "Stay in Lapad neighbourhood in Dubrovnik — half the price of Old Town, 20 min by bus",
+        "Mid-June or late August is 20–30% cheaper and far less crowded than mid-July"
+      ],
+      "notes": "Car road trip, no flights. Route: ZRH → AT → SI → HR (coast) → Dubrovnik. Return via Bosnia (Mostar + Sarajevo). Total ~3,200 km round-trip.",
+      "created_at": "2026-05-02T00:30:00Z",
+      "updated_at": "2026-05-02T00:30:00Z"
+    }
+  ]
+}

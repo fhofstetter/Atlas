@@ -1,0 +1,143 @@
+{
+  "schema": "1.0",
+  "updatedAt": "2026-05-01T22:16:26.686Z",
+  "products": [
+    {
+      "id": "dji-neo-molse8lq",
+      "name": "DJI Neo",
+      "category": "electronics",
+      "weightKg": 0.4,
+      "alertThresholdCHF": null,
+      "stores": [
+        {
+          "url": "https://www.digitec.ch/en/s1/product/dji-neo-18-min-135-g-12-mpx-drone-47860358",
+          "name": null,
+          "currency": "EUR",
+          "price": null,
+          "priceCHF": null,
+          "availability": null,
+          "lastChecked": "2026-05-01T22:15:56.285Z",
+          "parcelPricing": [],
+          "extractionTier": "fetch_failed"
+        },
+        {
+          "url": "https://www.amazon.de/DJI-selbstfliegende-KI-Motivverfolgung-Propellerschutz-Controllerfrei/dp/B07FTPX71F",
+          "name": null,
+          "origin": "DE",
+          "currency": "EUR",
+          "price": 139,
+          "priceCHF": 127.74,
+          "availability": "in_stock",
+          "lastChecked": "2026-05-01T22:15:56.285Z",
+          "parcelPricing": [],
+          "extractionTier": "jsonld"
+        }
+      ],
+      "createdAt": "2026-04-30T17:57:49.454Z",
+      "updatedAt": "2026-05-01T22:15:56.285Z"
+    },
+    {
+      "id": "dji-mini-4k-molsexo9",
+      "name": "DJI Mini 4K",
+      "category": "electronics",
+      "weightKg": 0.5,
+      "alertThresholdCHF": null,
+      "stores": [
+        {
+          "url": "https://www.digitec.ch/en/s1/product/dji-mini-4k-31-min-246-g-12-mpx-drone-47376140",
+          "name": null,
+          "currency": "EUR",
+          "price": null,
+          "priceCHF": null,
+          "availability": null,
+          "lastChecked": "2026-05-01T22:16:11.290Z",
+          "parcelPricing": [],
+          "extractionTier": "fetch_failed"
+        },
+        {
+          "url": "https://www.amazon.de/DJI-Erwachsene-Stabilisierung-Video%C3%BCbertragung-Windwiderstand/dp/B0CXJ9GM3G",
+          "name": null,
+          "origin": "DE",
+          "currency": "EUR",
+          "price": 209,
+          "priceCHF": 192.07,
+          "availability": "in_stock",
+          "lastChecked": "2026-05-01T22:16:11.290Z",
+          "parcelPricing": [],
+          "extractionTier": "jsonld"
+        }
+      ],
+      "createdAt": "2026-04-30T17:58:21.945Z",
+      "updatedAt": "2026-05-01T22:16:11.290Z"
+    },
+    {
+      "id": "dji-mini-4-pro-molsf9kz",
+      "name": "DJI Mini 4 Pro",
+      "category": "electronics",
+      "weightKg": 0.6,
+      "alertThresholdCHF": null,
+      "stores": [
+        {
+          "url": "https://www.digitec.ch/en/s1/product/dji-mini-4-pro-34-min-249-g-48-mpx-drone-38699115",
+          "name": null,
+          "currency": "EUR",
+          "price": null,
+          "priceCHF": null,
+          "availability": null,
+          "lastChecked": "2026-05-01T22:16:26.306Z",
+          "parcelPricing": [],
+          "extractionTier": "fetch_failed"
+        },
+        {
+          "url": "https://www.amazon.de/DJI-Mini-4-Pro-RC-N2/dp/B0CFF1SJ3P",
+          "name": null,
+          "origin": "DE",
+          "currency": "EUR",
+          "price": 829,
+          "priceCHF": 761.85,
+          "availability": "unknown",
+          "lastChecked": "2026-05-01T22:16:26.306Z",
+          "parcelPricing": [],
+          "extractionTier": "jsonld"
+        }
+      ],
+      "createdAt": "2026-04-30T17:58:37.379Z",
+      "updatedAt": "2026-05-01T22:16:26.306Z"
+    },
+    {
+      "id": "dji-lito-x1-monf41w7",
+      "name": "DJI Lito X1",
+      "category": "electronics",
+      "weightKg": 0.249,
+      "alertThresholdCHF": null,
+      "stores": [
+        {
+          "url": "https://www.alternate.de/DJI/Lito-X1-Fly-More-Combo-DJI-RC-N3-Drohne/html/product/100198060",
+          "name": null,
+          "origin": "DE",
+          "currency": "EUR",
+          "price": 579,
+          "priceCHF": 532.1,
+          "availability": null,
+          "lastChecked": "2026-05-01T22:16:26.686Z",
+          "parcelPricing": [],
+          "extractionTier": "heuristic"
+        },
+        {
+          "url": "https://store.dji.com/de/product/dji-lito-x1-fly-more-combo-dji-rc-2",
+          "name": null,
+          "origin": "US",
+          "currency": "EUR",
+          "price": null,
+          "priceCHF": null,
+          "availability": null,
+          "lastChecked": "2026-05-01T22:16:26.686Z",
+          "parcelPricing": [],
+          "extractionTier": "extraction_failed"
+        }
+      ],
+      "createdAt": "2026-05-01T21:21:31.543Z",
+      "updatedAt": "2026-05-01T22:16:26.686Z"
+    }
+  ]
+}

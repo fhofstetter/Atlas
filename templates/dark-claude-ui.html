@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<!--
+  dark-claude-ui.html — Atlas Design System Template
+  Extracted from Getting-started-with-Claude/index.html.
+
+  HOW TO USE THIS TEMPLATE
+  ━━━━━━━━━━━━━━━━━━━━━━━━
+  1. Copy this file to your project.
+  2. Replace {{SLOTS}} with your content (search for {{).
+  3. Remove component demos you don't need from the <body>.
+  4. The <style> block contains the full design system — keep it or extract to atlas.css.
+
+  SLOTS
+  ─────
+  {{APP_NAME}}       — Application title shown in nav and <title>
+  {{HERO_BADGE}}     — Small badge text above the headline ("Live · Market Research")
+  {{HERO_HEADLINE}}  — Large h1 headline
+  {{HERO_SUBTEXT}}   — Subtitle paragraph below the headline
+  {{NAV_LINKS}}      — <a> tags for the nav link row
+  {{CONTENT}}        — Main page content (replace demo sections below)
+
+  DESIGN TOKENS  (CSS custom properties)
+  ───────────────────────────────────────
+  --bg          #080808   deepest background
+  --bg2         #0f0f0f   secondary background
+  --bg3         #161616   tertiary / input fields
+  --card        #111111   card surface
+  --card2       #1a1a1a   elevated card / chat bubbles
+  --border      rgba(255,255,255,0.08)   subtle border
+  --red         #e8445a   primary accent (Atlas / Claude brand)
+  --red2        #ff6b7a   lighter accent
+  --red3        #c73050   darker accent / buttons
+  --text        #ffffff
+  --muted       #888888   secondary text
+  --muted2      #555555   tertiary text
+  --radius      12px
+  --radius2     20px
+
+  COMPONENT QUICK REFERENCE
+  ─────────────────────────
+  Badges/pills:   .pill  + .pill-{blue|green|purple|red|yellow|orange|muted}
+  Buttons:        .btn .btn-ghost  /  .btn .btn-primary
+  Cards:          .feature-card  (add .wide for 2-col span)
+  Inputs:         .cmd-input  (focus glow: --red tint)
+  Tables:         standard <table> with .cell-strong / .cell-red / .cell-green on <td>
+  Code:           .code-block  (monospace, dark bg)
+  Section heading: .section-heading  +  .section-tag  (uppercase red label above)
+  Gradients:      .grad-{red|blue|green|purple|orange}  on card preview areas
+  Fade animation: .fade-up  (add .visible or use IntersectionObserver)
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{APP_NAME}}</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080808;
+    --bg2: #0f0f0f;
+    --bg3: #161616;
+    --card: #111111;
+    --card2: #1a1a1a;
+    --border: rgba(255,255,255,0.08);
+    --red: #e8445a;
+    --red2: #ff6b7a;
+    --red3: #c73050;
+    --text: #ffffff;
+    --muted: #888888;
+    --muted2: #555555;
+    --radius: 12px;
+    --radius2: 20px;
+    --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  section[id], div[id] { scroll-margin-top: 64px; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  button { cursor: pointer; border: none; font-family: var(--font); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px;
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
+  .nav-logo svg { width: 28px; height: 28px; }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a { font-size: 14px; color: var(--muted); transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; transition: all .2s; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .btn-primary { background: var(--text); color: #000; border: none; }
+  .btn-primary:hover { background: rgba(255,255,255,0.88); }
+  .btn-red { background: rgba(232,68,90,0.15); color: var(--red2); border: 1px solid rgba(232,68,90,0.3); }
+  .btn-red:hover { background: rgba(232,68,90,0.25); border-color: rgba(232,68,90,0.5); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; min-height: 40vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 100px 32px 60px;
+    overflow: hidden; margin-top: 56px;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+    pointer-events: none;
+  }
+  .hero-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 80%, rgba(232,68,90,0.15) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(232,68,90,0.12); border: 1px solid rgba(232,68,90,0.3);
+    color: var(--red2); padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 500; margin-bottom: 24px;
+  }
+  .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); display: block; animation: pulse-dot 2s infinite; }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .hero h1 {
+    font-size: clamp(40px, 6vw, 80px); font-weight: 800; line-height: 1.05;
+    letter-spacing: -3px; max-width: 800px;
+    background: linear-gradient(180deg, #fff 60%, rgba(255,255,255,0.5));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 18px;
+  }
+  .hero-sub { font-size: 17px; color: var(--muted); max-width: 500px; line-height: 1.65; margin-bottom: 32px; }
+  .hero-ctas { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+  /* ── LAYOUT ── */
+  .main-content { max-width: 1200px; margin: 0 auto; padding: 0 32px 80px; }
+  section { padding: 80px 32px; }
+  .section-tag { font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+  .section-heading { font-size: clamp(26px, 3.5vw, 48px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; max-width: 640px; }
+  .section-sub { margin-top: 14px; font-size: 16px; color: var(--muted); max-width: 500px; line-height: 1.65; }
+  .center { text-align: center; margin-left: auto; margin-right: auto; }
+  .divider { height: 1px; background: var(--border); max-width: 1100px; margin: 0 auto; }
+
+  /* ── CARDS ── */
+  .feature-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius2);
+    overflow: hidden; transition: border-color .25s, transform .25s;
+  }
+  .feature-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+  .feature-card-header { padding: 24px 24px 16px; }
+  .feature-card-icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 20px; margin-bottom: 14px; }
+  .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .feature-card-preview {
+    margin: 0 16px 16px;
+    background: var(--bg3); border-radius: 12px; border: 1px solid var(--border);
+    height: 160px; display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .feature-card-preview.tall { height: 220px; }
+  .feature-card.wide { grid-column: span 2; }
+  .feature-card.wide .feature-card-preview { height: 200px; }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1100px; margin: 48px auto 0; }
+
+  /* ── STAT BLOCKS ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius2); overflow: hidden; }
+  .stat-block { background: var(--bg); padding: 28px 20px; text-align: center; }
+  .stat-number { font-size: 36px; font-weight: 800; letter-spacing: -2px; background: linear-gradient(180deg, #fff, rgba(255,255,255,0.6)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ── TABLE ── */
+  .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius2); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--bg3); }
+  th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border); }
+  td { padding: 12px 16px; font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--bg3); }
+  td.cell-strong { color: var(--text); font-weight: 600; }
+  td.cell-red { color: var(--red2); font-weight: 600; }
+  td.cell-green { color: #6ee7b7; font-weight: 600; }
+  td.cell-muted { color: var(--muted2); }
+  td.best { background: rgba(100,220,160,0.05); }
+
+  /* ── PILLS & BADGES ── */
+  .pill { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .pill-blue   { background: rgba(100,160,255,0.15); color: #82aaff; border: 1px solid rgba(100,160,255,0.25); }
+  .pill-green  { background: rgba(100,220,160,0.12); color: #6ee7b7; border: 1px solid rgba(100,220,160,0.2); }
+  .pill-purple { background: rgba(192,132,252,0.12); color: #c084fc; border: 1px solid rgba(192,132,252,0.2); }
+  .pill-yellow { background: rgba(250,204,21,0.1);  color: #fde047; border: 1px solid rgba(250,204,21,0.18); }
+  .pill-orange { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.2); }
+  .pill-red    { background: rgba(232,68,90,0.12);  color: var(--red2); border: 1px solid rgba(232,68,90,0.2); }
+  .pill-muted  { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+
+  /* ── INPUTS ── */
+  .cmd-input {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; color: var(--text); font-size: 14px; font-family: var(--font);
+    outline: none; transition: border-color .2s;
+  }
+  .cmd-input:focus { border-color: rgba(232,68,90,0.4); }
+  .cmd-input::placeholder { color: var(--muted2); }
+  select.cmd-input { cursor: pointer; }
+
+  /* ── CODE BLOCK ── */
+  .code-block { background: var(--bg3); border-radius: 10px; padding: 16px; font-family: 'SF Mono','Fira Code',monospace; font-size: 12px; line-height: 1.75; border: 1px solid var(--border); }
+  .code-block .kw { color: #c792ea; }
+  .code-block .fn { color: #82aaff; }
+  .code-block .str { color: #c3e88d; }
+  .code-block .cm { color: var(--muted2); }
+
+  /* ── WINDOW CHROME (mac-style bar) ── */
+  .window-wrap { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius2); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.5); }
+  .window-bar { height: 42px; background: var(--bg3); display: flex; align-items: center; padding: 0 16px; gap: 7px; border-bottom: 1px solid var(--border); }
+  .window-title { flex: 1; text-align: center; font-size: 13px; color: var(--muted2); font-weight: 500; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #28c840; }
+
+  /* ── LOADING / THINKING ── */
+  .thinking-dots span { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--red); margin: 0 2px; animation: bounce 1.2s infinite; }
+  .thinking-dots span:nth-child(2) { animation-delay: .2s; }
+  .thinking-dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+  .log-panel { background: var(--bg3); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; font-family: 'SF Mono','Fira Code',monospace; font-size: 12px; max-height: 300px; overflow-y: auto; line-height: 1.7; }
+  .log-line { color: var(--muted); }
+  .log-line.alert-line { color: var(--red2); }
+  .log-line.done-line { color: #6ee7b7; }
+
+  /* ── GRADIENT BACKGROUNDS ── */
+  .grad-red    { background: linear-gradient(135deg, rgba(199,48,80,0.3),  rgba(232,68,90,0.15)); }
+  .grad-blue   { background: linear-gradient(135deg, rgba(30,64,175,0.3),  rgba(99,102,241,0.15)); }
+  .grad-green  { background: linear-gradient(135deg, rgba(5,150,105,0.3),  rgba(16,185,129,0.15)); }
+  .grad-purple { background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(167,139,250,0.15)); }
+  .grad-orange { background: linear-gradient(135deg, rgba(194,65,12,0.3),  rgba(249,115,22,0.15)); }
+
+  /* ── SCROLL FADE ── */
+  .fade-up { opacity: 0; transform: translateY(24px); transition: opacity .55s ease, transform .55s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── FOOTER ── */
+  footer { background: var(--bg); border-top: 1px solid var(--border); padding: 40px 32px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .footer-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+  .footer-copy { font-size: 13px; color: var(--muted2); }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a { font-size: 13px; color: var(--muted2); transition: color .2s; }
+  .footer-links a:hover { color: var(--text); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .feature-card.wide { grid-column: span 2; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 80px 20px 40px; min-height: unset; }
+    .main-content { padding: 0 16px 60px; }
+    section { padding: 60px 20px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .feature-card.wide { grid-column: span 1; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     NAV — Replace links with your app's navigation
+     ═══════════════════════════════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-logo">
+    <!-- Atlas hexagon logo — keep or replace with your own SVG -->
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2L26 9V19L14 26L2 19V9L14 2Z" fill="#e8445a" opacity="0.2"/>
+      <path d="M14 2L26 9V19L14 26L2 19V9L14 2Z" stroke="#e8445a" stroke-width="1.5"/>
+      <path d="M8 14L12 10L16 14L20 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 17L12 13L16 17L20 13" stroke="#e8445a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+    </svg>
+    {{APP_NAME}}
+  </div>
+  <div class="nav-links">
+    <!-- {{NAV_LINKS}} — replace with <a href="/page">Label</a> tags -->
+    <a href="#">Dashboard</a>
+    <a href="#">History</a>
+    <a href="#">Compare</a>
+    <a href="#">Docs</a>
+  </div>
+  <div class="nav-right">
+    <!-- optional right-side button -->
+    <!-- <a href="#action" class="btn btn-primary">Action</a> -->
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     HERO — Replace headline and subtext
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    {{HERO_BADGE}}
+  </div>
+  <h1>{{HERO_HEADLINE}}</h1>
+  <p class="hero-sub">{{HERO_SUBTEXT}}</p>
+  <div class="hero-ctas">
+    <!-- optional CTA buttons -->
+    <!-- <a href="#action" class="btn btn-primary">Get Started</a> -->
+    <!-- <a href="#docs" class="btn btn-ghost">Read Docs →</a> -->
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     COMPONENT DEMOS — Remove sections you don't need
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="main-content">
+
+  <!-- STATS BAR -->
+  <div class="stats-grid fade-up" style="margin-bottom:48px">
+    <div class="stat-block">
+      <div class="stat-number">4</div>
+      <div class="stat-label">Products tracked</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Active alerts</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number">CHF</div>
+      <div class="stat-label">Base currency</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number">CH+DE</div>
+      <div class="stat-label">Destinations</div>
+    </div>
+  </div>
+
+  <!-- FEATURE CARDS GRID -->
+  <div class="section-tag">Components</div>
+  <h2 class="section-heading">Feature cards grid</h2>
+  <div class="features-grid fade-up">
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-red">🔍</div>
+        <h3>Card title</h3>
+        <p>Card description text in muted color. Supports hover lift effect and border highlight.</p>
+      </div>
+      <div class="feature-card-preview grad-blue">
+        <span style="font-size:32px">📊</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-green">⚡</div>
+        <h3>Another card</h3>
+        <p>Use .pill components inside or below cards for tags and status indicators.</p>
+      </div>
+      <div class="feature-card-preview grad-purple">
+        <div style="padding:16px;width:100%;display:flex;flex-wrap:wrap;gap:8px">
+          <span class="pill pill-blue">JSON-LD</span>
+          <span class="pill pill-green">In Stock</span>
+          <span class="pill pill-red">Alert</span>
+          <span class="pill pill-muted">General</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-card wide">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-orange">🌐</div>
+        <h3>Wide card (span 2 columns)</h3>
+        <p>Add class .wide to feature-card for a 2-column-spanning layout.</p>
+      </div>
+      <div class="feature-card-preview" style="height:120px">
+        <div class="code-block" style="width:90%">
+          <span class="kw">const</span> rate = <span class="fn">convertToCHF</span>(<span class="str">149</span>, <span class="str">'EUR'</span>, rates)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider" style="margin:64px auto"></div>
+
+  <!-- TABLE DEMO -->
+  <div class="section-tag" style="margin-top:0">Table</div>
+  <h2 class="section-heading">Data table</h2>
+  <div class="table-wrap fade-up" style="margin-top:24px">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Store</th>
+          <th>EUR Price</th>
+          <th>CHF (card)</th>
+          <th>Landed CH</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cell-strong">DJI Neo</td>
+          <td>amazon.de</td>
+          <td>€149.00</td>
+          <td class="cell-green best">CHF 140.36 ★</td>
+          <td>CHF 173.00</td>
+          <td><span class="pill pill-green">Best value</span></td>
+        </tr>
+        <tr>
+          <td class="cell-strong">DJI Mini 4K</td>
+          <td>amazon.de</td>
+          <td>€257.79</td>
+          <td>CHF 242.84</td>
+          <td>CHF 279.00</td>
+          <td><span class="pill pill-muted">Tracked</span></td>
+        </tr>
+        <tr>
+          <td class="cell-muted" colspan="6" style="text-align:center;padding:20px">
+            No more items
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider" style="margin:64px auto"></div>
+
+  <!-- INPUTS & BUTTONS -->
+  <div class="section-tag">Forms</div>
+  <h2 class="section-heading">Inputs and buttons</h2>
+  <div class="window-wrap fade-up" style="margin-top:24px">
+    <div class="window-bar">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+      <div class="window-title">Add Product Form</div>
+    </div>
+    <div style="padding:24px;display:flex;flex-direction:column;gap:12px">
+      <input class="cmd-input" type="url" placeholder="Store URL — e.g. https://www.amazon.de/dp/B09XYZ">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <input class="cmd-input" type="text" placeholder="Product name (optional)">
+        <select class="cmd-input">
+          <option>Category: General</option>
+          <option>Electronics</option>
+          <option>Clothing</option>
+          <option>Footwear</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-primary" style="flex:1">Track Product</button>
+        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-red">
+          Scan Now <span class="thinking-dots" style="margin-left:4px"><span></span><span></span><span></span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-content -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     FOOTER — Replace with your app's footer content
+     ═══════════════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
+        <path d="M10 1L19 6.5V13.5L10 19L1 13.5V6.5L10 1Z" fill="#e8445a" opacity="0.3" stroke="#e8445a" stroke-width="1"/>
+      </svg>
+      {{APP_NAME}}
+    </div>
+    <div class="footer-copy">© 2026 Atlas · Built with Claude</div>
+    <div class="footer-links">
+      <a href="/docs">Docs</a>
+      <a href="/compare">Compare</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll fade-in observer — keep this for .fade-up animations
+  const _io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); _io.unobserve(e.target) }
+    })
+  }, { threshold: 0.06 })
+  document.querySelectorAll('.fade-up').forEach(el => _io.observe(el))
+</script>
+</body>
+</html>

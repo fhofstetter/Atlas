@@ -1,0 +1,355 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:20vh">
+  <div class="hero-glow"></div>
+  <h1>Training</h1>
+  <p class="hero-sub">
+    <% if (currentPhase) { %>
+      Phase <%= currentPhaseNum %>/3 — <%= currentPhase.name %>
+    <% } else { %>
+      No active training plan
+    <% } %>
+  </p>
+</section>
+
+<div class="main-content">
+
+<% if (!plan || !plan.phases) { %>
+  <!-- EMPTY STATE -->
+  <div class="window-wrap fade-up">
+    <div class="window-body" style="display:flex;align-items:center;gap:20px;padding:32px">
+      <div style="font-size:40px">🏋️</div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--text);margin-bottom:6px">No training plan yet</div>
+        <div style="font-size:13px;color:var(--muted)">Ask Atlas: "Create my training plan" to get started.</div>
+      </div>
+    </div>
+  </div>
+<% } else { %>
+
+  <!-- ── STATS ──────────────────────────────────────────────────────────────── -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number" style="color:#e8445a">Phase <%= currentPhaseNum %><span style="font-size:16px;color:var(--muted)">/3</span></div>
+      <div class="stat-label"><%= currentPhase ? currentPhase.frequency : '—' %></div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#f59e0b">Week <%= currentWeek %><span style="font-size:16px;color:var(--muted)">/12</span></div>
+      <div class="stat-label">
+        <% if (startDate) { %>Started <%= startDate %><% } else { %>Not started yet<% } %>
+      </div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#6ee7b7"><%= workoutCount %></div>
+      <div class="stat-label">Sessions logged</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:<%= weeksToNextBenchmark <= 1 ? '#e8445a' : '#60a5fa' %>">
+        <% if (nextBenchmark) { %><%= weeksToNextBenchmark %>w<% } else { %>Done<% } %>
+      </div>
+      <div class="stat-label">To benchmark test<% if (nextBenchmark) { %> (Wk <%= nextBenchmark %>)<% } %></div>
+    </div>
+  </div>
+
+  <!-- ── TODAY'S SESSION ───────────────────────────────────────────────────── -->
+  <div class="section-heading fade-up">Today — <%= todayName %></div>
+
+  <% if (isRestDay) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px;border-left:3px solid var(--border)">
+    <div class="window-body" style="display:flex;align-items:center;gap:20px;padding:28px">
+      <div style="font-size:36px">😴</div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--text);margin-bottom:4px">Rest Day</div>
+        <div style="font-size:13px;color:var(--muted)">Recovery is training. Sleep, mobility, and myofunctional exercises count.</div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px;border-left:3px solid #e8445a">
+    <div class="window-body" style="padding:0">
+
+      <!-- Session header -->
+      <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:#e8445a;text-transform:uppercase;margin-bottom:4px">
+            Phase <%= currentPhaseNum %> · Week <%= currentWeek %>
+          </div>
+          <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:4px"><%= todaySession.day_label %></div>
+          <div style="font-size:13px;color:var(--muted)"><%= todaySession.focus %></div>
+        </div>
+        <span class="pill pill-green" style="font-size:10px;white-space:nowrap;margin-top:4px">Today</span>
+      </div>
+
+      <!-- Warm-up -->
+      <% if (todaySession.warm_up && todaySession.warm_up.length) { %>
+      <div style="padding:14px 24px;border-bottom:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Warm-up</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <% todaySession.warm_up.forEach(w => { %>
+          <span style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:12px;color:var(--muted)"><%= w %></span>
+          <% }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Exercises -->
+      <% if (todaySession.exercises && todaySession.exercises.length) { %>
+      <div style="padding:0 24px 4px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:14px 0 10px">Exercises</div>
+        <% todaySession.exercises.forEach((ex, i) => { %>
+        <div style="padding:12px 0;border-top:<%= i > 0 ? '1px solid var(--border)' : 'none' %>;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start">
+          <div>
+            <div style="font-weight:600;font-size:14px;color:var(--text);margin-bottom:4px"><%= ex.name %></div>
+            <% if (ex.warm_up_sets && ex.warm_up_sets.length) { %>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px">
+              Warm-up: <%= ex.warm_up_sets.join(' → ') %>
+            </div>
+            <% } %>
+            <% if (ex.cues) { %>
+            <div style="font-size:12px;color:#60a5fa;font-style:italic"><%= ex.cues %></div>
+            <% } %>
+          </div>
+          <div style="text-align:right;white-space:nowrap">
+            <div style="font-size:14px;font-weight:700;color:var(--text)"><%= ex.sets %>×<%= ex.reps %></div>
+            <div style="font-size:12px;color:var(--muted)"><%= ex.weight_kg === 'bodyweight' || ex.weight_kg === 'bag' ? ex.weight_kg : ex.weight_kg + 'kg' %></div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <% } %>
+
+      <!-- Cardio -->
+      <% if (todaySession.cardio) { %>
+      <div style="margin:0 24px 0;padding:14px;background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15);border-radius:var(--radius);margin-bottom:16px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#60a5fa;margin-bottom:6px">Cardio</div>
+        <div style="font-size:13px;color:var(--text);margin-bottom:4px">
+          <%= todaySession.cardio.type %>
+          <% if (todaySession.cardio.duration_min) { %> · <%= todaySession.cardio.duration_min %> min<% } %>
+        </div>
+        <% if (todaySession.cardio.intensity) { %>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Intensity: <%= todaySession.cardio.intensity %></div>
+        <% } %>
+        <% if (todaySession.cardio.asthma_note) { %>
+        <div style="font-size:12px;color:#f59e0b">⚠ <%= todaySession.cardio.asthma_note %></div>
+        <% } %>
+        <% if (todaySession.cardio.options) { %>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">
+          Run: <%= todaySession.cardio.options.running %><br>
+          Bike: <%= todaySession.cardio.options.biking %>
+        </div>
+        <% } %>
+      </div>
+      <% } %>
+
+      <!-- Cool-down -->
+      <% if (todaySession.cool_down && todaySession.cool_down.length) { %>
+      <div style="padding:0 24px 16px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Cool-down</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <% todaySession.cool_down.forEach(c => { %>
+          <span style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:12px;color:var(--muted)"><%= c %></span>
+          <% }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Notes -->
+      <% if (todaySession.notes) { %>
+      <div style="margin:0 24px 20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius);font-size:12px;color:var(--muted);border-left:2px solid var(--border)">
+        <%= todaySession.notes %>
+      </div>
+      <% } %>
+
+    </div>
+  </div>
+  <% } %>
+
+  <!-- ── MILITARY BENCHMARKS ────────────────────────────────────────────────── -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px">
+
+    <!-- Benchmarks table -->
+    <div>
+      <div class="section-heading fade-up">Military Readiness Benchmarks</div>
+      <% if (militaryGoal && militaryGoal.benchmarks && militaryGoal.benchmarks.length) { %>
+      <div class="table-wrap fade-up">
+        <table>
+          <thead><tr><th>Test</th><th>Target</th><th>Current</th></tr></thead>
+          <tbody>
+            <% militaryGoal.benchmarks.forEach(b => { %>
+            <tr>
+              <td class="cell-strong"><%= b.name %></td>
+              <td style="color:#6ee7b7;font-weight:600"><%= b.target %></td>
+              <td>
+                <% if (!b.current || b.current === 'unknown') { %>
+                <span class="pill" style="font-size:10px;background:var(--bg3);color:var(--muted)">not tested</span>
+                <% } else { %>
+                <span class="cell-strong"><%= b.current %></span>
+                <% } %>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% if (nextBenchmark) { %>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">
+        Next test: Week <%= nextBenchmark %> (<%= weeksToNextBenchmark %> week<%= weeksToNextBenchmark !== 1 ? 's' : '' %> away)
+      </div>
+      <% } %>
+      <% } else { %>
+      <div class="window-wrap fade-up"><div class="window-body" style="padding:20px;font-size:13px;color:var(--muted)">No benchmarks set.</div></div>
+      <% } %>
+    </div>
+
+    <!-- Safety rules -->
+    <div>
+      <div class="section-heading fade-up">Safety Rules</div>
+      <div class="window-wrap fade-up">
+        <div class="window-body" style="padding:16px 20px">
+          <div style="margin-bottom:12px">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#f59e0b;margin-bottom:6px">Asthma Protocol</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6"><%= plan.profile && plan.profile.medical ? plan.profile.medical.asthma_protocol : 'Conversational pace only in Phase 1' %></div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:12px">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e8445a;margin-bottom:6px">Back Safety</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6"><%= plan.profile && plan.profile.medical ? plan.profile.medical.back_protocol : 'Warm-up sets required on all compounds' %></div>
+          </div>
+          <% if (plan.profile && plan.profile.adjustment_rules) { %>
+          <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:0">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#60a5fa;margin-bottom:6px">Adaptive Rules</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8">
+              <div>🚴 Biking: <%= plan.profile.adjustment_rules.biking_logged %></div>
+              <div>🏊 Swimming: <%= plan.profile.adjustment_rules.swimming_logged %></div>
+              <div>🏃 Running: <%= plan.profile.adjustment_rules.running_logged %></div>
+            </div>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── PHASE ROADMAP ──────────────────────────────────────────────────────── -->
+  <div class="section-heading fade-up">12-Week Roadmap</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px" class="fade-up">
+    <% phases.forEach(phase => {
+      const isPast = phase.phase < currentPhaseNum
+      const isCurrent = phase.phase === currentPhaseNum
+      const isFuture = phase.phase > currentPhaseNum
+      const borderColor = isCurrent ? '#e8445a' : isPast ? '#6ee7b7' : 'var(--border)'
+      const opacity = isFuture ? '0.5' : '1'
+    %>
+    <div style="background:var(--bg2);border:1px solid <%= borderColor %>;border-radius:var(--radius);padding:18px;opacity:<%= opacity %>">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:<%= isCurrent ? '#e8445a' : isPast ? '#6ee7b7' : 'var(--muted)' %>">
+          Phase <%= phase.phase %> · Wk <%= phase.weeks %>
+        </div>
+        <% if (isCurrent) { %>
+        <span class="pill pill-red" style="font-size:9px">Active</span>
+        <% } else if (isPast) { %>
+        <span class="pill pill-green" style="font-size:9px">Done</span>
+        <% } %>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px"><%= phase.name %></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px"><%= phase.focus %></div>
+      <div style="font-size:11px;color:var(--muted)"><%= phase.frequency %> · <%= (phase.sessions_per_week || []).length %> session type<%= (phase.sessions_per_week || []).length !== 1 ? 's' : '' %></div>
+    </div>
+    <% }) %>
+  </div>
+
+  <!-- ── CURRENT PHASE SESSIONS ─────────────────────────────────────────────── -->
+  <% if (sessions.length) { %>
+  <div class="section-heading fade-up">Phase <%= currentPhaseNum %> Sessions</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:32px" class="fade-up">
+    <% sessions.forEach(session => {
+      const isToday = todaySession && session.day_label === todaySession.day_label
+    %>
+    <div class="window-wrap" style="<%= isToday ? 'border-color:#e8445a' : '' %>">
+      <div class="window-body" style="padding:0">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px"><%= session.day_label %></div>
+            <div style="font-size:12px;color:var(--muted)"><%= session.focus %></div>
+          </div>
+          <% if (isToday) { %><span class="pill pill-red" style="font-size:9px">Today</span><% } %>
+        </div>
+        <% if (session.exercises && session.exercises.length) { %>
+        <div style="padding:10px 18px">
+          <% session.exercises.forEach(ex => { %>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:12px;color:var(--text)"><%= ex.name %></span>
+            <span style="font-size:12px;color:var(--muted);white-space:nowrap;margin-left:8px"><%= ex.sets %>×<%= ex.reps %> <% if (ex.weight_kg !== 'bodyweight' && ex.weight_kg !== 'bag') { %>@ <%= ex.weight_kg %>kg<% } else { %>(<%= ex.weight_kg %>)<% } %></span>
+          </div>
+          <% }) %>
+        </div>
+        <% } %>
+        <% if (session.cardio) { %>
+        <div style="padding:8px 18px;background:rgba(96,165,250,0.05)">
+          <span style="font-size:11px;color:#60a5fa;font-weight:600">Cardio: </span>
+          <span style="font-size:11px;color:var(--muted)"><%= session.cardio.type %><% if (session.cardio.duration_min) { %> · <%= session.cardio.duration_min %> min<% } %></span>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+
+  <!-- ── RECENT WORKOUTS ────────────────────────────────────────────────────── -->
+  <% if (recentWorkouts && recentWorkouts.length) { %>
+  <div class="section-heading fade-up">Recent Logged Sessions</div>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Date</th><th>Type</th><th>Duration</th><th>Notes</th></tr></thead>
+      <tbody>
+        <% recentWorkouts.forEach(w => { %>
+        <tr>
+          <td class="cell-muted"><%= w.date || '—' %></td>
+          <td><span class="pill pill-green" style="font-size:10px"><%= w.type || '—' %></span></td>
+          <td class="cell-muted"><%= w.duration_min ? w.duration_min + ' min' : '—' %></td>
+          <td class="cell-muted" style="font-size:12px"><%= w.notes || '' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <!-- ── HOW TO USE ─────────────────────────────────────────────────────────── -->
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="padding:18px 22px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">How to use Atlas Training</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <% [
+          ['What should I train today?', 'personal-trainer reads plan + logs'],
+          ['Log workout: bench 3×6 @ 70kg', 'health-agent logs it'],
+          ['I went biking for 45 min', 'logs it, plan adjusts next session'],
+          ['Run benchmark test', 'personal-trainer records current scores'],
+          ['Adjust plan — traveling this week', 'personal-trainer rewrites that week'],
+          ['How is my asthma doing with cardio?', 'health-agent reviews breathing notes'],
+        ].forEach(([cmd, desc]) => { %>
+        <div style="background:var(--bg3);border-radius:var(--radius);padding:8px 12px">
+          <div style="font-size:12px;color:var(--text);font-family:monospace;margin-bottom:2px">"<%= cmd %>"</div>
+          <div style="font-size:11px;color:var(--muted)"><%= desc %></div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;font-size:12px;color:var(--muted);margin-bottom:32px">
+    🔒 All training data is stored locally — never sent to external services.
+  </div>
+
+<% } %>
+
+  <div style="display:flex;gap:12px">
+    <a href="/health" class="btn btn-ghost">← Health</a>
+    <a href="/" class="btn btn-ghost">Overview</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

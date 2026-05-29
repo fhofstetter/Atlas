@@ -1,0 +1,138 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:28vh">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    Live prices · Card rate applied
+  </div>
+  <h1>DJI Beginner Drones</h1>
+  <p class="hero-sub">Side-by-side comparison with total landed cost to Switzerland.</p>
+</section>
+
+<div class="main-content">
+
+  <div class="section-sub fade-up">
+    Prices shown with <strong style="color:var(--text)">Visa/Mastercard +2.5%</strong> over interbank rate — what you actually pay when buying in EUR.
+    Landed cost includes product + shipping + Swiss customs (8.1% VAT + duty where applicable).
+    <% if (ratesStale) { %><span style="color:var(--red2);margin-left:8px">⚠ Exchange rates may be stale</span><% } %>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="table-wrap fade-up">
+    <% if (!rows || !rows.length) { %>
+    <div class="table-empty">No products tracked yet. <a href="/#add-product" style="color:var(--muted)">Add a product →</a></div>
+    <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Best Store</th>
+          <th>EUR Price</th>
+          <th>CHF (interbank)</th>
+          <th>CHF (Visa/MC)</th>
+          <th>Landed CH</th>
+          <th>Rec</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.forEach((row, i) => { %>
+        <tr class="<%= row.isBest ? 'best-row' : '' %>">
+          <td class="cell-strong">
+            <a href="/history/<%= row.id %>" style="color:var(--text);transition:color .2s" onmouseover="this.style.color='var(--red2)'" onmouseout="this.style.color='var(--text)'">
+              <%= row.name %>
+            </a>
+          </td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            <% if (row.storeUrl) { %>
+            <a href="<%= row.storeUrl %>" target="_blank" rel="noopener" style="color:var(--muted);font-size:12px;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">
+              <%= row.storeName %>
+            </a>
+            <% } else { %>
+            <span style="color:var(--muted2)">—</span>
+            <% } %>
+          </td>
+          <td>
+            <% if (row.priceEUR != null) { %>
+            €<%= Number(row.priceEUR).toFixed(2) %>
+            <% } else { %><span class="cell-muted">—</span><% } %>
+          </td>
+          <td>
+            <% if (row.priceCHF != null) { %>
+            CHF <%= Number(row.priceCHF).toFixed(2) %>
+            <% } else { %><span class="cell-muted">—</span><% } %>
+          </td>
+          <td class="<%= row.isBest ? 'cell-green' : '' %>">
+            <% if (row.priceCHFCard != null) { %>
+            CHF <%= Number(row.priceCHFCard).toFixed(2) %>
+            <% if (row.isBest) { %> ★<% } %>
+            <% } else { %><span class="cell-muted">—</span><% } %>
+          </td>
+          <td class="<%= row.isBest ? 'cell-green' : '' %>">
+            <% if (row.landedCH != null) { %>
+            CHF <%= Number(row.landedCH).toFixed(2) %>
+            <% } else if (row.priceCHFCard != null) { %>
+            <span class="cell-muted">~CHF <%= Number(row.priceCHFCard).toFixed(0) %>+</span>
+            <% } else { %><span class="cell-muted">—</span><% } %>
+          </td>
+          <td>
+            <% if (row.isBest) { %>
+            <span class="deal-badge">Best value</span>
+            <% } else if (row.priceCHF == null) { %>
+            <span class="pill pill-red">No data</span>
+            <% } else { %>
+            <span class="pill pill-muted">Tracked</span>
+            <% } %>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+
+  <!-- RECOMMENDATION BOX -->
+  <% if (bestRow) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:40px">
+    <div class="window-bar">
+      <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+      <div class="window-title">Recommendation</div>
+    </div>
+    <div class="window-body">
+      <div style="display:flex;align-items:flex-start;gap:16px">
+        <div style="font-size:32px">🏆</div>
+        <div>
+          <div style="font-size:17px;font-weight:700;margin-bottom:6px;color:var(--text)"><%= bestRow.name %></div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.7">
+            Best value at <strong style="color:#6ee7b7">CHF <%= bestRow.landedCH != null ? Number(bestRow.landedCH).toFixed(2) : Number(bestRow.priceCHFCard).toFixed(2) %></strong>
+            landed to Switzerland — from <strong style="color:var(--text)"><%= bestRow.storeName %></strong>
+            <% if (bestRow.priceEUR != null) { %>(€<%= Number(bestRow.priceEUR).toFixed(2) %> + shipping + customs)<% } %>.
+          </div>
+          <% if (bestRow.storeUrl) { %>
+          <a href="<%= bestRow.storeUrl %>" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top:14px;display:inline-flex">View on store →</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- EXCHANGE RATE NOTE -->
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:40px">
+    <strong style="color:var(--text)">💱 About exchange rates:</strong>
+    Interbank rates via <a href="https://www.frankfurter.app" target="_blank" rel="noopener" style="color:var(--muted);text-decoration:underline">Frankfurter API</a> (1h cache).
+    Visa/Mastercard column adds 2.5% (1.5% interchange + ~1% typical Swiss bank fee).
+    Landed cost includes shipping from origin country + 8.1% Swiss VAT + category duty + CHF 11.50 clearance (where applicable).
+    <strong style="color:var(--text)">Imports under CHF 65 total are duty-free and VAT-free</strong> (small consignment relief).
+  </div>
+
+  <!-- BACK TO DASHBOARD -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <a href="/" class="btn btn-ghost">← Dashboard</a>
+    <a href="/docs#costs" class="btn btn-ghost">How costs are calculated →</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

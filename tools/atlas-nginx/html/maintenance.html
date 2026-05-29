@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas — Maintenance</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #8b949e;
+      --red:     #e8445a;
+      --accent:  #f97316;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* ── Logo ── */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 48px;
+      color: var(--text);
+    }
+    .logo svg { width: 26px; height: 26px; }
+
+    /* ── Graphic ── */
+    .graphic-wrap {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin-bottom: 44px;
+    }
+
+    .glow {
+      position: absolute;
+      inset: -50px;
+      background: radial-gradient(circle, rgba(232,68,90,0.28) 0%, transparent 65%);
+      animation: glow-pulse 3.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* orange accent glow for maintenance */
+    .glow-orange {
+      position: absolute;
+      inset: -30px;
+      background: radial-gradient(circle, rgba(249,115,22,0.14) 0%, transparent 70%);
+      animation: glow-pulse 3.5s ease-in-out infinite 0.5s;
+      pointer-events: none;
+    }
+
+    .hero-svg {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      animation: shape-pulse 3.5s ease-in-out infinite;
+    }
+
+    /* slow orbiting dash for maintenance */
+    .orbit-ring {
+      position: absolute;
+      inset: -16px;
+      z-index: 2;
+      animation: orbit 8s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.5;  transform: scale(0.93); }
+      50%       { opacity: 1;   transform: scale(1.07); }
+    }
+    @keyframes shape-pulse {
+      0%, 100% { opacity: 0.8;  transform: scale(0.96); }
+      50%       { opacity: 1;   transform: scale(1.04); }
+    }
+    @keyframes orbit {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ── Text ── */
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+      text-align: center;
+      max-width: 300px;
+      margin-bottom: 36px;
+    }
+
+    /* ── Status bar ── */
+    .status-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 20px;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 220px;
+    }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.2; }
+    }
+
+    #countdown { color: var(--accent); font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+
+  <!-- Atlas logo -->
+  <div class="logo">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2L26 9V19L14 26L2 19V9L14 2Z" fill="#e8445a" opacity="0.2"/>
+      <path d="M14 2L26 9V19L14 26L2 19V9L14 2Z" stroke="#e8445a" stroke-width="1.5"/>
+      <path d="M8 14L12 10L16 14L20 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 17L12 13L16 17L20 13" stroke="#e8445a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+    </svg>
+    Atlas
+  </div>
+
+  <!-- Hero graphic -->
+  <div class="graphic-wrap">
+    <div class="glow"></div>
+    <div class="glow-orange"></div>
+
+    <svg class="hero-svg" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hg1" x1="50" y1="50" x2="550" y2="550" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#ff6b7a"/>
+          <stop offset="60%"  stop-color="#e8445a"/>
+          <stop offset="100%" stop-color="#800020" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="hg2" x1="100" y1="100" x2="500" y2="500" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#e8445a" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="hg3" x1="200" y1="50" x2="400" y2="550" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#ff8a9a" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#c73050" stop-opacity="0"/>
+        </linearGradient>
+        <filter id="hblur"  x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="24"/></filter>
+        <filter id="hblur2" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="8"/></filter>
+      </defs>
+      <g filter="url(#hblur)">
+        <polygon points="300,40 560,180 560,420 300,560 40,420 40,180" fill="url(#hg1)" opacity="0.7"/>
+        <polygon points="200,100 500,100 560,300 300,560 40,420 120,100" fill="url(#hg2)" opacity="0.5"/>
+      </g>
+      <g filter="url(#hblur2)" opacity="0.9">
+        <rect x="260" y="60" width="80" height="480" rx="12" fill="url(#hg3)" transform="rotate(45 300 300)"  opacity="0.6"/>
+        <rect x="260" y="60" width="80" height="480" rx="12" fill="url(#hg3)" transform="rotate(-45 300 300)" opacity="0.6"/>
+      </g>
+      <polygon points="300,80 520,200 520,400 300,520 80,400 80,200" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    </svg>
+
+    <!-- slow orbiting dashed arc -->
+    <svg class="orbit-ring" viewBox="0 0 252 252" fill="none">
+      <circle cx="126" cy="126" r="120"
+        stroke="url(#orbitGrad)" stroke-width="1.5"
+        stroke-dasharray="60 80 20 576"
+        stroke-linecap="round"/>
+      <defs>
+        <linearGradient id="orbitGrad" x1="0" y1="0" x2="252" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#f97316" stop-opacity="0"/>
+          <stop offset="50%"  stop-color="#f97316"/>
+          <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="title">Maintenance in progress</div>
+  <div class="subtitle">Atlas is undergoing scheduled maintenance.<br>We'll be back shortly.</div>
+
+  <div class="status-bar">
+    <div class="dot"></div>
+    <span>Checking again in <span id="countdown">30</span>s&hellip;</span>
+  </div>
+
+  <script>
+    let t = 30;
+    const el = document.getElementById('countdown');
+    const iv = setInterval(() => {
+      t--;
+      el.textContent = t;
+      if (t <= 0) { clearInterval(iv); location.reload(); }
+    }, 1000);
+  </script>
+</body>
+</html>

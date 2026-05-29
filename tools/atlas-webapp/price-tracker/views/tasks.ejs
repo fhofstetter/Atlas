@@ -1,0 +1,143 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:22vh">
+  <div class="hero-glow"></div>
+  <h1>Task Board</h1>
+  <p class="hero-sub">Active work, queued tasks, and completed items across all Atlas agents.</p>
+</section>
+
+<div class="main-content">
+
+  <!-- STATS ROW -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number" style="color:var(--red2)"><%= queueCount %></div>
+      <div class="stat-label">Queued</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#f59e0b"><%= activeCount %></div>
+      <div class="stat-label">Active</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#6ee7b7"><%= completedCount %></div>
+      <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:var(--muted)"><%= failedCount %></div>
+      <div class="stat-label">Failed</div>
+    </div>
+  </div>
+
+  <% if (activeTasks.length) { %>
+  <div class="section-heading fade-up">Active</div>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Title</th><th>Agent</th><th>Priority</th><th>Created</th></tr>
+      </thead>
+      <tbody>
+        <% activeTasks.forEach(t => { %>
+        <tr>
+          <td class="cell-muted" style="font-family:monospace;font-size:12px"><%= t.id %></td>
+          <td class="cell-strong"><%= t.title %></td>
+          <td><span class="pill pill-yellow" style="font-size:10px"><%= t.agent %></span></td>
+          <td><span class="pill <%= t.priority === 'critical' ? 'pill-red' : t.priority === 'high' ? 'pill-orange' : 'pill-green' %>" style="font-size:10px"><%= t.priority %></span></td>
+          <td class="cell-muted"><%= t.created_at ? new Date(t.created_at).toLocaleString('de-CH') : '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <% if (queuedTasks.length) { %>
+  <div class="section-heading fade-up">Queued</div>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Title</th><th>Agent</th><th>Priority</th><th>Created</th></tr>
+      </thead>
+      <tbody>
+        <% queuedTasks.forEach(t => { %>
+        <tr>
+          <td class="cell-muted" style="font-family:monospace;font-size:12px"><%= t.id %></td>
+          <td class="cell-strong"><%= t.title %></td>
+          <td><span class="pill pill-yellow" style="font-size:10px"><%= t.agent %></span></td>
+          <td><span class="pill <%= t.priority === 'critical' ? 'pill-red' : t.priority === 'high' ? 'pill-orange' : 'pill-green' %>" style="font-size:10px"><%= t.priority %></span></td>
+          <td class="cell-muted"><%= t.created_at ? new Date(t.created_at).toLocaleString('de-CH') : '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <% if (!activeTasks.length && !queuedTasks.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-bar">
+      <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+      <div class="window-title">Task Queue</div>
+    </div>
+    <div class="window-body" style="display:flex;align-items:center;gap:16px">
+      <div style="font-size:28px">✅</div>
+      <div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:6px">No pending tasks</div>
+        <div style="font-size:13px;color:var(--muted)">
+          All caught up. Create a task with <code>/new-task</code> or run <code>bash tools/scripts/new-task.sh</code>.
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <% if (completedTasks.length) { %>
+  <div class="section-heading fade-up">Recently Completed</div>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Title</th><th>Agent</th><th>Updated</th></tr>
+      </thead>
+      <tbody>
+        <% completedTasks.slice(0, 10).forEach(t => { %>
+        <tr>
+          <td class="cell-muted" style="font-family:monospace;font-size:12px"><%= t.id %></td>
+          <td class="cell-strong"><%= t.title %></td>
+          <td><span class="pill pill-green" style="font-size:10px"><%= t.agent %></span></td>
+          <td class="cell-muted"><%= t.updated_at ? new Date(t.updated_at).toLocaleString('de-CH') : '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <% if (failedTasks.length) { %>
+  <div class="section-heading fade-up">Failed</div>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Title</th><th>Agent</th><th>Updated</th></tr>
+      </thead>
+      <tbody>
+        <% failedTasks.forEach(t => { %>
+        <tr>
+          <td class="cell-muted" style="font-family:monospace;font-size:12px"><%= t.id %></td>
+          <td class="cell-strong" style="color:var(--red2)"><%= t.title %></td>
+          <td><span class="pill pill-red" style="font-size:10px"><%= t.agent %></span></td>
+          <td class="cell-muted"><%= t.updated_at ? new Date(t.updated_at).toLocaleString('de-CH') : '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <a href="/" class="btn btn-ghost">← Dashboard</a>
+    <a href="/status" class="btn btn-ghost">Status →</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,81 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:20vh">
+  <div class="hero-glow"></div>
+  <h1>Agents</h1>
+  <p class="hero-sub">All <%= agents.length %> agents in the Atlas roster — each specialized for a specific domain.</p>
+</section>
+
+<div class="main-content">
+
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number"><%= agents.length %></div>
+      <div class="stat-label">Total agents</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#e8445a"><%= agents.filter(a => a.model === 'opus').length %></div>
+      <div class="stat-label">Opus (heavy)</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#60a5fa"><%= agents.filter(a => a.model === 'sonnet').length %></div>
+      <div class="stat-label">Sonnet (balanced)</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#86efac"><%= agents.filter(a => a.model === 'haiku').length %></div>
+      <div class="stat-label">Haiku (fast)</div>
+    </div>
+  </div>
+
+  <div class="section-heading fade-up">Agent Roster</div>
+  <div class="table-wrap fade-up" style="margin-bottom:40px">
+    <table>
+      <thead>
+        <tr><th style="width:160px">Agent</th><th style="width:80px">Model</th><th>Purpose</th><th>Tools</th></tr>
+      </thead>
+      <tbody>
+        <% agents.forEach(a => { %>
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:8px;height:8px;border-radius:50%;background:<%= a.color %>;flex-shrink:0"></div>
+              <code style="font-size:12px;color:var(--text)"><%= a.slug %></code>
+            </div>
+          </td>
+          <td>
+            <span class="pill <%= a.model === 'opus' ? 'pill-red' : a.model === 'haiku' ? 'pill-green' : 'pill-yellow' %>" style="font-size:10px"><%= a.model %></span>
+          </td>
+          <td style="font-size:13px;color:var(--muted);line-height:1.5"><%= a.purpose %></td>
+          <td style="font-size:11px;color:var(--border);white-space:nowrap"><%= a.tools %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-bar">
+      <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+      <div class="window-title">How to invoke an agent</div>
+    </div>
+    <div class="window-body" style="padding:20px">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
+        In a Claude Code session, agents are invoked automatically when Atlas matches your request, or explicitly:
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--radius);padding:12px 16px;font-family:monospace;font-size:13px;color:var(--text)">
+        "Ask the market-researcher to find the best price for a DJI drone in Europe"<br>
+        "Have the organizer-agent add a chore for monthly backup"<br>
+        "Get the health-agent to log last night — 7h, 2 apnea episodes"
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px">
+    <a href="/budget" class="btn btn-ghost">← Budget</a>
+    <a href="/tasks" class="btn btn-ghost">Tasks →</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

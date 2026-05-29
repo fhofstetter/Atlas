@@ -1,0 +1,19 @@
+{
+  "_schema": "atlas-session-summary-v1",
+  "_updated": "2026-05-04",
+  "date": "Mon 4 May 2026",
+  "achieved": [
+    {"text": "Planned Week 1 training: Push Mon / Pull Wed / Lower+Core Fri at lunchtime", "url": "/training"},
+    {"text": "Saved full 2026 shooting schedule to data/organizer/shooting-schedule.json"},
+    {"text": "Saved locations (office 3000 Bern, home 3096 Oberbalm, range Dentenbergstrasse 73 Gümligen)"},
+    {"text": "Queued 61 calendar events: 9 Bern holidays + 32 Freie Übung + 20 training sessions"},
+    {"text": "Planned Phase 1 timeline: intro → holiday (May 10–15) → return week → Phase 1 Wk1–4 → benchmark Jun 21", "url": "/training"}
+  ],
+  "next_up": [
+    {"text": "Authenticate Google Calendar MCP (claude.ai → /mcp → Google Calendar)"},
+    {"text": "Add weather to morning greeting based on today's location"},
+    {"text": "Set up yearly Bern public holiday routine (runs Dec 31 each year)"},
+    {"text": "Confirm training split after trial week → update training-plan.json", "url": "/training"},
+    {"text": "Create PostgreSQL DB and migrate all Atlas data"}
+  ]
+}

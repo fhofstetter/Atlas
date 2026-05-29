@@ -1,0 +1,214 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:20vh">
+  <div class="hero-glow"></div>
+  <h1>Organizer</h1>
+  <p class="hero-sub">Goals, todos, and chores — all in one place.</p>
+</section>
+
+<div class="main-content">
+
+  <!-- STATS -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number" style="<%= userGoals.filter(g=>g.status==='active').length ? 'color:#f59e0b' : 'color:var(--muted)' %>"><%= userGoals.filter(g=>g.status==='active').length %></div>
+      <div class="stat-label">Your active goals</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="<%= atlasGoals.filter(g=>g.status==='active').length ? 'color:#60a5fa' : 'color:var(--muted)' %>"><%= atlasGoals.filter(g=>g.status==='active').length %></div>
+      <div class="stat-label">Atlas system goals</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="<%= overdueTodos.length ? 'color:var(--red2)' : '' %>"><%= overdueTodos.length %></div>
+      <div class="stat-label">Overdue todos</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number"><%= todos.length %></div>
+      <div class="stat-label">Open todos</div>
+    </div>
+  </div>
+
+  <!-- YOUR GOALS -->
+  <div class="section-heading fade-up">Your Goals</div>
+  <% if (!userGoals.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:16px;padding:24px">
+      <div style="font-size:28px">🎯</div>
+      <div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:4px">No personal goals yet</div>
+        <div style="font-size:13px;color:var(--muted)">Ask the organizer-agent to add your first goal.</div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
+    <% userGoals.forEach(g => { %>
+    <div class="window-wrap fade-up">
+      <div class="window-bar">
+        <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+        <div class="window-title"><%= g.category || 'goal' %></div>
+        <span class="pill <%= g.status === 'active' ? 'pill-green' : 'pill-orange' %>" style="font-size:10px;margin-left:auto"><%= g.status %></span>
+      </div>
+      <div class="window-body" style="padding:16px 20px">
+        <div style="font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px"><%= g.title %></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5"><%= g.description %></div>
+
+        <% const done = (g.milestones || []).filter(m => m.done).length %>
+        <% const total = (g.milestones || []).length %>
+        <% if (total > 0) { %>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:12px;color:var(--muted)">Progress</div>
+          <div style="font-size:12px;color:var(--muted)"><%= done %>/<%= total %> milestones</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:99px;height:6px;overflow:hidden;margin-bottom:12px">
+          <div style="background:var(--red2);height:6px;width:<%= total ? Math.round(done/total*100) : 0 %>%;transition:width 0.5s;border-radius:99px"></div>
+        </div>
+        <% (g.milestones || []).forEach(m => { %>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;color:<%= m.done ? '#6ee7b7' : 'var(--muted)' %>">
+          <span><%= m.done ? '✓' : '○' %></span>
+          <span style="<%= m.done ? 'text-decoration:line-through;opacity:0.6' : '' %>"><%= m.title %></span>
+        </div>
+        <% }) %>
+        <% } %>
+
+        <% if (g.target_date) { %>
+        <div style="font-size:11px;color:var(--muted);margin-top:10px;border-top:1px solid var(--border);padding-top:8px">
+          Target: <%= g.target_date %> · <span style="font-style:italic"><%= g.horizon %></span>
+        </div>
+        <% } %>
+        <% if (g.next_action) { %>
+        <div style="font-size:12px;color:var(--text);margin-top:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius);border-left:2px solid var(--red2)">
+          Next: <%= g.next_action %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+
+  <!-- ATLAS SYSTEM GOALS -->
+  <div class="section-heading fade-up" style="margin-top:8px">
+    Atlas System Goals
+    <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px">infrastructure &amp; development goals tracked by Atlas</span>
+  </div>
+  <% if (!atlasGoals.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="padding:18px 20px;color:var(--muted);font-size:13px">No Atlas system goals active.</div>
+  </div>
+  <% } else { %>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
+    <% atlasGoals.forEach(g => { %>
+    <div class="window-wrap fade-up" style="border-color:rgba(96,165,250,0.25)">
+      <div class="window-bar">
+        <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+        <div class="window-title"><%= g.category || 'atlas' %></div>
+        <span class="pill" style="font-size:10px;margin-left:auto;background:rgba(96,165,250,0.15);color:#60a5fa">atlas</span>
+      </div>
+      <div class="window-body" style="padding:16px 20px">
+        <div style="font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px"><%= g.title %></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5"><%= g.description %></div>
+        <% const ad = (g.milestones||[]).filter(m=>m.done).length; const at = (g.milestones||[]).length %>
+        <% if (at > 0) { %>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px"><span>Progress</span><span><%= ad %>/<%= at %></span></div>
+        <div style="background:var(--bg3);border-radius:99px;height:6px;overflow:hidden;margin-bottom:10px">
+          <div style="background:#60a5fa;height:6px;width:<%= at ? Math.round(ad/at*100) : 0 %>%;border-radius:99px"></div>
+        </div>
+        <% (g.milestones||[]).forEach(m => { %>
+        <div style="display:flex;gap:8px;margin-bottom:4px;font-size:12px;color:<%= m.done ? '#6ee7b7' : 'var(--muted)' %>">
+          <span><%= m.done ? '✓' : '○' %></span>
+          <span style="<%= m.done ? 'text-decoration:line-through;opacity:0.6' : '' %>"><%= m.title %></span>
+        </div>
+        <% }) %>
+        <% } %>
+        <% if (g.next_action) { %>
+        <div style="font-size:12px;color:var(--text);margin-top:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius);border-left:2px solid #60a5fa">
+          Next: <%= g.next_action %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+
+  <!-- TODOS -->
+  <div class="section-heading fade-up">Todos</div>
+  <% if (!todos.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:16px;padding:24px">
+      <div style="font-size:28px">✅</div>
+      <div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:4px">All clear — no open todos</div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead>
+        <tr><th>Title</th><th>Priority</th><th>Due</th><th>Tags</th></tr>
+      </thead>
+      <tbody>
+        <% todos.forEach(t => { %>
+        <% const isOverdue = t.due && t.due < today %>
+        <% const isDueToday = t.due === today %>
+        <tr>
+          <td class="cell-strong" style="font-size:13px"><%= t.title %><% if (t.notes) { %><div style="font-size:11px;color:var(--muted);margin-top:2px;font-weight:400"><%= t.notes.slice(0,80) %><%= t.notes.length > 80 ? '…' : '' %></div><% } %></td>
+          <td><span class="pill <%= t.priority === 'critical' || t.priority === 'high' ? 'pill-red' : t.priority === 'medium' ? 'pill-yellow' : 'pill-green' %>" style="font-size:10px"><%= t.priority %></span></td>
+          <td class="cell-muted" style="font-size:12px;white-space:nowrap">
+            <% if (t.due) { %>
+            <span style="<%= isOverdue ? 'color:var(--red2);font-weight:600' : isDueToday ? 'color:#f59e0b;font-weight:600' : '' %>">
+              <%= isOverdue ? '⚠ ' : isDueToday ? '● ' : '' %><%= t.due %>
+            </span>
+            <% } else { %><span style="color:var(--border)">—</span><% } %>
+          </td>
+          <td style="font-size:11px">
+            <% (t.tags || []).forEach(tag => { %><span class="pill" style="font-size:10px;background:var(--bg3);color:var(--muted);margin-right:4px"><%= tag %></span><% }) %>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <!-- CHORES -->
+  <div class="section-heading fade-up">Chores</div>
+  <% if (!chores.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:16px;padding:24px">
+      <div style="font-size:28px">🏠</div>
+      <div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:4px">No chores configured</div>
+        <div style="font-size:13px;color:var(--muted)">Ask the organizer-agent to set up recurring chores.</div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Chore</th><th>Frequency</th><th>Last Done</th><th>Next Due</th></tr></thead>
+      <tbody>
+        <% chores.forEach(c => { %>
+        <tr>
+          <td class="cell-strong"><%= c.title %></td>
+          <td class="cell-muted"><%= c.frequency || '—' %></td>
+          <td class="cell-muted"><%= c.lastDone || '—' %></td>
+          <td class="cell-muted"><%= c.nextDue || '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <a href="/" class="btn btn-ghost">← Overview</a>
+    <a href="/tasks" class="btn btn-ghost">Tasks →</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

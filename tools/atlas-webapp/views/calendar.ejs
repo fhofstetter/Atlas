@@ -1,0 +1,396 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<style>
+/* ── FullCalendar dark overrides ──────────────────────────────────────────── */
+:root {
+  --fc-border-color: rgba(255,255,255,0.07);
+  --fc-button-bg-color: #161616;
+  --fc-button-border-color: rgba(255,255,255,0.1);
+  --fc-button-text-color: #888888;
+  --fc-button-hover-bg-color: #1f1f1f;
+  --fc-button-hover-border-color: rgba(255,255,255,0.2);
+  --fc-button-active-bg-color: rgba(232,68,90,0.18);
+  --fc-button-active-border-color: rgba(232,68,90,0.5);
+  --fc-button-active-text-color: #e8445a;
+  --fc-event-bg-color: #e8445a;
+  --fc-event-border-color: #c73050;
+  --fc-event-text-color: #fff;
+  --fc-today-bg-color: rgba(232,68,90,0.05);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: #111111;
+  --fc-neutral-text-color: #888888;
+  --fc-list-event-hover-bg-color: rgba(255,255,255,0.04);
+  --fc-highlight-color: rgba(232,68,90,0.08);
+  --fc-non-business-color: rgba(255,255,255,0.012);
+}
+
+.fc { font-family: var(--font); font-size: 13px; }
+.fc-toolbar-title { color: var(--text) !important; font-size: 17px !important; font-weight: 700 !important; letter-spacing: -0.3px; }
+.fc-col-header-cell { background: #0d0d0d; border-color: rgba(255,255,255,0.06) !important; }
+.fc-col-header-cell-cushion {
+  color: var(--text) !important; font-size: 11px !important; font-weight: 700 !important;
+  text-transform: uppercase; letter-spacing: .07em; padding: 10px 4px 4px !important;
+  text-decoration: none !important; display: block;
+}
+.fc-daygrid-day-number {
+  color: var(--muted) !important; font-size: 12px !important; text-decoration: none !important; padding: 6px 8px !important;
+}
+.fc-day-today .fc-daygrid-day-number { color: var(--red2) !important; font-weight: 700 !important; }
+.fc-day-today { background: var(--fc-today-bg-color) !important; }
+.fc-button-primary {
+  border-radius: 8px !important; font-size: 12px !important; font-weight: 600 !important;
+  padding: 5px 13px !important; transition: all .15s !important; letter-spacing: .02em;
+}
+.fc-button-primary:not(:disabled):active,
+.fc-button-primary:not(:disabled).fc-button-active {
+  background-color: var(--fc-button-active-bg-color) !important;
+  border-color: var(--fc-button-active-border-color) !important;
+  color: var(--fc-button-active-text-color) !important;
+}
+.fc-toolbar.fc-header-toolbar { margin-bottom: 16px !important; }
+.fc-event {
+  border-radius: 5px !important; font-size: 12px !important; font-weight: 600 !important;
+  padding: 2px 7px !important; cursor: pointer !important; border: none !important;
+}
+.fc-daygrid-day { transition: background .12s; cursor: pointer; }
+.fc-daygrid-day:hover { background: rgba(255,255,255,0.025) !important; }
+.fc-list-day-cushion { background: rgba(255,255,255,0.03) !important; }
+.fc-list-day-text, .fc-list-day-side-text { color: var(--text) !important; font-size: 12px !important; font-weight: 700 !important; text-decoration: none !important; }
+.fc-list-event-title a { color: var(--text) !important; text-decoration: none !important; }
+.fc-list-event-time { color: var(--muted) !important; font-size: 11px !important; }
+.fc-list-table { border-color: rgba(255,255,255,0.05) !important; }
+
+/* Weather badge — sits below the day label in the column header */
+.wx-badge {
+  font-size: 10px; color: var(--muted); padding: 0 4px 6px;
+  text-align: center; line-height: 1.4; white-space: nowrap;
+}
+.wx-hint {
+  color: #e8445a; font-weight: 600;
+  -webkit-text-fill-color: #e8445a;   /* override emoji colour in WebKit */
+  font-variant-emoji: text;           /* force text presentation in modern browsers */
+  letter-spacing: .1em;
+}
+
+/* Detail popup */
+#cal-popup {
+  position: fixed; z-index: 400;
+  background: #181818; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 20px 22px; width: 300px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.75);
+  display: none;
+}
+.cal-popup-close {
+  position: absolute; top: 12px; right: 14px;
+  font-size: 15px; cursor: pointer; color: var(--muted);
+  background: none; border: none; line-height: 1;
+}
+.cal-popup-close:hover { color: var(--text); }
+.cal-popup-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+}
+.cal-popup-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.cal-popup-date { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.cal-popup-row {
+  font-size: 12px; color: var(--muted); padding: 5px 0;
+  border-top: 1px solid rgba(255,255,255,0.05); line-height: 1.5;
+}
+.cal-popup-row strong { color: var(--text); }
+.cal-popup-event-list { margin-top: 8px; }
+.cal-popup-event-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 0; border-top: 1px solid rgba(255,255,255,0.05); font-size: 12px;
+}
+.cal-popup-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.cal-popup-wx { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px; color: var(--muted); }
+</style>
+
+<section class="hero" style="min-height:18vh">
+  <div class="hero-glow"></div>
+  <h1>Calendar</h1>
+  <p class="hero-sub">Training · Appointments · Events — with live weather.</p>
+</section>
+
+<div class="main-content">
+
+  <!-- Legend -->
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-bottom:20px;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)" class="fade-up">
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
+      <span style="width:8px;height:8px;border-radius:50%;background:#e8445a;flex-shrink:0"></span> Training
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
+      <span style="width:8px;height:8px;border-radius:50%;background:#60a5fa;flex-shrink:0"></span> Appointment
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
+      <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0"></span> Todo
+    </div>
+    <div style="margin-left:auto;font-size:11px;color:var(--muted)">
+      Weather for events with a location —
+      <span style="color:#e8445a;font-weight:600;letter-spacing:.15em">☂︎ ❄︎ ◔︎ ○︎ ☀︎</span>
+      <span style="color:var(--muted2)">rain · cold · cool · warm · hot</span>
+    </div>
+  </div>
+
+  <!-- Calendar -->
+  <div class="window-wrap fade-up" style="overflow:hidden;margin-bottom:32px">
+    <div style="padding:20px">
+      <div id="calendar"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px">
+    <a href="/organizer" class="btn btn-ghost">← Organizer</a>
+    <a href="/training" class="btn btn-ghost">Training →</a>
+  </div>
+
+</div>
+
+<!-- Detail popup -->
+<div id="cal-popup">
+  <button class="cal-popup-close" id="popup-close">✕</button>
+  <div class="cal-popup-tag"  id="popup-tag"></div>
+  <div class="cal-popup-title" id="popup-title"></div>
+  <div class="cal-popup-date"  id="popup-date"></div>
+  <div id="popup-rows"></div>
+  <div class="cal-popup-wx" id="popup-wx" style="display:none"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
+<script>
+const EVENTS = <%- eventsJson %>
+
+// ── Weather ──────────────────────────────────────────────────────────────────
+
+const wxCache  = new Map()
+const geoCache = new Map()
+
+async function geocode(loc) {
+  if (geoCache.has(loc)) return geoCache.get(loc)
+  try {
+    const d = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(loc)}&count=1`).then(r => r.json())
+    if (!d.results?.length) return null
+    const { latitude: lat, longitude: lon } = d.results[0]
+    geoCache.set(loc, { lat, lon })
+    return { lat, lon }
+  } catch { return null }
+}
+
+async function fetchWeather(loc, start, end) {
+  const c = await geocode(loc)
+  if (!c) return
+  try {
+    const d = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}` +
+      `&daily=temperature_2m_max,precipitation_probability_max&timezone=auto` +
+      `&start_date=${start}&end_date=${end}&forecast_days=14`
+    ).then(r => r.json())
+    if (!d.daily) return
+    d.daily.time.forEach((date, i) => {
+      wxCache.set(`${loc}|${date}`, {
+        maxTemp: Math.round(d.daily.temperature_2m_max[i] ?? 0),
+        rainPct: d.daily.precipitation_probability_max[i] ?? 0,
+      })
+    })
+  } catch { /* weather is optional */ }
+}
+
+// Unicode text-presentation symbols (U+FE0E forces glyph, not emoji color)
+const SYM = {
+  rain:      '☂︎',   // ☂︎  umbrella
+  cold:      '❄︎',   // ❄︎  snowflake
+  jacket:    '◔︎',   // ◔   half-filled circle (cool / layered)
+  warm:      '○︎',   // ○   open circle (shades / sunny)
+  hot:       '☀︎',   // ☀︎  sun
+}
+
+function clothingHint(maxTemp, rainPct) {
+  const h = []
+  if (rainPct >= 50)      h.push(SYM.rain)
+  if      (maxTemp <=  8) h.push(SYM.cold)
+  else if (maxTemp <= 15) h.push(SYM.jacket)
+  else if (maxTemp >= 28) h.push(SYM.hot + SYM.hot)
+  else if (maxTemp >= 22) h.push(SYM.warm)
+  return h.join(' ')
+}
+
+async function updateWeatherBadges(startStr, endStr) {
+  const start = startStr.slice(0, 10)
+  const end   = endStr.slice(0, 10)
+
+  const locByDate = {}
+  EVENTS.forEach(e => {
+    const loc = e.extendedProps?.location
+    if (!loc) return
+    const d = (e.start || '').slice(0, 10)
+    if (d >= start && d < end) locByDate[d] = loc
+  })
+
+  const locs = [...new Set(Object.values(locByDate))]
+  if (!locs.length) return
+
+  await Promise.all(locs.map(l => fetchWeather(l, start, end)))
+
+  document.querySelectorAll('[data-date]').forEach(cell => {
+    const date = cell.dataset.date
+    if (!date || !locByDate[date]) return
+    const wx = wxCache.get(`${locByDate[date]}|${date}`)
+    if (!wx) return
+
+    cell.querySelectorAll('.wx-badge').forEach(b => b.remove())
+    const hint = clothingHint(wx.maxTemp, wx.rainPct)
+    const badge = document.createElement('div')
+    badge.className = 'wx-badge'
+    badge.innerHTML = `${wx.maxTemp}°${hint ? ` <span class="wx-hint">${hint}</span>` : ''}`
+    cell.appendChild(badge)
+  })
+}
+
+// ── Popup ─────────────────────────────────────────────────────────────────────
+
+const popup = document.getElementById('cal-popup')
+document.getElementById('popup-close').addEventListener('click', () => popup.style.display = 'none')
+document.addEventListener('click', e => {
+  if (!popup.contains(e.target) && !e.target.closest('.fc-event') && !e.target.closest('.fc-daygrid-day')) {
+    popup.style.display = 'none'
+  }
+})
+
+function positionPopup(rect) {
+  const pw = 320, ww = window.innerWidth, wh = window.innerHeight
+  let left = rect.right + 10
+  let top  = rect.top + window.scrollY
+  if (left + pw > ww - 12) left = rect.left - pw - 10
+  if (left < 8) left = 8
+  popup.style.left = `${left}px`
+  popup.style.top  = `${Math.min(top, window.scrollY + wh - 340)}px`
+  popup.style.display = 'block'
+}
+
+function fmtDate(dateStr) {
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-CH', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  })
+}
+
+function renderEventPopup(event, rect) {
+  const ep = event.extendedProps
+  const dateStr = event.startStr.slice(0, 10)
+  const cat = ep.category || 'event'
+
+  document.getElementById('popup-tag').textContent   = `${cat.toUpperCase()}${ep.phase ? ` · Phase ${ep.phase} · Week ${ep.week}` : ''}`
+  document.getElementById('popup-title').textContent = event.title
+  document.getElementById('popup-date').textContent  = fmtDate(dateStr)
+
+  const rows = []
+  if (ep.focus)       rows.push(`<div class="cal-popup-row"><strong>Focus</strong><br>${ep.focus}</div>`)
+  if (ep.description) rows.push(`<div class="cal-popup-row"><strong>Exercises</strong><br>${ep.description}</div>`)
+  if (ep.cardio)      rows.push(`<div class="cal-popup-row"><strong>Cardio</strong><br>${ep.cardio}</div>`)
+  if (ep.location)    rows.push(`<div class="cal-popup-row"><strong>Location</strong><br>${ep.location}</div>`)
+  document.getElementById('popup-rows').innerHTML = rows.join('')
+
+  const wxEl = document.getElementById('popup-wx')
+  if (ep.location) {
+    const wx = wxCache.get(`${ep.location}|${dateStr}`)
+    if (wx) {
+      const hint = clothingHint(wx.maxTemp, wx.rainPct)
+      wxEl.innerHTML = `${wx.maxTemp}° · ${wx.rainPct}% rain${hint ? ` · <span style="color:#e8445a;font-weight:600">${hint}</span>` : ''}`
+      wxEl.style.display = 'block'
+    } else { wxEl.style.display = 'none' }
+  } else { wxEl.style.display = 'none' }
+
+  positionPopup(rect)
+}
+
+function renderDayPopup(dateStr, rect) {
+  const dayEvents = EVENTS.filter(e => (e.start || '').slice(0, 10) === dateStr)
+
+  document.getElementById('popup-tag').textContent   = 'DAY SUMMARY'
+  document.getElementById('popup-title').textContent = fmtDate(dateStr)
+  document.getElementById('popup-date').textContent  = ''
+
+  let html = ''
+  if (dayEvents.length === 0) {
+    html = '<div class="cal-popup-row" style="color:var(--muted)">No events scheduled</div>'
+  } else {
+    html = '<div class="cal-popup-event-list">'
+    dayEvents.forEach(e => {
+      const ep = e.extendedProps || {}
+      html += `<div class="cal-popup-event-item">
+        <span class="cal-popup-dot" style="background:${e.backgroundColor || '#e8445a'}"></span>
+        <div>
+          <div style="font-weight:600;color:var(--text)">${e.title}</div>
+          ${ep.focus ? `<div style="color:var(--muted);margin-top:1px">${ep.focus}</div>` : ''}
+          ${ep.cardio ? `<div style="color:var(--muted);margin-top:1px">Cardio: ${ep.cardio}</div>` : ''}
+          ${ep.location ? `<div style="color:var(--muted);margin-top:1px">${ep.location}</div>` : ''}
+        </div>
+      </div>`
+    })
+    html += '</div>'
+  }
+  document.getElementById('popup-rows').innerHTML = html
+
+  const wxEl = document.getElementById('popup-wx')
+  const locsOnDay = [...new Set(dayEvents.map(e => e.extendedProps?.location).filter(Boolean))]
+  if (locsOnDay.length) {
+    const loc = locsOnDay[0]
+    const wx  = wxCache.get(`${loc}|${dateStr}`)
+    if (wx) {
+      const hint = clothingHint(wx.maxTemp, wx.rainPct)
+      wxEl.innerHTML = `${loc} · ${wx.maxTemp}° · ${wx.rainPct}% rain${hint ? ` · <span style="color:#e8445a;font-weight:600">${hint}</span>` : ''}`
+      wxEl.style.display = 'block'
+    } else { wxEl.style.display = 'none' }
+  } else { wxEl.style.display = 'none' }
+
+  positionPopup(rect)
+}
+
+// ── Calendar init ─────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Start on the week containing the first upcoming event (or today)
+  const today     = new Date().toISOString().slice(0, 10)
+  const upcoming  = EVENTS.filter(e => e.start >= today).sort((a, b) => a.start.localeCompare(b.start))
+  const initDate  = upcoming[0]?.start?.slice(0, 10) || today
+
+  const cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
+    initialView: 'dayGridWeek',
+    initialDate: initDate,
+    headerToolbar: {
+      left:   'prev,next today',
+      center: 'title',
+      right:  'dayGridMonth,dayGridWeek,listWeek',
+    },
+    buttonText: { today: 'today', month: 'month', week: 'week', list: 'list' },
+    firstDay:   1,
+    height:     'auto',
+    events:     EVENTS,
+
+    eventClick: info => {
+      if (info.event.url) {
+        info.jsEvent.preventDefault()
+        window.location.href = info.event.url
+        return
+      }
+      info.jsEvent.stopPropagation()
+      renderEventPopup(info.event, info.el.getBoundingClientRect())
+    },
+
+    dateClick: info => {
+      const cell = document.querySelector(`.fc-daygrid-day[data-date="${info.dateStr}"]`)
+      const rect = cell ? cell.getBoundingClientRect() : { left: info.jsEvent.clientX, right: info.jsEvent.clientX, top: info.jsEvent.clientY }
+      renderDayPopup(info.dateStr, rect)
+    },
+
+    datesSet: info => {
+      popup.style.display = 'none'
+      updateWeatherBadges(info.startStr, info.endStr)
+    },
+  })
+
+  cal.render()
+})
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,158 @@
+# Atlas Price Tracker Configuration
+# Shipping tables, customs duty rates, domain-to-origin mappings, and alert settings.
+
+tracker:
+
+  # --- Deal Detection ---
+  deals:
+    drop_threshold_percent: 15    # alert when price drops >15% below rolling average
+    rolling_window_observations: 30
+
+  # --- Domain → Origin Mapping ---
+  # Maps hostname substrings to shipping origin regions.
+  # CH = Switzerland, DE = Germany/Austria, EU = other EU, UK = United Kingdom, US = USA/global
+  domainOrigins:
+    "amazon.de": DE
+    "amazon.co.uk": UK
+    "amazon.com": US
+    "digitec.ch": CH
+    "galaxus.ch": CH
+    "microspot.ch": CH
+    "brack.ch": CH
+    "galaxus.de": DE
+    "notebooksbilliger.de": DE
+    "alternate.de": DE
+    "mediamarkt.ch": CH
+    "conrad.ch": CH
+    "interdiscount.ch": CH
+    "fnac.com": EU
+    "cdiscount.com": EU
+    "ebay.de": DE
+    "ebay.ch": CH
+    "ebay.co.uk": UK
+    "ebay.com": US
+    "saturn.de": DE
+    "mediamarkt.de": DE
+    "galaxus.at": DE
+    "coolblue.de": DE
+    "coolblue.ch": CH
+    "ricardo.ch": CH
+    "tutti.ch": CH
+    "manor.ch": CH
+    "amazon.fr": EU
+    "amazon.it": EU
+    "amazon.es": EU
+    "bhphotovideo.com": US
+    "apple.com": US
+
+  # --- Shipping Tables (all costs in CHF) ---
+  shipping:
+
+    shipping_to_ch:
+      CH:
+        estimate: 0
+        note: domestic
+      DE:
+        estimate: 10
+        tiers:
+          - { max_kg: 0.5, cost_chf: 8.00 }
+          - { max_kg: 2.0, cost_chf: 10.00 }
+          - { max_kg: 5.0, cost_chf: 13.00 }
+          - { max_kg: 10.0, cost_chf: 18.00 }
+          - { max_kg: 20.0, cost_chf: 25.00 }
+        per_extra_kg_chf: 1.50
+      EU:
+        estimate: 16
+        tiers:
+          - { max_kg: 0.5, cost_chf: 12.00 }
+          - { max_kg: 2.0, cost_chf: 15.00 }
+          - { max_kg: 5.0, cost_chf: 18.00 }
+          - { max_kg: 10.0, cost_chf: 22.00 }
+          - { max_kg: 20.0, cost_chf: 30.00 }
+        per_extra_kg_chf: 2.00
+      UK:
+        estimate: 22
+        tiers:
+          - { max_kg: 0.5, cost_chf: 18.00 }
+          - { max_kg: 2.0, cost_chf: 22.00 }
+          - { max_kg: 5.0, cost_chf: 28.00 }
+          - { max_kg: 10.0, cost_chf: 35.00 }
+        per_extra_kg_chf: 2.50
+      US:
+        estimate: 30
+        tiers:
+          - { max_kg: 0.5, cost_chf: 20.00 }
+          - { max_kg: 1.0, cost_chf: 25.00 }
+          - { max_kg: 2.0, cost_chf: 32.00 }
+          - { max_kg: 5.0, cost_chf: 40.00 }
+        per_extra_kg_chf: 4.00
+
+    shipping_to_de:
+      CH:
+        estimate: 8
+        tiers:
+          - { max_kg: 0.5, cost_chf: 6.00 }
+          - { max_kg: 2.0, cost_chf: 8.00 }
+          - { max_kg: 5.0, cost_chf: 11.00 }
+          - { max_kg: 20.0, cost_chf: 16.00 }
+        per_extra_kg_chf: 1.00
+      DE:
+        estimate: 0
+        note: domestic Germany shipment
+        tiers:
+          - { max_kg: 2.0, cost_chf: 0.00 }
+          - { max_kg: 5.0, cost_chf: 4.00 }
+          - { max_kg: 20.0, cost_chf: 7.00 }
+      EU:
+        estimate: 8
+        tiers:
+          - { max_kg: 0.5, cost_chf: 6.00 }
+          - { max_kg: 2.0, cost_chf: 8.00 }
+          - { max_kg: 5.0, cost_chf: 12.00 }
+          - { max_kg: 20.0, cost_chf: 18.00 }
+        per_extra_kg_chf: 1.50
+      UK:
+        estimate: 15
+        tiers:
+          - { max_kg: 0.5, cost_chf: 10.00 }
+          - { max_kg: 2.0, cost_chf: 14.00 }
+          - { max_kg: 5.0, cost_chf: 20.00 }
+        per_extra_kg_chf: 2.00
+      US:
+        estimate: 22
+        tiers:
+          - { max_kg: 0.5, cost_chf: 15.00 }
+          - { max_kg: 2.0, cost_chf: 20.00 }
+          - { max_kg: 5.0, cost_chf: 28.00 }
+        per_extra_kg_chf: 3.00
+
+  # --- Swiss Customs ---
+  customs:
+    small_consignment_threshold_chf: 65.00
+    vat_rate: 0.081          # 8.1% standard rate
+    swiss_post_clearance_fee: 11.50
+
+    # Customs duty rates by product category (on declared value)
+    duty_rates:
+      electronics: 0.00
+      clothing: 0.12
+      footwear: 0.17
+      general: 0.04
+
+    # Note: EU shipments (DE->CH) still require customs declaration
+    # but benefit from simplified AEO/trusted trader procedures.
+
+  # --- Parcel/Bulk Pricing ---
+  # Stores that commonly offer quantity discounts.
+  bulk_pricing_selectors:
+    - "[data-bundle-price]"
+    - ".quantity-discount"
+    - ".staffelpreis"
+    - ".mengenrabatt"
+    - "table.pricing-tiers"
+
+  # --- Alerts ---
+  alerts:
+    log_file: logs/alerts.md
+    data_file: data/prices/alerts.json
+    console_output: true

@@ -1,0 +1,29 @@
+{
+  "name": "atlas-webapp",
+  "version": "1.0.0",
+  "description": "Atlas webapp — dashboard, price tracking, and monitoring interface",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "check-all": "node index.js check-all",
+    "list": "node index.js list",
+    "lint": "eslint *.js commands/*.js",
+    "audit": "npm audit --audit-level=high"
+  },
+  "dependencies": {
+    "body-highlighter": "^3.0.2",
+    "cheerio": "^1.0.0",
+    "commander": "^12.1.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "js-yaml": "^4.1.0",
+    "prom-client": "^15.1.3"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.3.0"
+  }
+}

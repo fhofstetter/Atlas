@@ -1,0 +1,15 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:40vh">
+  <div class="hero-glow"></div>
+  <div style="font-size:80px;font-weight:800;opacity:0.12;letter-spacing:-4px;line-height:1;margin-bottom:16px">500</div>
+  <h1 style="font-size:clamp(28px,4vw,48px);margin-bottom:12px">Something went wrong</h1>
+  <p class="hero-sub" style="max-width:420px">An internal error occurred. Details have been logged — nothing is exposed here.</p>
+  <div style="margin-top:28px;display:flex;gap:12px">
+    <a href="/" class="btn btn-primary">Go to Overview</a>
+    <a href="javascript:history.back()" class="btn btn-ghost">← Go back</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,11 @@
+{
+  "_comment": "MCP server configurations for Atlas. Add servers here to extend Claude's toolset.",
+  "mcpServers": {
+    "filesystem": {
+      "enabled": true,
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "c:/Data/Projects/code/Atlas"],
+      "_note": "Grants file access to the Atlas project directory"
+    }
+  }
+}

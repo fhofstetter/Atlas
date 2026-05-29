@@ -1,0 +1,52 @@
+{
+  "_schema": "atlas-goals-v1",
+  "_updated": "2026-05-02T00:00:00Z",
+  "goals": [
+    {
+      "id": "goal_20260502_001",
+      "title": "Build secure home network",
+      "description": "Set up fiber, structured cabling, AP, Pi-hole DNS filtering, and WireGuard VPN on Raspberry Pi for whole-home coverage and secure remote access",
+      "category": "home-infrastructure",
+      "owner": "user",
+      "horizon": "medium-term",
+      "target_date": "2026-08-01",
+      "status": "active",
+      "progress_pct": 0,
+      "milestones": [
+        { "id": "ms_001", "title": "Fiber installation confirmed and scheduled", "done": false },
+        { "id": "ms_002", "title": "Network zone plan documented", "done": false },
+        { "id": "ms_003", "title": "Structured cabling complete", "done": false },
+        { "id": "ms_004", "title": "Access point installed and configured", "done": false },
+        { "id": "ms_005", "title": "Pi-hole installed and handling DNS for all zones", "done": false },
+        { "id": "ms_006", "title": "WireGuard VPN running on Raspberry Pi", "done": false },
+        { "id": "ms_007", "title": "Atlas dashboard accessible remotely via WireGuard", "done": false }
+      ],
+      "next_action": "Wait for fiber installation — use the waiting time to plan cabling routes and buy materials",
+      "created_at": "2026-05-02T00:00:00Z",
+      "updated_at": "2026-05-02T00:00:00Z",
+      "notes": "Pi-hole and WireGuard will run on same Raspberry Pi. Pi-hole handles DNS filtering for whole home. WireGuard replaces Tailscale for remote access — self-hosted, no external dependency."
+    },
+    {
+      "id": "goal_20260502_002",
+      "title": "Atlas on GitHub with CI",
+      "description": "Push Atlas to a private GitHub repo and set up GitHub Actions for automated dependency audits and security checks",
+      "category": "project",
+      "owner": "atlas",
+      "horizon": "short-term",
+      "target_date": "2026-05-15",
+      "status": "active",
+      "progress_pct": 0,
+      "milestones": [
+        { "id": "ms_001", "title": "Create private GitHub repo", "done": false },
+        { "id": "ms_002", "title": "Add .gitignore (exclude .env, data/health, data/budget, config/integrations.yaml)", "done": false },
+        { "id": "ms_003", "title": "Initial commit and push", "done": false },
+        { "id": "ms_004", "title": "GitHub Actions: weekly npm audit on both packages", "done": false },
+        { "id": "ms_005", "title": "GitHub Actions: lint check on PR", "done": false }
+      ],
+      "next_action": "Create the GitHub repo and .gitignore first — make sure health/budget data is excluded",
+      "created_at": "2026-05-02T00:00:00Z",
+      "updated_at": "2026-05-02T00:00:00Z",
+      "notes": "IMPORTANT: data/health/ and data/budget/ must be in .gitignore — these are private. Also exclude .env, config/integrations.yaml, and data/prices/ (contains scraped price history)."
+    }
+  ]
+}

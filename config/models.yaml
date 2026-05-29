@@ -1,0 +1,54 @@
+# Model reference — official data from Anthropic docs (2026-04-28)
+# Source: https://docs.anthropic.com/en/docs/about-claude/models/overview
+
+models:
+  claude-opus-4-7:
+    alias: claude-opus-4-7
+    context_window: 1_000_000
+    max_output_tokens: 128_000
+    input_price_per_mtok: 5.00
+    output_price_per_mtok: 25.00
+    extended_thinking: false
+    adaptive_thinking: true
+    knowledge_cutoff: 2026-01
+    latency: moderate
+    note: >
+      Most capable generally available model. Best for complex reasoning,
+      agentic coding, and long-context tasks. Uses a new tokenizer —
+      token counts differ from prior Opus/Sonnet models.
+    recommended_for: [orchestrator, reviewer, complex-planning]
+
+  claude-sonnet-4-6:
+    alias: claude-sonnet-4-6
+    context_window: 1_000_000
+    max_output_tokens: 64_000
+    input_price_per_mtok: 3.00
+    output_price_per_mtok: 15.00
+    extended_thinking: true
+    adaptive_thinking: true
+    knowledge_cutoff: 2025-08
+    latency: fast
+    note: Best combination of speed and intelligence. Default for most Atlas agents.
+    recommended_for: [planner, researcher, coder, writer, default]
+
+  claude-haiku-4-5-20251001:
+    alias: claude-haiku-4-5
+    context_window: 200_000
+    max_output_tokens: 64_000
+    input_price_per_mtok: 1.00
+    output_price_per_mtok: 5.00
+    extended_thinking: false
+    adaptive_thinking: false
+    knowledge_cutoff: 2025-02
+    latency: fastest
+    note: Fastest model. Use for classification, routing, and quick lookups only.
+    recommended_for: [classifier, routing, tagging]
+
+# Deprecated — retire by 2026-06-15
+deprecated:
+  claude-sonnet-4-20250514:
+    replacement: claude-sonnet-4-6
+    retirement: 2026-06-15
+  claude-opus-4-20250514:
+    replacement: claude-opus-4-7
+    retirement: 2026-06-15

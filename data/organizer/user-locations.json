@@ -1,0 +1,40 @@
+{
+  "_schema": "atlas-user-locations-v1",
+  "_updated": "2026-05-04",
+  "_privacy": "LOCAL ONLY",
+  "locations": {
+    "office": {
+      "label": "Office",
+      "postal_code": "3000",
+      "city": "Bern",
+      "country": "CH",
+      "weather_query": "Bern, CH"
+    },
+    "home_office": {
+      "label": "Home Office",
+      "postal_code": "3096",
+      "city": "Oberbalm",
+      "country": "CH",
+      "weather_query": "Oberbalm, CH"
+    },
+    "shooting_range": {
+      "label": "Schiessstand Gümligen",
+      "street": "Dentenbergstrasse 73",
+      "postal_code": "3073",
+      "city": "Gümligen",
+      "country": "CH",
+      "weather_query": "Gümligen, CH",
+      "club": "Schützen Muri-Gümligen",
+      "website": "https://schuetzen-muri-guemligen.ch"
+    }
+  },
+  "schedule": {
+    "monday": { "location": "home_office" },
+    "tuesday": { "location": "office" },
+    "wednesday": { "location": "home_office", "note": "Shooting evening — leave 16:30 for 17:30 session" },
+    "thursday": { "location": "office" },
+    "friday": { "location": "home_office" },
+    "saturday": { "location": "home_office" },
+    "sunday": { "location": "home_office" }
+  }
+}

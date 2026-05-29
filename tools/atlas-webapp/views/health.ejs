@@ -1,0 +1,139 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:20vh">
+  <div class="hero-glow"></div>
+  <h1>Health</h1>
+  <p class="hero-sub">Sleep, fitness, and health goals — all local, never shared.</p>
+</section>
+
+<div class="main-content">
+
+  <!-- STATS -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number" style="<%= avgSleep ? (avgSleep >= 7 ? 'color:#6ee7b7' : 'color:var(--red2)') : 'color:var(--muted)' %>">
+        <%= avgSleep ? avgSleep.toFixed(1) + 'h' : '—' %>
+      </div>
+      <div class="stat-label">Avg sleep (30 days)</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:var(--muted)"><%= sleepEntries.length %></div>
+      <div class="stat-label">Sleep entries logged</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:var(--muted)"><%= fitnessEntries.length %></div>
+      <div class="stat-label">Workouts logged</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:var(--muted)"><%= healthGoals.length %></div>
+      <div class="stat-label">Health goals</div>
+    </div>
+  </div>
+
+  <!-- SLEEP LOG -->
+  <div class="section-heading fade-up">Sleep Log</div>
+  <% if (!sleepEntries.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:20px;padding:28px">
+      <div style="font-size:36px">😴</div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--text);margin-bottom:6px">No sleep entries yet</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Start logging nightly with the health-agent.</div>
+        <div style="background:var(--bg3);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--muted)">
+          <code>Ask: "Log last night — slept 7.5h, 1 apnea episode, woke feeling rested"</code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Date</th><th>Duration</th><th>Quality</th><th>Apnea</th><th>Notes</th></tr></thead>
+      <tbody>
+        <% sleepEntries.slice().reverse().slice(0, 14).forEach(e => { %>
+        <tr>
+          <td class="cell-muted"><%= e.date || '—' %></td>
+          <td class="cell-strong" style="<%= (e.duration_hours||0) >= 7 ? 'color:#6ee7b7' : 'color:var(--red2)' %>"><%= e.duration_hours ? e.duration_hours + 'h' : '—' %></td>
+          <td><% if (e.quality) { %><span class="pill <%= e.quality >= 4 ? 'pill-green' : e.quality >= 3 ? 'pill-yellow' : 'pill-red' %>" style="font-size:10px"><%= e.quality %>/5</span><% } else { %>—<% } %></td>
+          <td class="cell-muted"><%= e.apnea_episodes != null ? e.apnea_episodes + ' ep.' : '—' %></td>
+          <td class="cell-muted" style="font-size:12px"><%= e.notes || '' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <!-- FITNESS LOG -->
+  <div class="section-heading fade-up">Fitness Log</div>
+  <% if (!fitnessEntries.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:20px;padding:28px">
+      <div style="font-size:36px">🏋️</div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--text);margin-bottom:6px">No workouts logged yet</div>
+        <div style="font-size:13px;color:var(--muted)">Tell the health-agent about your workouts and measurements.</div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Date</th><th>Type</th><th>Duration</th><th>Notes</th></tr></thead>
+      <tbody>
+        <% fitnessEntries.slice().reverse().slice(0, 10).forEach(e => { %>
+        <tr>
+          <td class="cell-muted"><%= e.date || '—' %></td>
+          <td><span class="pill pill-green" style="font-size:10px"><%= e.type || '—' %></span></td>
+          <td class="cell-muted"><%= e.duration_min ? e.duration_min + ' min' : '—' %></td>
+          <td class="cell-muted" style="font-size:12px"><%= e.notes || '' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <!-- HEALTH GOALS -->
+  <div class="section-heading fade-up">Health Goals</div>
+  <% if (!healthGoals.length) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-body" style="display:flex;align-items:center;gap:20px;padding:28px">
+      <div style="font-size:36px">🎯</div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--text);margin-bottom:6px">No health goals set</div>
+        <div style="font-size:13px;color:var(--muted)">Ask the health-agent to set weight, sleep, or fitness targets.</div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="table-wrap fade-up" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Goal</th><th>Target</th><th>Current</th><th>Status</th></tr></thead>
+      <tbody>
+        <% healthGoals.forEach(g => { %>
+        <tr>
+          <td class="cell-strong"><%= g.title %></td>
+          <td class="cell-muted"><%= g.target %></td>
+          <td class="cell-muted"><%= g.current || '—' %></td>
+          <td><span class="pill <%= g.status === 'on-track' ? 'pill-green' : 'pill-yellow' %>" style="font-size:10px"><%= g.status || '—' %></span></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;font-size:12px;color:var(--muted);margin-bottom:32px">
+    🔒 All health data is stored locally only — never sent to external services.
+  </div>
+
+  <div style="display:flex;gap:12px">
+    <a href="/" class="btn btn-ghost">← Overview</a>
+    <a href="/budget" class="btn btn-ghost">Budget →</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

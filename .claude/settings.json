@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "cleanupPeriodDays": 30,
+  "env": {
+    "ATLAS_PROJECT_DIR": "."
+  },
+  "attribution": {
+    "commit": "Co-Authored-By: Atlas (Claude Code) <noreply@anthropic.com>",
+    "pr": "Generated with Atlas (Claude Code)"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(find *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(chmod *)",
+      "Bash(date *)",
+      "Bash(wc *)",
+      "Bash(jq *)",
+      "Bash(node *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(start *)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:placehold.co)",
+      "WebFetch(domain:cdn.tailwindcss.com)",
+      "WebFetch(domain:api.frankfurter.app)",
+      "WebFetch(domain:amazon.de)",
+      "WebFetch(domain:amazon.co.uk)",
+      "WebFetch(domain:amazon.com)",
+      "WebFetch(domain:digitec.ch)",
+      "WebFetch(domain:galaxus.ch)",
+      "WebFetch(domain:galaxus.de)",
+      "WebFetch(domain:notebooksbilliger.de)",
+      "WebFetch(domain:alternate.de)",
+      "WebFetch(domain:mediamarkt.ch)",
+      "WebFetch(domain:brack.ch)",
+      "WebFetch(domain:microspot.ch)",
+      "WebFetch(domain:interdiscount.ch)",
+      "WebFetch(domain:conrad.ch)",
+      "Read(**)",
+      "Write(tasks/**)",
+      "Write(output/**)",
+      "Write(logs/**)",
+      "Write(memory/**)",
+      "Write(data/**)",
+      "Write(tools/atlas-webapp/**)",
+      "Write(data/organizer/**)",
+      "Write(data/health/**)",
+      "Write(data/budget/**)",
+      "Write(tools/dashboard/**)",
+      "WebFetch(domain:www.dji.com)",
+      "WebFetch(domain:toppreise.ch)",
+      "WebFetch(domain:idealo.de)",
+      "WebFetch(domain:idealo.ch)",
+      "WebFetch(domain:geizhals.at)",
+      "WebFetch(domain:galaxus.de)",
+      "WebFetch(domain:galaxus.at)",
+      "WebFetch(domain:ebay.de)",
+      "WebFetch(domain:ebay.ch)",
+      "WebFetch(domain:ebay.com)",
+      "WebFetch(domain:ebay.co.uk)",
+      "WebFetch(domain:saturn.de)",
+      "WebFetch(domain:mediamarkt.de)",
+      "WebFetch(domain:coolblue.de)",
+      "WebFetch(domain:coolblue.ch)",
+      "WebFetch(domain:fnac.com)",
+      "WebFetch(domain:amazon.fr)",
+      "WebFetch(domain:amazon.it)",
+      "WebFetch(domain:amazon.es)",
+      "WebFetch(domain:ricardo.ch)",
+      "WebFetch(domain:tutti.ch)",
+      "WebFetch(domain:manor.ch)",
+      "WebFetch(domain:apple.com)",
+      "WebFetch(domain:bhphotovideo.com)",
+      "Read(//c/Data/Projects/code/Getting-started-with-Claude/**)",
+      "WebFetch(domain:alexop.dev)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:wttr.in)",
+      "WebFetch(domain:api.open-meteo.com)",
+      "WebFetch(domain:api.brightsky.dev)",
+      "WebFetch(domain:api.met.no)",
+      "WebFetch(domain:overpass-api.de)",
+      "WebFetch(domain:nominatim.openstreetmap.org)",
+      "Bash(curl -s http://localhost:3456/)",
+      "Bash(curl -s http://localhost:3456/compare)",
+      "Bash(netstat -ano)",
+      "Bash(curl -s http://localhost:3456/api/health)",
+      "Bash(wsl -d Ubuntu-22.04 -- bash -c \"cd /mnt/c/Data/Projects/code/Atlas && docker compose ps 2>&1\")",
+      "Bash(wsl -d Ubuntu-22.04 -- docker inspect*)",
+      "Bash(wsl -d Ubuntu-22.04 -- docker ps*)",
+      "Bash(wsl -d Ubuntu-22.04 -- docker logs*)",
+      "Bash(wsl -d Ubuntu-22.04 -- docker compose -f /mnt/c/Data/Projects/code/Atlas/docker-compose.yml restart*)",
+      "Bash(wsl -d Ubuntu-22.04 -- docker compose -f /mnt/c/Data/Projects/code/Atlas/docker-compose.yml up*)",
+      "Bash(wsl -d Ubuntu-22.04 -- docker compose -f /mnt/c/Data/Projects/code/Atlas/docker-compose.yml stop*)",
+      "Bash(wsl -d Ubuntu-22.04 -- docker compose -f /mnt/c/Data/Projects/code/Atlas/docker-compose.yml down*)",
+      "Bash(wsl -d Ubuntu-22.04 -- docker info*)",
+      "Bash(wsl -d Ubuntu-22.04 -- docker restart*)",
+      "Bash(wsl -d Ubuntu-22.04 -u root -- systemctl*)",
+      "Bash(MSYS_NO_PATHCONV=1 wsl -d Ubuntu-22.04 -- docker*)",
+      "Bash(MSYS_NO_PATHCONV=1 wsl -d Ubuntu-22.04 -u root -- systemctl*)",
+      "Write(data/ops/**)",
+      "mcp__chrome-devtools__list_pages"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(config/integrations.yaml)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git reset *)",
+      "Write(.claude/**)",
+      "Write(agents/**)",
+      "Write(config/**)",
+      "Write(hooks/**)",
+      "Write(workflows/**)"
+    ],
+    "defaultMode": "default"
+  },
+  "model": "claude-sonnet-4-6",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/guard-destructive.sh",
+            "timeout": 10,
+            "statusMessage": "Checking command safety..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/hooks/session-startup.sh",
+            "timeout": 30,
+            "statusMessage": "Checking Atlas status..."
+          }
+        ]
+      }
+    ]
+  },
+  "showTurnDuration": false
+}

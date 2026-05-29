@@ -1,0 +1,111 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:22vh">
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><span class="hero-badge-dot"></span>Webapp Pipeline</div>
+  <h1>Webapp Team</h1>
+  <p class="hero-sub"><%= agents.length %> agents across the full build pipeline — design → build → quality → support.</p>
+</section>
+
+<div class="main-content">
+
+  <%
+    const byStage = {
+      design:  ['planner','researcher','schema-agent','api-designer','scholar'],
+      build:   ['coder','web-designer','infra-agent'],
+      quality: ['tester','reviewer','security-auditor','performance-agent','a11y-auditor'],
+      support: ['writer','orchestrator','skill-creator','ops-agent'],
+    }
+    const stageLabels = {
+      design:  { label: 'Design',  icon: '◆', color: '#60a5fa', desc: 'Plan, research, model data, define APIs' },
+      build:   { label: 'Build',   icon: '▶', color: '#34d399', desc: 'Implement, style, ship infrastructure' },
+      quality: { label: 'Quality', icon: '✔', color: '#f59e0b', desc: 'Test, review, audit security, perf & a11y' },
+      support: { label: 'Support', icon: '★', color: '#c084fc', desc: 'Write docs, coordinate, manage operations' },
+    }
+    const NEW_AGENTS = new Set(['schema-agent','api-designer','performance-agent','a11y-auditor'])
+    function findAgent(slug) { return agents.find(a => a.slug === slug) || null }
+  %>
+
+  <% for (const [stageKey, slugs] of Object.entries(byStage)) { %>
+  <%   const stage = stageLabels[stageKey] %>
+  <div class="fade-up" style="margin-bottom:36px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:<%= stage.color %>"><%= stage.icon %></div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:<%= stage.color %>"><%= stage.label %></div>
+        <div style="font-size:12px;color:var(--muted)"><%= stage.desc %></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+      <% for (const slug of slugs) { %>
+      <%   const a = findAgent(slug) %>
+      <%   if (!a) continue %>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:8px;position:relative;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(255,255,255,0.16)'" onmouseout="this.style.borderColor='var(--border)'">
+        <% if (NEW_AGENTS.has(a.slug)) { %>
+        <div style="position:absolute;top:12px;right:12px;background:rgba(232,68,90,0.15);border:1px solid rgba(232,68,90,0.3);color:#ff6b7a;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:0.5px">NEW</div>
+        <% } %>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:10px;height:10px;border-radius:50%;background:<%= a.color %>;flex-shrink:0"></div>
+          <code style="font-size:13px;font-weight:600;color:var(--text)"><%= a.slug %></code>
+          <span class="pill <%= a.model === 'opus' ? 'pill-red' : a.model === 'haiku' ? 'pill-green' : 'pill-yellow' %>" style="font-size:10px;margin-left:auto"><%= a.model %></span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5"><%= a.purpose %></div>
+        <div style="font-size:11px;color:var(--muted2);border-top:1px solid var(--border);padding-top:8px;margin-top:2px"><%= a.tools %></div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Pipeline flow diagram -->
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-bar">
+      <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+      <div class="window-title">Typical webapp build workflow</div>
+    </div>
+    <div class="window-body" style="padding:20px">
+      <div style="font-family:monospace;font-size:12px;color:var(--muted);line-height:2;white-space:pre">  <span style="color:#60a5fa">planner</span>      →  decompose goal into ordered task plan
+  <span style="color:#60a5fa">researcher</span>   →  investigate libraries, patterns, constraints
+  <span style="color:#a78bfa">schema-agent</span> →  design data models before any code is written   <span style="color:#ff6b7a">[new]</span>
+  <span style="color:#38bdf8">api-designer</span> →  write REST contracts before route handlers        <span style="color:#ff6b7a">[new]</span>
+  <span style="color:#34d399">coder</span>        →  implement routes, logic, data access
+  <span style="color:#f472b6">web-designer</span> →  build UI views; iterates via screenshot
+  <span style="color:#fb923c">infra-agent</span>  →  Dockerfile, Compose, nginx, health checks
+  <span style="color:#86efac">tester</span>       →  lint, type check, unit + integration tests
+  <span style="color:#a78bfa">reviewer</span>     →  code review; returns structured findings
+  <span style="color:#fca5a5">security-audit</span>→ OWASP Top 10 review before deploy
+  <span style="color:#f59e0b">perf-agent</span>   →  Lighthouse, bundle analysis, Core Web Vitals  <span style="color:#ff6b7a">[new]</span>
+  <span style="color:#6ee7b7">a11y-auditor</span> →  WCAG 2.1 AA review; keyboard + screen reader  <span style="color:#ff6b7a">[new]</span>
+  <span style="color:#fb923c">writer</span>       →  API docs, README, error messages</div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number"><%= agents.filter(a => Object.values(byStage).flat().includes(a.slug)).length %></div>
+      <div class="stat-label">Pipeline agents</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#ff6b7a"><%= NEW_AGENTS.size %></div>
+      <div class="stat-label">New this session</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#e8445a"><%= agents.filter(a => a.model === 'opus').length %></div>
+      <div class="stat-label">Opus (heavy)</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color:#86efac"><%= agents.filter(a => Object.values(byStage).flat().includes(a.slug) && ['schema-agent','api-designer','performance-agent','a11y-auditor','reviewer','security-auditor'].includes(a.slug)).length %></div>
+      <div class="stat-label">Read-only auditors</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px">
+    <a href="/agents" class="btn btn-ghost">← All agents</a>
+    <a href="/tasks"  class="btn btn-ghost">Tasks →</a>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

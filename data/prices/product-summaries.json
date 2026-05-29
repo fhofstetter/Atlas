@@ -1,0 +1,94 @@
+{
+  "dji-neo-molse8lq": {
+    "updatedAt": "2026-05-01T21:00:00Z",
+    "oneLiner": "135g palm-launch selfie drone for social creators who want zero-fuss AI tracking.",
+    "keySpecs": [
+      "135g — no pilot certificate required in Switzerland",
+      "1/2-inch CMOS, 12MP, 4K/30fps at 75Mbps (JPEG only, no RAW)",
+      "~18 min flight time; 22GB internal storage only (no microSD slot)",
+      "No obstacle avoidance; downward visual positioning only",
+      "Launches from palm; flies controller-free via app or voice"
+    ],
+    "pros": [
+      "Lowest barrier to entry of any DJI drone — controller-free, palm launch",
+      "Built-in propeller guards make it safe around people",
+      "AI subject tracking and QuickShots produce social-ready clips with no piloting skill"
+    ],
+    "cons": [
+      "No obstacle avoidance — will fly into trees and walls",
+      "No microSD slot; 22GB internal fills fast at 4K; no RAW photos",
+      "Weak in wind above ~18 mph; not an outdoor adventure drone"
+    ],
+    "verdict": "Best pick for first-time pilots who want zero paperwork and maximum portability."
+  },
+  "dji-mini-4k-molsexo9": {
+    "updatedAt": "2026-05-01T21:00:00Z",
+    "oneLiner": "246g folding drone with 4K, 3-axis gimbal and 31 min flight for budget beginners.",
+    "keySpecs": [
+      "246g — operator registration required in Switzerland (CHF 10, no pilot exam)",
+      "1/2.3-inch CMOS, 12MP, f/2.8, 4K/30fps at 100Mbps",
+      "3-axis mechanical gimbal — genuinely smooth stabilised footage",
+      "31 min rated flight (~20–25 min real-world); Level 5 wind resistance (38 km/h)",
+      "10 km O3 transmission; downward sensors only — no obstacle avoidance"
+    ],
+    "pros": [
+      "3-axis mechanical gimbal delivers smooth footage no fixed-camera competitor can match",
+      "Level 5 wind resistance handles moderate outdoor conditions reliably",
+      "QuickShots and auto Return-to-Home make it beginner-safe out of the box"
+    ],
+    "cons": [
+      "No obstacle avoidance — only downward sensors for landing assist",
+      "1/2.3-inch sensor struggles in low light and blows out high-contrast scenes",
+      "Requires smartphone as screen with RC-N1 remote"
+    ],
+    "verdict": "Best first outdoor drone under CHF 300; skip if you need obstacle avoidance."
+  },
+  "dji-mini-4-pro-molsf9kz": {
+    "updatedAt": "2026-05-01T21:00:00Z",
+    "oneLiner": "Sub-250g prosumer drone with omnidirectional avoidance for travel creators.",
+    "keySpecs": [
+      "249g — no C1 designation, no mandatory insurance in CH",
+      "1/1.3-inch CMOS, 48MP, f/1.7 aperture, Dual Native ISO",
+      "4K/100fps, 4K/60fps HDR, 10-bit D-Log M/HLG",
+      "34 min flight time (45 min with Plus battery); ~30 min real-world",
+      "Omnidirectional obstacle avoidance — 6 fisheye sensors + 3D infrared",
+      "DJI O4 transmission, 20 km range, true vertical shooting mode"
+    ],
+    "pros": [
+      "Best-in-class omnidirectional obstacle avoidance in the sub-250g category",
+      "4K/100fps slow-motion and 10-bit D-Log M in a 249g body",
+      "True vertical shooting mode (45° camera rotation) for social content",
+      "20 km O4 range — far exceeds practical needs"
+    ],
+    "cons": [
+      "Low-light noise visible at 100% crop — not a low-light specialist",
+      "No AirSense transponder — cannot detect nearby manned aircraft",
+      "Significantly more expensive than the Mini 4K for casual users"
+    ],
+    "verdict": "Best sub-250g all-rounder; skip only if you already own the Mini 3 Pro."
+  },
+  "dji-lito-x1-monf41w7": {
+    "updatedAt": "2026-05-01T21:00:00Z",
+    "oneLiner": "Budget 249g beginner drone with LiDAR, 4K/100fps and 42GB internal storage.",
+    "keySpecs": [
+      "249g — no C1 designation, no mandatory insurance in CH",
+      "1/1.3-inch CMOS, 48MP, f/1.7 aperture",
+      "4K/60fps HDR, 4K/100fps slow-mo, 10-bit D-Log M (14 stops DR)",
+      "36 min rated flight time; omnidirectional vision + forward LiDAR (0.5–36m)",
+      "42GB internal storage built-in — no SD card needed",
+      "DJI O4, 15 km range; €419 drone-only (CHF 378 at dji.com/ch)"
+    ],
+    "pros": [
+      "Forward-facing LiDAR unique at this price — stronger low-light obstacle detection",
+      "42GB internal storage eliminates the need for an SD card",
+      "10-bit D-Log M and 4K/100fps at an entry-level price point",
+      "Rated #1 beginner drone by TechRadar at launch (Apr 2026)"
+    ],
+    "cons": [
+      "Image quality below Mini 5 Pro and Air 3S — not a professional tool",
+      "Digital zoom degrades noticeably — fixed focal length only practical option",
+      "LiDAR and obstacle avoidance disabled in Sport mode"
+    ],
+    "verdict": "Best-value beginner drone in Europe; strong buy under €420 for Swiss buyers."
+  }
+}

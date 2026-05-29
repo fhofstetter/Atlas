@@ -1,0 +1,448 @@
+{
+  "_schema": "atlas-calendar-v1",
+  "_updated": "2026-05-04",
+  "_note": "Local calendar events. gcal_sync=false = not yet pushed to Google Calendar (pending MCP auth).",
+  "events": [
+    {
+      "id": "holiday-2026-01-01", "title": "🇨🇭 Neujahr", "date": "2026-01-01",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "holiday-2026-01-02", "title": "🇨🇭 Berchtoldstag", "date": "2026-01-02",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "holiday-2026-04-03", "title": "🇨🇭 Karfreitag", "date": "2026-04-03",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "holiday-2026-04-06", "title": "🇨🇭 Ostermontag", "date": "2026-04-06",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "holiday-2026-05-14", "title": "🇨🇭 Auffahrt", "date": "2026-05-14",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "holiday-2026-05-25", "title": "🇨🇭 Pfingstmontag", "date": "2026-05-25",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "holiday-2026-08-01", "title": "🇨🇭 Bundesfeier", "date": "2026-08-01",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "holiday-2026-12-25", "title": "🇨🇭 Weihnachtstag", "date": "2026-12-25",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "holiday-2026-12-26", "title": "🇨🇭 Stephanstag", "date": "2026-12-26",
+      "allDay": true, "category": "holiday", "color": "#6ee7b7",
+      "description": "Feiertag Kanton Bern", "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260304-2550", "title": "🎯 Freie Übung — Pistole 25m/50m",
+      "date": "2026-03-04", "start_time": "17:30", "end_time": "19:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:00",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260307-all", "title": "🎯 Freie Übung — Gewehr 300m + Nur 50m",
+      "date": "2026-03-07", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260311-2550", "title": "🎯 Freie Übung — Pistole 25m/50m",
+      "date": "2026-03-11", "start_time": "17:30", "end_time": "19:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:00",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260314-all", "title": "🎯 Freie Übung — Gewehr 300m + Nur 50m",
+      "date": "2026-03-14", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260318-2550", "title": "🎯 Freie Übung — Pistole 25m/50m",
+      "date": "2026-03-18", "start_time": "17:30", "end_time": "19:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:00",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260319-kk", "title": "🎯 Freie Übung — 25m Kleinkaliber",
+      "date": "2026-03-19", "start_time": "17:30", "end_time": "19:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260321-all", "title": "🎯 Freie Übung — Gewehr 300m + Nur 50m",
+      "date": "2026-03-21", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260325-2550", "title": "🎯 Freie Übung — Pistole 25m/50m",
+      "date": "2026-03-25", "start_time": "17:30", "end_time": "19:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:00",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260328-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-03-28", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260401-2550", "title": "🎯 Freie Übung — Pistole 25m/50m",
+      "date": "2026-04-01", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260408-2550", "title": "🎯 Freie Übung — Pistole 25m/50m",
+      "date": "2026-04-08", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260411-all", "title": "🎯 Freie Übung — Gewehr 300m + Nur 50m",
+      "date": "2026-04-11", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260415-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-04-15", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260416-kk", "title": "🎯 Freie Übung — 25m Kleinkaliber",
+      "date": "2026-04-16", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260418-all", "title": "🎯 Freie Übung — Gewehr 300m + Nur 50m",
+      "date": "2026-04-18", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260422-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-04-22", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260425-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-04-25", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260429-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-04-29", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260502-300", "title": "🎯 Freie Übung — Gewehr 300m",
+      "date": "2026-05-02", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260506-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-05-06", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260509-all", "title": "🎯 Freie Übung — Gewehr 300m + Nur 50m",
+      "date": "2026-05-09", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260516-300", "title": "🎯 Freie Übung — Gewehr 300m",
+      "date": "2026-05-16", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260520-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-05-20", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260521-kk", "title": "🎯 Freie Übung — 25m Kleinkaliber",
+      "date": "2026-05-21", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260523-all", "title": "🎯 Freie Übung — Gewehr 300m + Nur 50m",
+      "date": "2026-05-23", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260603-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-06-03", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260606-300", "title": "🎯 Freie Übung — Gewehr 300m",
+      "date": "2026-06-06", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260611-kk", "title": "🎯 Freie Übung — 25m Kleinkaliber",
+      "date": "2026-06-11", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260617-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-06-17", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260620-all", "title": "🎯 Freie Übung — Gewehr 300m + Nur 50m",
+      "date": "2026-06-20", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260624-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-06-24", "start_time": "17:30", "end_time": "19:30",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen | Abfahrt Oberbalm: 16:30 | Rückfahrt ca. 20:30",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "shoot-20260627-all", "title": "🎯 Freie Übung — Gewehr 300m + Pistole 25m/50m",
+      "date": "2026-06-27", "start_time": "10:00", "end_time": "12:00",
+      "category": "shooting", "color": "#f97316",
+      "location": "Schiessstand Gümligen, Dentenbergstrasse 73, 3073 Gümligen",
+      "description": "Schützen Muri-Gümligen",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260504-push", "title": "🏋 Push — Bench / OHP / French Press",
+      "date": "2026-05-04", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#3b82f6",
+      "location": "Oberbalm, 3096",
+      "description": "Phase 1 intro — conservative weights | Bench 3×8 / OHP 3×8 / French Press 2×12 / Wrist Curls 2×12",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260506-pull", "title": "🏋 Pull — Row / Pull-up neg / Curl",
+      "date": "2026-05-06", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#8b5cf6",
+      "location": "Oberbalm, 3096",
+      "description": "Phase 1 intro — conservative weights | Pull-up neg 3×5 / Row 3×10 / EZ Curl 2×12",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260508-lower", "title": "🏋 Lower+Core — RDL / Glute / Plank",
+      "date": "2026-05-08", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#10b981",
+      "location": "Oberbalm, 3096",
+      "description": "Phase 1 intro — conservative weights | RDL 3×10 / Glute Bridge 3×15 / Plank 3×30s / Crunches 2×15",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "travel-20260510-holiday", "title": "🏖 Ferien — aktive Erholung",
+      "date": "2026-05-10", "end_date": "2026-05-15",
+      "allDay": true, "category": "travel", "color": "#a78bfa",
+      "description": "Cycling 1–2h/day, walking. Optional 2× calisthenics: Push-ups 3×max / Pike push-ups 3×10 / Plank 3×30s / Leg raises 2×12",
+      "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260518-push", "title": "🏋 Push — Return week (easy)",
+      "date": "2026-05-18", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#3b82f6",
+      "location": "Oberbalm, 3096",
+      "description": "Return week — weights -20% | Bench 3×8 / OHP 3×8 / French Press 2×12",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260520-pull", "title": "🏋 Pull — Return week (easy)",
+      "date": "2026-05-20", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#8b5cf6",
+      "location": "Oberbalm, 3096",
+      "description": "Return week — weights -20% | Pull-up neg 3×5 / Row 3×10 / EZ Curl 2×12",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260522-lower", "title": "🏋 Lower+Core — Return week (easy)",
+      "date": "2026-05-22", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#10b981",
+      "location": "Oberbalm, 3096",
+      "description": "Return week — weights -20% | RDL 3×10 / Glute Bridge 3×15 / Plank 3×30s",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260526-push", "title": "🏋 Push — Phase 1 Wk1",
+      "date": "2026-05-26", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#3b82f6",
+      "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk1 — +2.5kg when all sets clean | Bench 3×8 / OHP 3×8 / French Press 2×12 / Wrist Curls 2×12",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260527-pull", "title": "🏋 Pull — Phase 1 Wk1",
+      "date": "2026-05-27", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#8b5cf6",
+      "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk1 | Pull-up neg 3×5 / Row 3×10 / EZ Curl 2×12",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260529-lower", "title": "🏋 Lower+Core — Phase 1 Wk1",
+      "date": "2026-05-29", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#10b981",
+      "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk1 | RDL 3×10 / Glute Bridge 3×15 / Plank 3×30s / Crunches 2×15",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260601-push", "title": "🏋 Push — Phase 1 Wk2",
+      "date": "2026-06-01", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#3b82f6", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk2", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260603-pull", "title": "🏋 Pull — Phase 1 Wk2",
+      "date": "2026-06-03", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#8b5cf6", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk2", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260605-lower", "title": "🏋 Lower+Core — Phase 1 Wk2",
+      "date": "2026-06-05", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#10b981", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk2", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260608-push", "title": "🏋 Push — Phase 1 Wk3",
+      "date": "2026-06-08", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#3b82f6", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk3", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260610-pull", "title": "🏋 Pull — Phase 1 Wk3",
+      "date": "2026-06-10", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#8b5cf6", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk3", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260612-lower", "title": "🏋 Lower+Core — Phase 1 Wk3",
+      "date": "2026-06-12", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#10b981", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk3", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260615-push", "title": "🏋 Push — Phase 1 Wk4",
+      "date": "2026-06-15", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#3b82f6", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk4", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260617-pull", "title": "🏋 Pull — Phase 1 Wk4",
+      "date": "2026-06-17", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#8b5cf6", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk4", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260619-lower", "title": "🏋 Lower+Core — Phase 1 Wk4",
+      "date": "2026-06-19", "start_time": "12:00", "end_time": "12:45",
+      "category": "training", "color": "#10b981", "location": "Oberbalm, 3096",
+      "description": "Phase 1 Wk4", "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    },
+    {
+      "id": "train-20260621-benchmark", "title": "🏆 Benchmark Test — Phase 1 End",
+      "date": "2026-06-21", "start_time": "10:00", "end_time": "11:00",
+      "category": "training", "color": "#f59e0b", "location": "Oberbalm, 3096",
+      "description": "Max pull-ups (unbroken) / Max push-ups (unbroken) / 1km timed run / 200m loaded carry 20kg",
+      "allDay": false, "gcal_sync": false, "gcal_event_id": null
+    }
+  ]
+}

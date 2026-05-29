@@ -1,0 +1,182 @@
+<%- include('partials/head', {title, includeCharts: true}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<div style="margin-top:56px;padding:32px 32px 0;max-width:1200px;margin-left:auto;margin-right:auto">
+  <div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span>›</span>
+    <span>History</span>
+    <% if (typeof product !== 'undefined' && product) { %>
+    <span>›</span>
+    <span><%= product.name %></span>
+    <% } %>
+  </div>
+</div>
+
+<div class="main-content" style="padding-top:0">
+
+<% if (typeof product === 'undefined' || !product) { %>
+
+  <!-- Product list (no productId given) -->
+  <h1 class="section-heading">Price History</h1>
+  <p class="section-sub">Select a product to view its price history over time.</p>
+  <div id="historyProductList">
+    <div style="color:var(--muted2);font-size:14px">Loading products...</div>
+  </div>
+
+<% } else { %>
+
+  <!-- Single product history -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px">
+    <div>
+      <h1 class="section-heading"><%= product.name %></h1>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="pill pill-<%= product.category === 'electronics' ? 'blue' : product.category === 'clothing' ? 'purple' : product.category === 'footwear' ? 'orange' : 'muted' %>"><%= product.category %></span>
+        <% if (product.weightKg) { %><span class="pill pill-muted"><%= product.weightKg %> kg</span><% } %>
+        <span class="pill pill-muted"><%= (product.stores || []).length %> stores</span>
+      </div>
+    </div>
+    <a href="/" class="btn btn-ghost">← Back</a>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stats-grid fade-up" style="margin-bottom:32px">
+    <div class="stat-block">
+      <div class="stat-number" id="statCurrentBest">—</div>
+      <div class="stat-label">Current best (CHF card)</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" id="statAvg">—</div>
+      <div class="stat-label">Average price</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" id="statLow">—</div>
+      <div class="stat-label">All-time low</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number"><%= (history.observations || []).length %></div>
+      <div class="stat-label">Observations</div>
+    </div>
+  </div>
+
+  <!-- Summary card -->
+  <% if (typeof summary !== 'undefined' && summary) { %>
+  <div class="window-wrap fade-up" style="margin-bottom:32px">
+    <div class="window-bar">
+      <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+      <div class="window-title">Product Summary</div>
+    </div>
+    <div class="window-body">
+      <p style="font-size:15px;color:var(--text);font-weight:500;margin-bottom:16px"><%= summary.oneLiner %></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted2);margin-bottom:8px">Key Specs</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px">
+            <% (summary.keySpecs || []).forEach(s => { %>
+            <li style="font-size:13px;color:var(--muted)">· <%= s %></li>
+            <% }) %>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:#6ee7b7;margin-bottom:8px">Pros</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px">
+            <% (summary.pros || []).forEach(p => { %>
+            <li style="font-size:13px;color:var(--muted)">✓ <%= p %></li>
+            <% }) %>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--red2);margin-bottom:8px">Cons</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px">
+            <% (summary.cons || []).forEach(c => { %>
+            <li style="font-size:13px;color:var(--muted)">✗ <%= c %></li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:var(--muted)">
+        <strong style="color:var(--text)">Verdict:</strong> <%= summary.verdict %>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Chart -->
+  <div class="chart-wrap fade-up">
+    <h2>Price over time — CHF</h2>
+    <div class="chart-container">
+      <canvas id="priceChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Observations table -->
+  <div class="section-heading" style="margin-top:40px">All Observations</div>
+  <div class="table-wrap fade-up">
+    <% if (!history || !history.observations || !history.observations.length) { %>
+    <div class="table-empty">No observations recorded yet. Run "Check All Prices" on the dashboard.</div>
+    <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Store</th>
+          <th>EUR Price</th>
+          <th>CHF (interbank)</th>
+          <th>CHF (Visa/MC +2.5%)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% (history.observations || []).slice().reverse().forEach(obs => { %>
+          <% (obs.stores || []).forEach(s => { %>
+          <tr>
+            <td class="cell-muted"><%= new Date(obs.timestamp).toLocaleString('de-CH') %></td>
+            <td class="cell-strong" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              <a href="<%= s.url %>" target="_blank" rel="noopener" style="color:var(--muted);transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">
+                <%= (() => { try { return new URL(s.url).hostname.replace(/^www\./,'') } catch { return s.url } })() %>
+              </a>
+            </td>
+            <td><% if (s.price != null) { %>€<%= Number(s.price).toFixed(2) %><% } else { %><span style="color:var(--muted2)">—</span><% } %></td>
+            <td><% if (s.priceCHF != null) { %>CHF <%= Number(s.priceCHF).toFixed(2) %><% } else { %><span style="color:var(--muted2)">—</span><% } %></td>
+            <td class="cell-green"><% if (s.priceCHF != null) { %>CHF <%= (s.priceCHF * 1.025).toFixed(2) %><% } else { %><span style="color:var(--muted2)">—</span><% } %></td>
+            <td>
+              <% if (s.priceCHF != null) { %>
+              <span class="pill pill-green">✓ OK</span>
+              <% } else { %>
+              <span class="pill pill-red">Failed</span>
+              <% } %>
+            </td>
+          </tr>
+          <% }) %>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+
+  <!-- Inject history data for Chart.js -->
+  <script id="historyData" type="application/json"><%- JSON.stringify(history) %></script>
+  <script id="productData" type="application/json"><%- JSON.stringify(product) %></script>
+  <script src="/js/charts.js"></script>
+
+<% } %>
+</div>
+
+<script>
+<% if (typeof product === 'undefined' || !product) { %>
+// Load product list for /history landing page
+fetch('/api/products').then(r => r.json()).then(data => {
+  const el = document.getElementById('historyProductList')
+  const products = data?.products || []
+  if (!products.length) { el.innerHTML = '<div style="color:var(--muted2);font-size:14px">No products tracked yet.</div>'; return }
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px">${products.map(p =>
+    `<a href="/history/${p.id}" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)'" onmouseout="this.style.borderColor='var(--border)'">
+      <span style="font-weight:600;color:var(--text)">${p.name}</span>
+      <span style="font-size:12px;color:var(--muted2)">${p.stores?.length || 0} stores →</span>
+    </a>`
+  ).join('')}</div>`
+})
+<% } %>
+</script>
+
+<%- include('partials/footer') %>

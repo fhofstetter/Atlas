@@ -1,0 +1,39 @@
+# Atlas .gitignore
+
+# ── Secrets — never commit ────────────────────────────────────────────────────
+config/integrations.yaml
+*.env
+.env*
+secrets/
+
+# ── Private health & financial data (LOCAL ONLY per CLAUDE.md) ───────────────
+data/health/
+data/budget/
+
+# ── Price history (large, generated) ─────────────────────────────────────────
+data/prices/history/
+
+# ── Node modules ─────────────────────────────────────────────────────────────
+node_modules/
+tools/atlas-webapp/node_modules/
+tools/atlas-webapp/price-tracker/node_modules/
+
+# ── Task artefacts — keep completed/failed for audit trail ───────────────────
+# tasks/completed/
+# tasks/failed/
+
+# ── Generated output ──────────────────────────────────────────────────────────
+output/*
+!output/.gitkeep
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+logs/sessions/*.md
+logs/errors/*.md
+
+# ── OS / editor noise ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/

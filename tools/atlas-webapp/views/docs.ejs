@@ -1,0 +1,279 @@
+<%- include('partials/head', {title, includeCharts: false}) %>
+<%- include('partials/nav', {activeNav}) %>
+
+<section class="hero" style="min-height:26vh">
+  <div class="hero-glow"></div>
+  <h1>Documentation</h1>
+  <p class="hero-sub">How Atlas works — architecture, technology stack, agents, and operational details.</p>
+</section>
+
+<div class="main-content">
+
+  <div class="features-grid fade-up">
+
+    <!-- 1. What this app does -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-red">🔍</div>
+        <h3>What this app does</h3>
+      </div>
+      <div class="feature-card-body">
+        <p>Atlas Market Research tracks product prices across Swiss and German online stores. For each product, it calculates the <strong style="color:var(--text)">total landed cost</strong> to Switzerland — including currency conversion, shipping, and customs — so you always see the real price you'd pay.</p>
+        <p style="margin-top:10px">Prices are refreshed on demand. Alerts fire when prices drop below your set threshold or a deal is detected.</p>
+      </div>
+    </div>
+
+    <!-- 2. Price collection -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-blue">📡</div>
+        <h3>How prices are collected</h3>
+      </div>
+      <div class="feature-card-body">
+        <p style="margin-bottom:10px">Three-tier web scraping, tried in order:</p>
+        <ul>
+          <li><span class="pill pill-green" style="margin-right:4px">JSON-LD</span> Schema.org structured data (most reliable)</li>
+          <li><span class="pill pill-yellow" style="margin-right:4px">OpenGraph</span> <code>product:price</code> meta tags</li>
+          <li><span class="pill pill-orange" style="margin-right:4px">Heuristic</span> CSS selectors (<code>.price</code>, <code>.a-price-whole</code>, etc.)</li>
+        </ul>
+        <p style="margin-top:10px">Supported stores: Digitec, Galaxus, Amazon.de/co.uk/com, Notebooksbilliger, Alternate, Saturn, MediaMarkt, Coolblue, and 40+ others.</p>
+      </div>
+    </div>
+
+    <!-- 3. Landed cost -->
+    <div class="feature-card" id="costs">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-green">🏷️</div>
+        <h3>Landed cost to Switzerland</h3>
+      </div>
+      <div class="feature-card-body">
+        <p><strong style="color:var(--text)">Landed cost = product + shipping + customs</strong></p>
+        <p style="margin-top:10px">Swiss customs rules:</p>
+        <ul>
+          <li>Import value <strong style="color:var(--text)">under CHF 65</strong>: completely duty-free and VAT-free</li>
+          <li>Import value <strong style="color:var(--text)">≥ CHF 65</strong>: 8.1% VAT + category duty + CHF 11.50 clearance fee</li>
+        </ul>
+        <p style="margin-top:10px">Duty rates by category:</p>
+        <ul>
+          <li>Electronics: <strong style="color:var(--text)">0%</strong></li>
+          <li>Clothing: 12% &nbsp;|&nbsp; Footwear: 17% &nbsp;|&nbsp; General: 4%</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. Exchange rates -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-purple">💱</div>
+        <h3>Exchange rates</h3>
+      </div>
+      <div class="feature-card-body">
+        <p>Live rates from <a href="https://www.frankfurter.app" target="_blank" rel="noopener" style="color:var(--muted);text-decoration:underline">Frankfurter API</a> (free, no API key), cached for 1 hour.</p>
+        <p style="margin-top:10px">Two rates are shown:</p>
+        <ul>
+          <li><strong style="color:var(--text)">Interbank</strong> — raw mid-market rate</li>
+          <li><strong style="color:#6ee7b7">Visa/Mastercard</strong> — interbank +2.5% (1.5% interchange + ~1% typical Swiss bank fee)</li>
+        </ul>
+        <p style="margin-top:10px">EUR prices are shown only when the card rate results in a lower CHF total than buying from a Swiss store.</p>
+      </div>
+    </div>
+
+    <!-- 5. How to add a product -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-orange">➕</div>
+        <h3>How to add a product</h3>
+      </div>
+      <div class="feature-card-body">
+        <p>Paste any store product URL in the Add Product form on the Dashboard. Optional fields:</p>
+        <ul style="margin-top:8px">
+          <li><strong style="color:var(--text)">Category</strong> — affects customs duty rate</li>
+          <li><strong style="color:var(--text)">Weight (kg)</strong> — affects shipping cost estimate</li>
+          <li><strong style="color:var(--text)">Name</strong> — auto-detected if left blank</li>
+        </ul>
+        <p style="margin-top:10px">Or via CLI:</p>
+        <div class="code-block" style="margin-top:8px;font-size:11px">node index.js add-product --url &lt;url&gt; --category electronics</div>
+      </div>
+    </div>
+
+    <!-- 6. Deal detection -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-red">🔔</div>
+        <h3>Deal detection &amp; alerts</h3>
+      </div>
+      <div class="feature-card-body">
+        <p>Three deal types trigger alerts:</p>
+        <ul style="margin-top:8px">
+          <li><strong style="color:var(--text)">Threshold</strong> — price drops below your set CHF threshold</li>
+          <li><strong style="color:var(--text)">Below average</strong> — price ≥15% below the 30-observation rolling average</li>
+          <li><strong style="color:var(--text)">Cross-store</strong> — cheapest store ≥15% cheaper than second-cheapest</li>
+        </ul>
+        <p style="margin-top:10px">Set a threshold via CLI:</p>
+        <div class="code-block" style="margin-top:8px;font-size:11px">node index.js set-alert "DJI Neo" --threshold 120</div>
+      </div>
+    </div>
+
+    <!-- 7. CLI reference -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-blue">⚡</div>
+        <h3>CLI commands</h3>
+      </div>
+      <div class="feature-card-body">
+        <p style="margin-bottom:8px">Run from <code>tools/price-tracker/</code>:</p>
+        <div class="code-block" style="font-size:11px;display:flex;flex-direction:column;gap:6px">
+          <div><span style="color:#c792ea">node</span> index.js <span style="color:#82aaff">check-all</span></div>
+          <div><span style="color:#c792ea">node</span> index.js <span style="color:#82aaff">check-one</span> <span style="color:#c3e88d">"DJI Neo"</span></div>
+          <div><span style="color:#c792ea">node</span> index.js <span style="color:#82aaff">list</span> [--json]</div>
+          <div><span style="color:#c792ea">node</span> index.js <span style="color:#82aaff">add-product</span> --url &lt;url&gt;</div>
+          <div><span style="color:#c792ea">node</span> index.js <span style="color:#82aaff">set-alert</span> &lt;name&gt; --threshold 150</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Infrastructure skills -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-orange">🐳</div>
+        <h3>Infrastructure skills</h3>
+      </div>
+      <div class="feature-card-body">
+        <p style="margin-bottom:8px">Docker Compose stack management via slash commands:</p>
+        <div class="code-block" style="font-size:11px;display:flex;flex-direction:column;gap:6px">
+          <div><span style="color:#c792ea">/stack-up</span> <span style="color:var(--muted)">[--build]</span></div>
+          <div><span style="color:#c792ea">/stack-status</span></div>
+          <div><span style="color:#c792ea">/stack-restart</span> <span style="color:var(--muted)">[grafana|prometheus|price-tracker]</span></div>
+        </div>
+        <p style="margin-top:10px;font-size:12px;color:var(--muted)">Handled by <code>infra-agent</code> — knows the WSL docker workaround and polls health endpoints until services are confirmed up.</p>
+      </div>
+    </div>
+
+    <!-- 9. Market Researcher agent -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon" style="background:rgba(0,200,200,0.15)">🤖</div>
+        <h3>Market Researcher agent</h3>
+      </div>
+      <div class="feature-card-body">
+        <p>The <code>market-researcher</code> Atlas agent automates the full research workflow: searches for store URLs, adds the product to the tracker, runs a price check, and returns a structured buy-recommendation report with landed costs.</p>
+        <p style="margin-top:10px">Trigger it by telling Atlas: <em style="color:var(--text)">"find the best price for [product] in Switzerland"</em>.</p>
+      </div>
+    </div>
+
+    <!-- 10. Tech stack -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon grad-green">🛠️</div>
+        <h3>Core tech stack</h3>
+      </div>
+      <div class="feature-card-body">
+        <ul>
+          <li><strong style="color:var(--text)">Runtime</strong>: Node.js 24 (ESM, no transpile step)</li>
+          <li><strong style="color:var(--text)">Web server</strong>: Express 4 — routing, static files, middleware</li>
+          <li><strong style="color:var(--text)">Templating</strong>: EJS — server-side rendering with partials (head/nav/footer)</li>
+          <li><strong style="color:var(--text)">Scraping</strong>: Native <code>fetch</code> API + Cheerio for HTML parsing</li>
+          <li><strong style="color:var(--text)">FX rates</strong>: Frankfurter API (free, ECB data)</li>
+          <li><strong style="color:var(--text)">Charts</strong>: Chart.js 4 via CDN — label-based time series, no adapter needed</li>
+          <li><strong style="color:var(--text)">Storage</strong>: JSON flat files — no database, bind-mounted in Docker</li>
+          <li><strong style="color:var(--text)">CLI</strong>: Commander.js — add-product, check-all, list, set-alert subcommands</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 11. Monitoring -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon" style="background:rgba(251,146,60,0.15)">📊</div>
+        <h3>Monitoring stack</h3>
+      </div>
+      <div class="feature-card-body">
+        <ul>
+          <li><strong style="color:var(--text)">prom-client</strong>: Embeds a Prometheus metrics endpoint at <code>/metrics</code> — HTTP request rate, latency histogram, product count gauge</li>
+          <li><strong style="color:var(--text)">Prometheus</strong>: Scrapes <code>/metrics</code> every 15 s, stores 30 days of time-series data in a named Docker volume</li>
+          <li><strong style="color:var(--text)">Grafana</strong>: Pre-provisioned dashboard (auto-loaded from <code>config/grafana/dashboards/</code>) — shows req rate, p95 latency, heap usage, event loop lag</li>
+          <li><strong style="color:var(--text)">Health check</strong>: <code>GET /api/health</code> — used by Docker HEALTHCHECK and load balancers</li>
+        </ul>
+        <p style="margin-top:10px;font-size:12px;color:var(--muted)">Start the full stack with <code>make up</code>. Grafana at :3000, Prometheus at :9090.</p>
+      </div>
+    </div>
+
+    <!-- 12. Deployment -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon" style="background:rgba(96,165,250,0.15)">🐳</div>
+        <h3>Deployment</h3>
+      </div>
+      <div class="feature-card-body">
+        <ul>
+          <li><strong style="color:var(--text)">Docker</strong>: Alpine Node 24 image, non-root user, minimal attack surface</li>
+          <li><strong style="color:var(--text)">Docker Compose</strong>: Orchestrates price-tracker + Prometheus + Grafana as a single stack</li>
+          <li><strong style="color:var(--text)">Bind mounts</strong>: <code>./data</code> is mounted to <code>/atlas-data</code> — agents on the host can read/write data while the container runs</li>
+          <li><strong style="color:var(--text)">Named volumes</strong>: Prometheus and Grafana state persist across container restarts</li>
+          <li><strong style="color:var(--text)">Makefile</strong>: <code>make up/down/build/logs/shell/check/add/health</code> shortcuts</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 13. Code quality -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon" style="background:rgba(167,139,250,0.15)">✅</div>
+        <h3>Code quality</h3>
+      </div>
+      <div class="feature-card-body">
+        <ul>
+          <li><strong style="color:var(--text)">ESLint 10</strong>: Flat config (<code>eslint.config.js</code>) — strict equality, no unused vars, prefer-const, no-var</li>
+          <li><strong style="color:var(--text)">npm audit</strong>: <code>npm run audit</code> checks for high/critical CVEs in all dependencies</li>
+          <li><strong style="color:var(--text)">security-auditor agent</strong>: OWASP Top 10 (2025) read-only review — invoke on demand before releases</li>
+        </ul>
+        <div style="margin-top:12px;background:var(--bg3);border-radius:var(--radius);padding:10px 14px;font-family:monospace;font-size:12px;color:var(--muted)">
+          npm run lint &nbsp;·&nbsp; npm run audit
+        </div>
+      </div>
+    </div>
+
+    <!-- 14. Atlas agent system -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon" style="background:rgba(232,68,90,0.15)">🤖</div>
+        <h3>Atlas agent system</h3>
+      </div>
+      <div class="feature-card-body">
+        <p>Atlas is powered by Claude Code's multi-agent SDK. Each agent is a <code>.claude/agents/*.md</code> file that defines its model, tools, and protocol.</p>
+        <ul style="margin-top:10px">
+          <li><strong style="color:var(--text)">Orchestrator</strong>: Routes every request to the right specialist</li>
+          <li><strong style="color:var(--text)">Planner</strong>: Writes dependency-ordered YAML task plans</li>
+          <li><strong style="color:var(--text)">Coder / Reviewer</strong>: Write + audit code; reviewer is read-only</li>
+          <li><strong style="color:var(--text)">Domain agents</strong>: market-researcher, health-agent, budget-agent, organizer-agent each own their data domain</li>
+          <li><strong style="color:var(--text)">Memory</strong>: Persistent markdown files in <code>memory/</code>, indexed in <code>MEMORY.md</code></li>
+        </ul>
+        <p style="margin-top:10px;font-size:12px;color:var(--muted)">See the <a href="/agents" style="color:var(--muted)">Agents page</a> for the full roster.</p>
+      </div>
+    </div>
+
+    <!-- 15. Data architecture -->
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-card-icon" style="background:rgba(110,231,183,0.15)">🗄️</div>
+        <h3>Data architecture</h3>
+      </div>
+      <div class="feature-card-body">
+        <ul>
+          <li><code>data/prices/</code> — products, alerts, history, summaries (read/write)</li>
+          <li><code>data/organizer/</code> — goals, todos, chores (read/write)</li>
+          <li><code>data/health/</code> — sleep, fitness, goals (<strong style="color:var(--red2)">local only</strong>)</li>
+          <li><code>data/budget/</code> — accounts, transactions, savings (<strong style="color:var(--red2)">local only</strong>)</li>
+          <li><code>tasks/</code> — agent task queue (queue / active / completed / failed)</li>
+          <li><code>memory/</code> — Atlas persistent memory, indexed in MEMORY.md</li>
+          <li><code>config/</code> — tracker.yaml, Prometheus config, Grafana provisioning</li>
+          <li><code>logs/</code> — session logs, alert log</li>
+        </ul>
+        <p style="margin-top:10px;font-size:12px;color:var(--muted)">Health and budget data never leave the machine — no external API calls, no cloud sync.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<%- include('partials/footer') %>

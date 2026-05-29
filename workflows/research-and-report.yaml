@@ -1,0 +1,73 @@
+# Research-and-Report Workflow
+# Given a topic, research it and produce a written report.
+name: research-and-report
+description: Research a topic and deliver a structured written report
+version: "1.0"
+trigger:
+  type: manual
+
+inputs:
+  - name: topic
+    type: string
+    required: true
+    description: "The topic to research"
+  - name: audience
+    type: string
+    required: false
+    default: "general"
+    description: "Target audience for the report"
+
+steps:
+  - id: plan
+    name: Plan the research
+    agent: planner
+    prompt: |
+      Create a research plan for the topic: "{{ inputs.topic }}".
+      Audience: {{ inputs.audience }}.
+      Identify the key questions to answer and the best sources to consult.
+    inputs:
+      topic: "{{ inputs.topic }}"
+    depends_on: []
+    on_error: fail
+
+  - id: research
+    name: Gather information
+    agent: researcher
+    prompt: |
+      Using the plan from the previous step, research the topic: "{{ inputs.topic }}".
+      Answer each key question identified in the plan. Cite all sources.
+      Write your findings to output/research_{{ inputs.topic | slugify }}.md
+    inputs:
+      plan: "{{ steps.plan.output }}"
+      topic: "{{ inputs.topic }}"
+    depends_on: [plan]
+    on_error: fail
+
+  - id: write
+    name: Write the report
+    agent: writer
+    prompt: |
+      Using the research findings, write a structured report on "{{ inputs.topic }}".
+      Audience: {{ inputs.audience }}.
+      Include: executive summary, key findings, recommendations, sources.
+      Write to output/report_{{ inputs.topic | slugify }}.md
+    inputs:
+      research: "{{ steps.research.output }}"
+    depends_on: [research]
+    on_error: fail
+
+  - id: review
+    name: Review the report
+    agent: reviewer
+    prompt: |
+      Review the report at output/report_{{ inputs.topic | slugify }}.md
+      Check for: factual accuracy, completeness, clarity, and citation quality.
+      Write your review to output/review_{{ inputs.topic | slugify }}.md
+    inputs:
+      report: "{{ steps.write.output }}"
+    depends_on: [write]
+    on_error: skip
+
+outputs:
+  report: "output/report_{{ inputs.topic | slugify }}.md"
+  review: "output/review_{{ inputs.topic | slugify }}.md"

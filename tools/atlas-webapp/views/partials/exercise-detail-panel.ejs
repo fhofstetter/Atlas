@@ -1,0 +1,49 @@
+<!-- Reusable exercise detail panel. Caller must pass `panelId` (string). -->
+<div id="ex-panel-<%= panelId %>" class="ex-panel">
+  <div class="ex-panel-empty">
+    <div class="ex-panel-empty-icon">💪</div>
+    <div class="ex-panel-empty-text">Click an exercise for details</div>
+  </div>
+  <div class="ex-panel-content">
+    <div class="ex-panel-header">
+      <div class="ex-panel-header-left">
+        <div id="ex-panel-name-<%= panelId %>" class="ex-panel-title"></div>
+        <div id="ex-panel-category-<%= panelId %>" class="ex-panel-cat"></div>
+      </div>
+      <button id="anatomy-toggle-btn-<%= panelId %>" class="anatomy-toggle" data-active="standard" onclick="toggleAnatomyMode('<%= panelId %>')">
+        <span class="toggle-opt" data-mode="standard">Standard</span>
+        <span class="toggle-opt" data-mode="anatomy">Anatomy</span>
+      </button>
+    </div>
+    <div class="ex-panel-body">
+      <div class="ex-diagrams">
+        <div class="ex-diagram-col">
+          <div class="ex-diagram-label">Back</div>
+          <div id="body-back-<%= panelId %>" class="body-chart-wrap"></div>
+          <div id="anatomy-back-<%= panelId %>" class="anatomy-chart-wrap"></div>
+        </div>
+        <div class="ex-diagram-col">
+          <div class="ex-diagram-label">Front</div>
+          <div id="body-front-<%= panelId %>" class="body-chart-wrap"></div>
+          <div id="anatomy-front-<%= panelId %>" class="anatomy-chart-wrap"></div>
+        </div>
+      </div>
+      <div class="ex-info">
+        <div class="ex-info-section">
+          <div class="ex-info-heading" style="color:#e8445a">Muscles</div>
+          <div id="ex-panel-muscles-<%= panelId %>" class="ex-muscle-tags"></div>
+        </div>
+        <div class="ex-info-section">
+          <div id="ex-panel-equipment-<%= panelId %>" style="font-size:12px;color:var(--muted)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-panel-lower">
+      <div id="ex-panel-schematic-<%= panelId %>" class="ex-panel-form-guide"></div>
+      <div class="ex-info-section">
+        <div class="ex-info-heading">How to</div>
+        <div id="ex-panel-desc-<%= panelId %>" class="ex-desc"></div>
+      </div>
+    </div>
+  </div>
+</div>
