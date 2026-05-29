@@ -10,7 +10,7 @@ Last updated: 2026-05-29
 
 | Repo | Phase | Status | Port |
 |------|-------|--------|------|
-| [atlas-core](todos/atlas-core.md) | Extraction | Running — needs slimming | 3456 |
+| [atlas-core](todos/atlas-core.md) | Complete | Running — healthy, slimmed | 3456 |
 | [atlas-fit](todos/atlas-fit.md) | Phase 1–3 done | Running — healthy | 3457 |
 | [atlas-trading](todos/atlas-trading.md) | Early stage | trade-bot exists (testnet only) | 3458 |
 | [devops-platform](todos/devops-platform.md) | Scaffold | No live projects yet | — |
@@ -19,11 +19,11 @@ Last updated: 2026-05-29
 
 ```
 Step 1  [x] Extract atlas-fit                    ← DONE 2026-05-29
-Step 2  [ ] Wire atlas-fit widget into dashboard  ← NEXT
-Step 3  [ ] Build atlas-trading
-Step 4  [ ] Wire atlas-trading into dashboard + plan-day
-Step 5  [ ] Harden devops-platform scaffold
-Step 6  [ ] Retire extracted code from atlas-core
+Step 2  [x] Wire atlas-fit widget into dashboard  ← DONE 2026-05-29
+Step 3  [x] Build atlas-trading                   ← DONE 2026-05-29
+Step 4  [x] Wire atlas-trading into dashboard     ← DONE 2026-05-29
+Step 5  [x] Harden devops-platform scaffold       ← DONE 2026-05-29
+Step 6  [x] Retire extracted code from atlas-core ← DONE 2026-05-29
 ```
 
 ---

@@ -18,6 +18,8 @@ Generate the daily organizer briefing by delegating to specialist agents and rea
    - Read `data/organizer/goals.json` for active goal next-actions
    - Read `data/organizer/chores.json` for overdue/due-today chores
    - Read `data/organizer/user-todos.json` for open todos
+   - Call `GET http://atlas-fit:3457/api/today` for today's training session (graceful fallback if unreachable)
+   - Call `GET http://atlas-trading:3458/api/briefing` for overnight market summary (graceful fallback if unreachable)
    - Read `data/health/sleep-log.json` for last night's sleep summary
    - Compose and write the briefing to `output/daily-plan_<YYYYMMDD>.md`
 

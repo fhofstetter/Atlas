@@ -32,7 +32,6 @@ services:
       ATLAS_DATA_ROOT: /atlas-data
       DATA_DIR: /atlas-data/prices
       ORGANIZER_DIR: /atlas-data/organizer
-      HEALTH_DIR: /atlas-data/health
       BUDGET_DIR: /atlas-data/budget
       CONFIG_DIR: /config
       LOGS_DIR: /logs
@@ -81,6 +80,30 @@ services:
       - /mnt/c/Data/Projects/code/atlas-fit/public:/app/public:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3457/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  atlas-trading:
+    build:
+      context: /mnt/c/Data/Projects/code/atlas-trading
+      dockerfile: Dockerfile
+    image: atlas-trading:latest
+    container_name: atlas-trading
+    restart: unless-stopped
+    expose:
+      - "3458"
+    ports:
+      - "3458:3458"
+    environment:
+      PORT: "3458"
+      DATA_DIR: /data
+    volumes:
+      - /mnt/c/Data/Projects/code/atlas-trading/server.py:/app/server.py:ro
+      - /mnt/c/Data/Projects/code/atlas-trading/src:/app/src:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:3458/api/health')"]
       interval: 30s
       timeout: 5s
       retries: 3

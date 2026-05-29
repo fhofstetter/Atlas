@@ -46,6 +46,35 @@
   </div>
   <% } %>
 
+  <!-- SERVICE WIDGETS -->
+  <% if (widgets && widgets.length) { %>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:32px">
+    <% widgets.forEach(w => { %>
+    <% const statusColor = w.status === 'ok' ? '#6ee7b7' : w.status === 'warn' ? '#f59e0b' : 'var(--red2)' %>
+    <div class="window-wrap fade-up">
+      <div class="window-body" style="padding:16px 20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="width:7px;height:7px;border-radius:50%;background:<%= statusColor %>;flex-shrink:0"></span>
+          <span style="font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.07em"><%= w.title %></span>
+        </div>
+        <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
+          <% (w.lines || []).forEach(line => { %>
+          <li style="font-size:12px;color:var(--muted)"><%= line %></li>
+          <% }) %>
+        </ul>
+        <% if (w.actions && w.actions.length) { %>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <% w.actions.forEach(a => { %>
+          <a href="<%= a.url %>" style="font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:5px;padding:3px 9px;text-decoration:none;white-space:nowrap"><%= a.label %> →</a>
+          <% }) %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px">
 
     <!-- TODOS -->

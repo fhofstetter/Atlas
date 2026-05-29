@@ -1,0 +1,17 @@
+{
+  "_comment": "External service widgets shown on the overview dashboard. Each service must implement GET /api/widget/summary.",
+  "widgets": [
+    {
+      "id": "atlas-fit",
+      "label": "Training",
+      "url": "http://atlas-fit:3457/api/widget/summary",
+      "enabled": true
+    },
+    {
+      "id": "atlas-trading",
+      "label": "Trading",
+      "url": "http://atlas-trading:3458/api/widget/summary",
+      "enabled": true
+    }
+  ]
+}
