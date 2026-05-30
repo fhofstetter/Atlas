@@ -39,6 +39,8 @@ services:
       GRAFANA_URL: "http://localhost:3000"
       AGENTS_DIR: /claude-agents
       ATLAS_FIT_URL: "http://atlas-fit:3457"
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      GITHUB_REPOS: "fhofstetter/Atlas,fhofstetter/atlas-fit,fhofstetter/atlas-trading"
     volumes:
       - ./data:/atlas-data
       - ./config:/config:ro

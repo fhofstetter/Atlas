@@ -459,6 +459,68 @@ app.get('/reference', async (_req, res) => {
 
 // ── Tasks section ─────────────────────────────────────────────────────────────
 
+// ── Board (GitHub Issues Kanban) ──────────────────────────────────────────────
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? ''
+const GITHUB_REPOS = (process.env.GITHUB_REPOS ?? '').split(',').filter(Boolean)
+
+async function fetchGitHubIssues(repo, state = 'open') {
+  if (!GITHUB_TOKEN) return []
+  try {
+    const url = `https://api.github.com/repos/${repo}/issues?state=${state}&per_page=100&sort=updated`
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, 'X-GitHub-Api-Version': '2022-11-28' },
+      signal: AbortSignal.timeout(5000),
+    })
+    if (!res.ok) return []
+    const issues = await res.json()
+    return issues
+      .filter(i => !i.pull_request)
+      .map(i => ({
+        number: i.number,
+        title: i.title,
+        url: i.html_url,
+        repo: repo.split('/')[1],
+        repoFull: repo,
+        labels: i.labels.map(l => ({ name: l.name, color: l.color })),
+        milestone: i.milestone?.title ?? null,
+        state: i.state,
+        createdAt: i.created_at,
+        updatedAt: i.updated_at,
+        typeLabel: i.labels.find(l => ['feat','fix','chore','refactor','docs','security','research'].includes(l.name))?.name ?? null,
+        priorityLabel: i.labels.find(l => l.name.startsWith('P'))?.name ?? null,
+        sizeLabel: i.labels.find(l => l.name.startsWith('size:'))?.name ?? null,
+        statusLabel: i.labels.find(l => l.name.startsWith('status:'))?.name ?? null,
+      }))
+  } catch { return [] }
+}
+
+app.get('/board', async (_req, res) => {
+  const allOpen = (await Promise.all(GITHUB_REPOS.map(r => fetchGitHubIssues(r, 'open')))).flat()
+  const allClosed = (await Promise.all(GITHUB_REPOS.map(r => fetchGitHubIssues(r, 'closed')))).flat()
+
+  const cutoff = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+  const recentDone = allClosed.filter(i => i.updatedAt > cutoff).slice(0, 20)
+
+  const columns = {
+    backlog:    allOpen.filter(i => !i.statusLabel),
+    ready:      allOpen.filter(i => i.statusLabel === 'status: ready'),
+    inProgress: allOpen.filter(i => i.statusLabel === 'status: in-progress'),
+    inReview:   allOpen.filter(i => i.statusLabel === 'status: in-review'),
+    blocked:    allOpen.filter(i => i.statusLabel === 'status: blocked'),
+    done:       recentDone,
+  }
+
+  res.render('board', {
+    title: 'Board',
+    activeNav: 'board',
+    columns,
+    repos: GITHUB_REPOS,
+    hasToken: !!GITHUB_TOKEN,
+    totalOpen: allOpen.length,
+  })
+})
+
 app.get('/tasks', async (_req, res) => {
   const [queuedTasks, activeTasks, completedTasks, failedTasks] = await Promise.all([
     readTasksDir(path.join(TASKS_ROOT, 'queue')),

@@ -24,8 +24,10 @@
       <div class="stat-label">Products tracked</div>
     </div>
     <div class="stat-block">
-      <div class="stat-number" style="<%= activeTasks.length > 0 ? 'color:#f59e0b' : 'color:var(--muted)' %>"><%= activeTasks.length + queuedTasks.length %></div>
-      <div class="stat-label">Agent tasks pending</div>
+      <a href="/board" style="text-decoration:none">
+        <div class="stat-number" style="<%= activeTasks.length > 0 ? 'color:#f59e0b' : 'color:var(--muted)' %>"><%= activeTasks.length + queuedTasks.length %></div>
+        <div class="stat-label">Agent tasks pending</div>
+      </a>
     </div>
   </div>
 
