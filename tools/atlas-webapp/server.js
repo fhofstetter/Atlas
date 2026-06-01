@@ -461,8 +461,98 @@ app.get('/reference', async (_req, res) => {
 
 // ── Board (GitHub Issues Kanban) ──────────────────────────────────────────────
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? ''
-const GITHUB_REPOS = (process.env.GITHUB_REPOS ?? '').split(',').filter(Boolean)
+const GITHUB_TOKEN      = process.env.GITHUB_TOKEN ?? ''
+const GITHUB_REPOS      = (process.env.GITHUB_REPOS ?? '').split(',').filter(Boolean)
+const GITHUB_PROJECT_NUM = parseInt(process.env.GITHUB_PROJECT_NUM ?? '1', 10)
+const GITHUB_PROJECT_OWNER = (process.env.GITHUB_REPOS ?? '').split('/')[0] ?? ''
+
+// Map GitHub Projects v2 Status field values → webapp column keys
+const PROJECT_STATUS_MAP = {
+  'Todo':        'backlog',
+  'Backlog':     'backlog',
+  'Ready':       'ready',
+  'In Progress': 'inProgress',
+  'In Review':   'inReview',
+  'Blocked':     'blocked',
+  'Done':        'done',
+}
+
+async function fetchProjectItems() {
+  if (!GITHUB_TOKEN || !GITHUB_PROJECT_OWNER) return null
+  const query = `query($login:String!, $num:Int!) {
+    user(login:$login) {
+      projectV2(number:$num) {
+        title
+        items(first:100) {
+          nodes {
+            id
+            fieldValues(first:10) {
+              nodes {
+                ... on ProjectV2ItemFieldSingleSelectValue {
+                  name
+                  field { ... on ProjectV2SingleSelectField { name } }
+                }
+              }
+            }
+            content {
+              ... on Issue {
+                number
+                title
+                url
+                state
+                updatedAt
+                repository { name }
+                labels(first:10) { nodes { name color } }
+                milestone { title }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`
+  try {
+    const res = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query, variables: { login: GITHUB_PROJECT_OWNER, num: GITHUB_PROJECT_NUM } }),
+      signal: AbortSignal.timeout(8000),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    if (data.errors) return null
+    const items = data?.data?.user?.projectV2?.items?.nodes ?? []
+    return items
+      .filter(item => item.content?.number)
+      .map(item => {
+        const statusField = item.fieldValues.nodes.find(
+          f => f?.field?.name === 'Status'
+        )
+        const projectStatus = statusField?.name ?? 'Backlog'
+        const colKey = PROJECT_STATUS_MAP[projectStatus] ?? 'backlog'
+        const issue = item.content
+        const labels = issue.labels?.nodes ?? []
+        return {
+          number:        issue.number,
+          title:         issue.title,
+          url:           issue.url,
+          repo:          issue.repository?.name ?? '',
+          state:         issue.state?.toLowerCase() ?? 'open',
+          updatedAt:     issue.updatedAt,
+          milestone:     issue.milestone?.title ?? null,
+          labels:        labels.map(l => ({ name: l.name, color: l.color })),
+          typeLabel:     labels.find(l => ['feat','fix','chore','refactor','docs','security','research'].includes(l.name))?.name ?? null,
+          priorityLabel: labels.find(l => l.name.startsWith('P'))?.name ?? null,
+          sizeLabel:     labels.find(l => l.name.startsWith('size:'))?.name ?? null,
+          statusLabel:   null,
+          colKey,
+        }
+      })
+  } catch { return null }
+}
 
 async function fetchGitHubIssues(repo, state = 'open') {
   if (!GITHUB_TOKEN) return []
@@ -496,19 +586,39 @@ async function fetchGitHubIssues(repo, state = 'open') {
 }
 
 app.get('/board', async (_req, res) => {
-  const allOpen = (await Promise.all(GITHUB_REPOS.map(r => fetchGitHubIssues(r, 'open')))).flat()
-  const allClosed = (await Promise.all(GITHUB_REPOS.map(r => fetchGitHubIssues(r, 'closed')))).flat()
+  // Try GitHub Projects first (requires project scope token)
+  const projectItems = await fetchProjectItems()
 
-  const cutoff = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
-  const recentDone = allClosed.filter(i => i.updatedAt > cutoff).slice(0, 20)
+  let columns, totalOpen, usingProject
 
-  const columns = {
-    backlog:    allOpen.filter(i => !i.statusLabel),
-    ready:      allOpen.filter(i => i.statusLabel === 'status: ready'),
-    inProgress: allOpen.filter(i => i.statusLabel === 'status: in-progress'),
-    inReview:   allOpen.filter(i => i.statusLabel === 'status: in-review'),
-    blocked:    allOpen.filter(i => i.statusLabel === 'status: blocked'),
-    done:       recentDone,
+  if (projectItems) {
+    usingProject = true
+    const open = projectItems.filter(i => i.state === 'open')
+    const done = projectItems.filter(i => i.colKey === 'done' || i.state === 'closed')
+    totalOpen = open.length
+    columns = {
+      backlog:    open.filter(i => i.colKey === 'backlog'),
+      ready:      open.filter(i => i.colKey === 'ready'),
+      inProgress: open.filter(i => i.colKey === 'inProgress'),
+      inReview:   open.filter(i => i.colKey === 'inReview'),
+      blocked:    open.filter(i => i.colKey === 'blocked'),
+      done:       done.slice(0, 20),
+    }
+  } else {
+    // Fallback: label-based grouping
+    usingProject = false
+    const allOpen   = (await Promise.all(GITHUB_REPOS.map(r => fetchGitHubIssues(r, 'open')))).flat()
+    const allClosed = (await Promise.all(GITHUB_REPOS.map(r => fetchGitHubIssues(r, 'closed')))).flat()
+    const cutoff    = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+    totalOpen = allOpen.length
+    columns = {
+      backlog:    allOpen.filter(i => !i.statusLabel),
+      ready:      allOpen.filter(i => i.statusLabel === 'status: ready'),
+      inProgress: allOpen.filter(i => i.statusLabel === 'status: in-progress'),
+      inReview:   allOpen.filter(i => i.statusLabel === 'status: in-review'),
+      blocked:    allOpen.filter(i => i.statusLabel === 'status: blocked'),
+      done:       allClosed.filter(i => i.updatedAt > cutoff).slice(0, 20),
+    }
   }
 
   res.render('board', {
@@ -517,7 +627,8 @@ app.get('/board', async (_req, res) => {
     columns,
     repos: GITHUB_REPOS,
     hasToken: !!GITHUB_TOKEN,
-    totalOpen: allOpen.length,
+    usingProject,
+    totalOpen,
   })
 })
 
@@ -548,6 +659,15 @@ app.get('/docs', (_req, res) => {
 // ── Calendar section ──────────────────────────────────────────────────────────
 
 const ATLAS_FIT_URL = process.env.ATLAS_FIT_URL ?? 'http://atlas-fit:3457'
+
+const SESSION_COLORS = {
+  work:     { bg: '#3b82f6', border: '#2563eb' },
+  health:   { bg: '#10b981', border: '#059669' },
+  personal: { bg: '#8b5cf6', border: '#7c3aed' },
+  travel:   { bg: '#f59e0b', border: '#d97706' },
+  training: { bg: '#ef4444', border: '#dc2626' },
+  other:    { bg: '#4b5563', border: '#374151' },
+}
 
 async function fetchTrainingEvents() {
   try {

@@ -41,6 +41,7 @@ services:
       ATLAS_FIT_URL: "http://atlas-fit:3457"
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
       GITHUB_REPOS: "fhofstetter/Atlas,fhofstetter/atlas-fit,fhofstetter/atlas-trading"
+      GITHUB_PROJECT_NUM: "1"
     volumes:
       - ./data:/atlas-data
       - ./config:/config:ro
